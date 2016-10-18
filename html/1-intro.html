@@ -11751,9 +11751,48 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Layout">Layout<a class="anchor-link" href="#Layout">&#182;</a></h1><ul>
+<li><p>opening</p>
+<ul>
+<li>contents</li>
+<li>files used</li>
+<li>packages used</li>
+</ul>
+</li>
+<li><p>Scraping</p>
+<ul>
+<li>Images<ul>
+<li>OCR</li>
+</ul>
+</li>
+<li>raw text</li>
+<li>html</li>
+<li>PDFs</li>
+<li>word doc etc.</li>
+</ul>
+</li>
+<li>spidering<ul>
+<li>wikipedia</li>
+<li>APIs<ul>
+<li>REST</li>
+<li>tumblr</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>reading files<ul>
+<li>encodings</li>
+<li>unicode</li>
+</ul>
+</li>
+<li>filtering</li>
+<li>data structures<ul>
+<li>pandas</li>
+</ul>
+</li>
+</ul>
 <h1 id="Week-1---Intro">Week 1 - Intro<a class="anchor-link" href="#Week-1---Intro">&#182;</a></h1><p>Intro stuff ...</p>
-<h1 id="Scraping">Scraping<a class="anchor-link" href="#Scraping">&#182;</a></h1><p>Before we can start analyzing content we need to obtain it. Sometimes it will be provided to us before hand, but often we will need to download it. As a starting example we will attempt to download the MACS 3000 syllabus from github. The course page is located at <a href="https://github.com/UC-MACSS/persp-analysis">github.com/UC-MACSS/persp-analysis</a> so lets start with that.</p>
-<p>We can do this by making an HTTP GET request to that url, a GET request is simply a request to the server to provide the contents given by some url. The other request we will be using in this class is called a POST request and requests the server to take some content we provide. While the Python standard library does have the ability do make GET requests we will be using the <a href="http://docs.python-requests.org/en/master/"><em>requests</em></a> package as it is <em>'the only Non-GMO HTTP library for Python'</em>, also it provides a nicer interface.</p>
+<p>For this notebook we will be using the following packages</p>
 
 </div>
 </div>
@@ -11763,11 +11802,78 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
-<span class="c1">#requests.get(&#39;https://github.com/UC-MACSS/persp-analysis&#39;)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span> <span class="c1">#http requests</span>
+<span class="kn">import</span> <span class="nn">bs4</span> <span class="c1">#called &#39;BeautifulSoup&#39;, a html parser</span>
+<span class="kn">import</span> <span class="nn">re</span> <span class="c1">#for regexs</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="c1">#DataFrames</span>
 </pre></div>
 
 </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We will also be working on the following files/urls</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wikipedia_content_analysis</span> <span class="o">=</span> <span class="s1">&#39;https://en.wikipedia.org/wiki/Content_analysis&#39;</span>
+<span class="n">content_analysis_save</span> <span class="o">=</span> <span class="s1">&#39;wikipedia_content_analysis.html&#39;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Scraping">Scraping<a class="anchor-link" href="#Scraping">&#182;</a></h1><p>Before we can start analyzing content we need to obtain it. Sometimes it will be provided to us before hand, but often we will need to download it. As a starting example we will attempt to download the wikipedia page on content analysis. The page is located at <a href="https://en.wikipedia.org/wiki/Content_analysis">https://en.wikipedia.org/wiki/Content_analysis</a> so lets start with that.</p>
+<p>We can do this by making an HTTP GET request to that url, a GET request is simply a request to the server to provide the contents given by some url. The other request we will be using in this class is called a POST request and requests the server to take some content we provide. While the Python standard library does have the ability do make GET requests we will be using the <a href="http://docs.python-requests.org/en/master/"><em>requests</em></a> package as it is <em>'the only Non-GMO HTTP library for Python'</em>, also it provides a nicer interface.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#wikipedia_content_analysis = &#39;https://en.wikipedia.org/wiki/Content_analysis&#39;</span>
+<span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://en.wikipedia.org/wiki/Content_analysis&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[3]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;Response [200]&gt;</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -11784,11 +11890,11 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://github.com/UC-MACSS/persp-analysis&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">1000</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wikiContentRequest</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://en.wikipedia.org/wiki/Content_analysis&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">wikiContentRequest</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">1000</span><span class="p">])</span>
 </pre></div>
 
 </div>
@@ -11801,28 +11907,13 @@ div#notebook {
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>
-
-
-
-&lt;!DOCTYPE html&gt;
-&lt;html lang=&#34;en&#34; class=&#34;&#34;&gt;
-  &lt;head prefix=&#34;og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#&#34;&gt;
-    &lt;meta charset=&#39;utf-8&#39;&gt;
-    
-
-    &lt;link crossorigin=&#34;anonymous&#34; href=&#34;https://assets-cdn.github.com/assets/frameworks-cb4ede7df6d8670c4051172e4d6bc6916b3c765fa15b4ee9b348f157fdb85114.css&#34; media=&#34;all&#34; rel=&#34;stylesheet&#34; /&gt;
-    &lt;link crossorigin=&#34;anonymous&#34; href=&#34;https://assets-cdn.github.com/assets/github-171d3f0f3e5bd93fdd10a9f389e058c1f415ee10ec550302a2b73c5aaf70ce2e.css&#34; media=&#34;all&#34; rel=&#34;stylesheet&#34; /&gt;
-    
-    
-    &lt;link crossorigin=&#34;anonymous&#34; href=&#34;https://assets-cdn.github.com/assets/site-b637b3b72afffd79585a758c94c7bd5bc8d451dd7ff634ca3a1b23221da39613.css&#34; media=&#34;all&#34; rel=&#34;stylesheet&#34; /&gt;
-    
-
-    &lt;meta http-equiv=&#34;X-UA-Compatible&#34; content=&#34;IE=edge&#34;&gt;
-    &lt;meta http-equiv=&#34;Content-Language&#34; content=&#34;en&#34;&gt;
-    &lt;meta name=&#34;viewport&#34; content=&#34;width=device-width&#34;&gt;
-    
-    
+<pre>&lt;!DOCTYPE html&gt;
+&lt;html class=&#34;client-nojs&#34; lang=&#34;en&#34; dir=&#34;ltr&#34;&gt;
+&lt;head&gt;
+&lt;meta charset=&#34;UTF-8&#34;/&gt;
+&lt;title&gt;Content analysis - Wikipedia&lt;/title&gt;
+&lt;script&gt;document.documentElement.className = document.documentElement.className.replace( /(^|\s)client-nojs(\s|$)/, &#34;$1client-js$2&#34; );&lt;/script&gt;
+&lt;script&gt;(window.RLQ=window.RLQ||[]).push(function(){mw.config.set({&#34;wgCanonicalNamespace&#34;:&#34;&#34;,&#34;wgCanonicalSpecialPageName&#34;:false,&#34;wgNamespaceNumber&#34;:0,&#34;wgPageName&#34;:&#34;Content_analysis&#34;,&#34;wgTitle&#34;:&#34;Content analysis&#34;,&#34;wgCurRevisionId&#34;:735443188,&#34;wgRevisionId&#34;:735443188,&#34;wgArticleId&#34;:473317,&#34;wgIsArticle&#34;:true,&#34;wgIsRedirect&#34;:false,&#34;wgAction&#34;:&#34;view&#34;,&#34;wgUserName&#34;:null,&#34;wgUserGroups&#34;:[&#34;*&#34;],&#34;wgCategories&#34;:[&#34;Articles needing cleanup from April 2008&#34;,&#34;All articles needing cleanup&#34;,&#34;Cleanup tagged articles without a reason field from April 2008&#34;,&#34;Wikipedia pages needing cleanup from April 2008&#34;,&#34;Articles needing expert attention with no reason or talk parameter&#34;,&#34;Articles needing expert attention from April 2008&#34;,&#34;All artic
 </pre>
 </div>
 </div>
@@ -11836,19 +11927,18 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This is a bunch of nonsense, what it is, is the start of the HTML that makes up the website. This is a version of XML and is meant to be read by computers. Luckily we have a computer to parse it for us. To do the parsing we will use <a href="https://www.crummy.com/software/BeautifulSoup/"><em>Beautiful Soup</em></a> which is a better xml parser than the one in the standard library.</p>
+<p>This is not what we were looking for, because it is the start of the HTML that makes up the website. This is HTML and is meant to be read by computers. Luckily we have a computer to parse it for us. To do the parsing we will use <a href="https://www.crummy.com/software/BeautifulSoup/"><em>Beautiful Soup</em></a> which is a better parser than the one in the standard library.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">bs4</span>
-<span class="n">soup</span> <span class="o">=</span> <span class="n">bs4</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">200</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wikiContentSoup</span> <span class="o">=</span> <span class="n">bs4</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">wikiContentRequest</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">wikiContentSoup</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">200</span><span class="p">])</span>
 </pre></div>
 
 </div>
@@ -11865,73 +11955,9 @@ div#notebook {
 
 
 
-
-
-
-
-
-
-
-GitHub - UC-MACSS/persp-analysis: Course materials for MACS 30000 (Perspectives on Computational Analysis)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Skip to content
-
-
-
-
-
-
-
-
-
-
-
-         
+Content analysis - Wikipedia
+document.documentElement.className = document.documentElement.className.replace( /(^|\s)client-nojs(\s|$)/, &#34;$1client-js$2&#34; );
+(window.RLQ=window.RLQ||[]).push(functio
 </pre>
 </div>
 </div>
@@ -11945,7 +11971,147 @@ Skip to content
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This is better but there's a bunch of random whitespace and we have way more than just the <code>README.md</code> file. This is because the text we requested is for the whole web page, not just for the syllabus.</p>
+<p>This is better but there's a bunch of random whitespace and we have way more than just the text of the article. This is because what we requested is the whole webpage, not just the text for the article.</p>
+<p>We need to extract only the text we care about, in order to do this we will need to inspect the html. One way to do this is to simply go to the website with a browser and use its inspection or view source tool, but if there is javascript or other dynamic loading occurring on the page it is very likely that what Python receives is not what you will see. So we will need to view what Python receives. To do this we can save the html <code>requests</code> obtained.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#content_analysis_save = &#39;wikipedia_content_analysis.html&#39;</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">content_analysis_save</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">wikiContentRequest</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now lets open the file (<code>wikipedia_content_analysis.html</code>) we just created with a web browser. It should look sort of like the original but missing all the images and formatting.</p>
+<p>As there is very little standardization on structuring webpages figuring out how best to extract what you want is an art. Looking at this page it looks like all the main textual content is within <code>&lt;p&gt;</code>(paragraph) tags inside the <code>&lt;body&gt;</code> tag.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">contentPTags</span> <span class="o">=</span> <span class="n">wikiContentSoup</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">pTag</span> <span class="ow">in</span> <span class="n">contentPTags</span><span class="p">[:</span><span class="mi">3</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">pTag</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Content analysis is &#34;a wide and heterogeneous set of manual or computer-assisted techniques for contextualized interpretations of documents produced by communication processes in the strict sense of that phrase (any kind of text, written, iconic, multimedia, etc.) or signification processes (traces and artifacts), having as ultimate goal the production of valid and trustworthy inferences.&#34;
+Content analysis has come to be a sort of &#39;umbrella term&#39; referring to an almost boundless set of quite diverse research approaches and techniques. Broadly, it can refer to methods for studying and/or retrieving meaningful information from documents.[1] In a more focused way, content analysis refers to a family of techniques for studying the &#34;mute evidence&#34; of texts and artifacts.[2] There are 5 types of texts in content analysis:
+Content analysis can also be described as studying traces, which are documents from past times, and artifacts, which are non-linguistic documents. Texts are understood to be produced by communication processes in a broad sense of that phrase - often gaining mean through abduction.[1][3]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We now have all the text from the page, split up by paragraph. If we wanted to get the section headers or references as well it would require a bit more work, but is doable.</p>
+<p>There is one more thing we might want to do before sending this text to be processed, remove the references indicators (<code>[2]</code>, <code>[3]</code> , etc). To do this we can use a short regular expression.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">contentParagraphs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">pTag</span> <span class="ow">in</span> <span class="n">contentPTags</span><span class="p">:</span>
+    <span class="n">contentParagraphs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;\[\d+\]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">pTag</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+
+<span class="c1">#convert to a DataFrame</span>
+<span class="n">contentParagraphsDF</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">contentParagraphs</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;paragraph-text&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">contentParagraphsDF</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>                                       paragraph-text
+0   Content analysis is &#34;a wide and heterogeneous ...
+1   Content analysis has come to be a sort of &#39;umb...
+2   Content analysis can also be described as stud...
+3   Despite the wide variety of options, generally...
+4   Over the years, content analysis has been appl...
+5   In recent times, particularly with the advent ...
+6   Quantitative content analysis has enjoyed a re...
+7                                                    
+8                                                    
+9   The method of content analysis enables the res...
+10  Since the 1980s, content analysis has become a...
+11  The creation of coding frames is intrinsically...
+12  Mimetic Convergence thus aims to show the proc...
+13  Every content analysis should depart from a hy...
+14  As an evaluation approach, content analysis is...
+15  Qualitative content analysis is “a systematic,...
+16  Holsti groups fifteen uses of content analysis...
+17  He also places these uses into the context of ...
+18  The following table shows fifteen uses of cont...
+19  According to Dr. Klaus Krippendorff, six quest...
+20  The assumption is that words and phrases menti...
+21  Qualitatively, content analysis can involve an...
+22  Normally, content analysis can only be applied...
+23  A further step in analysis is the distinction ...
+24  Dermot McKeone highlighted the difference betw...
+25  As the uncritical use of text is today widely ...
+26  Neuendorf suggests that when human coders are ...
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we have a <code>DataFrame</code> of all the relevant text from the page ready to be processed</p>
 
 </div>
 </div>
