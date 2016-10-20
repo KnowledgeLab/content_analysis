@@ -45,6 +45,7 @@ We will also be working on the following files/urls
 wikipedia_base_url = 'https://en.wikipedia.org'
 wikipedia_content_analysis = 'https://en.wikipedia.org/wiki/Content_analysis'
 content_analysis_save = 'wikipedia_content_analysis.html'
+example_text_file = 'sometextfile.txt'
 ```
 
 # Scraping
@@ -165,3 +166,37 @@ for aTag in tagLinks[:5]:
     contentParagraphsDF = contentParagraphsDF.append(getTextFromWikiPage(aTag),ignore_index=True)
 contentParagraphsDF
 ```
+
+# Files
+
+What if the text we want isn't on a webpage? There are a many other sources of text available.
+
+## Raw text
+
+The most basic form of storing text is as a _raw text_ document. Source code (`.py`, `.r`, etc) is usually raw text as are text files (`.txt`) and many other things. Opening an unknown file with a text editor is often a great way of learning what the file is.
+
+We can create a text file with the `open()` function
+
+```python
+#example_text_file = 'sometextfile.txt'
+#stringToWrite = 'A line\nAnother line\nA line with a few unusual symbols \u2421 \u241B \u20A0 \u20A1 \u20A2 \u20A3 \u0D60\n'
+stringToWrite = 'A line\nAnother line\nA line with a few unusual symbols ␡ ␛ ₠ ₡ ₢ ₣ ൠ\n'
+
+with open(example_text_file, 'w', encoding='utf-8') as f:
+    f.write(stringToWrite)
+```
+
+Notice though the `encoding='utf-8'` argument, the encoding specifies how we map the bits from the file to the glyphs (and whitespace characters like tab (`'\t'`) or newline (`'\n'`)) on the screen. When dealing only with latin letters, arabic numerals and the other symbols on America keyboards you usually do not have to worry about encodings as the ones used today are backwards compatible with [ASCII](https://en.wikipedia.org/wiki/ASCII) which gives the binary representation of 128 characters.
+
+Some people though use other characters. To solve this there is [Unicode](https://en.wikipedia.org/wiki/Unicode) which gives numbers to symbols, e.g. 041 is `'A'` and 03A3 is `'Σ'` (number starting with 0 indicates they are hexadecimal), often non-ASCII characters are called Unicode characters. Unfortunately there are many ways used to map combinations of bits to Unicode symbols. The ones you are likely to encounter are called by Python _utf-8_, _utf-16_ and _latin-1_. _utf-8_ is the standard for Linux and Mac OS while both _utf-16_ and _latin-1_ are used by windows. If you use the wrong encoding characters can appear wrong, sometimes change in number or Python could raise an exception. Lets see what happens when we open the file we just created with different encodings.
+
+```python
+with open(example_text_file, encoding='utf-8') as f:
+    print("This is with the correct encoding:")
+    print(f.read())
+
+with open(example_text_file, encoding='latin-1') as f:
+    print("This is with the wrong encoding:")
+    print(f.read())
+```
+Notice that with _latin-1_ the unicode characters are mixed up and there are too many of them. You need to keep in mind encoding when obtaining text files, as determining the encoding can sometime be a lot of work.
