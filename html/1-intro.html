@@ -11807,6 +11807,8 @@ div#notebook {
 <span class="kn">import</span> <span class="nn">re</span> <span class="c1">#for regexs</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="c1">#DataFrames</span>
 <span class="kn">import</span> <span class="nn">urllib.parse</span> <span class="c1">#For joining urls</span>
+<span class="kn">import</span> <span class="nn">pdfminer.pdfparser</span> <span class="c1">#For readin pdfs</span>
+<span class="kn">import</span> <span class="nn">docx</span> <span class="c1">#MS doc files</span>
 </pre></div>
 
 </div>
@@ -12771,7 +12773,7 @@ A line with a few unusual symbols â¡ â â  â¡ â¢ â£ àµ
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#information_extraction_pdf = &#39;https://web.stanford.edu/~jurafsky/slp3/20.pdf&#39;</span>
 
-<span class="n">infoExtractionRequest</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">information_extraction_pdf</span><span class="p">)</span>
+<span class="n">infoExtractionRequest</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">information_extraction_pdf</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">infoExtractionRequest</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">1000</span><span class="p">])</span>
 </pre></div>
 
@@ -12807,6 +12809,162 @@ i)s|�͢H������$�����v��Շ���W[���f��
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>It says <code>'pdf'</code>, so thats a good sign, the rest though looks like we are having issues with an encoding. The random characters are not though caused by our encoding being wrong they are cause by there not being an encoding for those parts at all. PDFs are nominally binary files, meaning there are sections of binary that are specific to pdf and nothing else so you need something that knows about pdf to read them. To do that we will be using <a href="https://github.com/jaepil/pdfminer3k"><code>pdfminer3k</code></a> which is a PDF processing library for Python 3.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">slate</span><span class="o">.</span><span class="n">PDF</span><span class="p">(</span><span class="n">infoExtractionRequest</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-16-26db9436f68a&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>slate<span class="ansi-blue-fg">.</span>PDF<span class="ansi-blue-fg">(</span>infoExtractionRequest<span class="ansi-blue-fg">.</span>read<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;slate&#39; is not defined</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>maybe use <code>PyPDF2</code> or <code>slate</code></p>
+<h1 id="Work-in-progress">Work in progress<a class="anchor-link" href="#Work-in-progress">&#182;</a></h1><h2 id="Word-Docs">Word Docs<a class="anchor-link" href="#Word-Docs">&#182;</a></h2><p>Looks like <code>python-docx</code> may work</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">docx</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://github.com/xiaow2/persp-analysis/raw/02772bc5baf4044ba6410170ca740f14cd6155d5/assignments/short%20paper%201.docx&#39;</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">docx</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">raw</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">UnsupportedOperation</span>                      Traceback (most recent call last)
+<span class="ansi-green-fg">/usr/local/Cellar/python3/3.5.1/Frameworks/Python.framework/Versions/3.5/lib/python3.5/zipfile.py</span> in <span class="ansi-cyan-fg">_RealGetContents</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1088</span>         <span class="ansi-green-fg">try</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">-&gt; 1089</span><span class="ansi-red-fg">             </span>endrec <span class="ansi-blue-fg">=</span> _EndRecData<span class="ansi-blue-fg">(</span>fp<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1090</span>         <span class="ansi-green-fg">except</span> OSError<span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">/usr/local/Cellar/python3/3.5.1/Frameworks/Python.framework/Versions/3.5/lib/python3.5/zipfile.py</span> in <span class="ansi-cyan-fg">_EndRecData</span><span class="ansi-blue-fg">(fpin)</span>
+<span class="ansi-green-intense-fg ansi-bold">    240</span>     <span class="ansi-red-fg"># Determine file size</span>
+<span class="ansi-green-fg">--&gt; 241</span><span class="ansi-red-fg">     </span>fpin<span class="ansi-blue-fg">.</span>seek<span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    242</span>     filesize <span class="ansi-blue-fg">=</span> fpin<span class="ansi-blue-fg">.</span>tell<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-red-fg">UnsupportedOperation</span>: seek
+
+During handling of the above exception, another exception occurred:
+
+<span class="ansi-red-fg">BadZipFile</span>                                Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-17-69ad08e5ba05&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-green-fg">import</span> docx
+<span class="ansi-green-intense-fg ansi-bold">      2</span> r <span class="ansi-blue-fg">=</span> requests<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#39;https://github.com/xiaow2/persp-analysis/raw/02772bc5baf4044ba6410170ca740f14cd6155d5/assignments/short%20paper%201.docx&#39;</span><span class="ansi-blue-fg">,</span> stream<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">True</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">----&gt; 3</span><span class="ansi-red-fg"> </span>d <span class="ansi-blue-fg">=</span> docx<span class="ansi-blue-fg">.</span>Document<span class="ansi-blue-fg">(</span>r<span class="ansi-blue-fg">.</span>raw<span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">/usr/local/lib/python3.5/site-packages/docx/api.py</span> in <span class="ansi-cyan-fg">Document</span><span class="ansi-blue-fg">(docx)</span>
+<span class="ansi-green-intense-fg ansi-bold">     23</span>     &#34;&#34;&#34;
+<span class="ansi-green-intense-fg ansi-bold">     24</span>     docx <span class="ansi-blue-fg">=</span> _default_docx_path<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">if</span> docx <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span> <span class="ansi-green-fg">else</span> docx
+<span class="ansi-green-fg">---&gt; 25</span><span class="ansi-red-fg">     </span>document_part <span class="ansi-blue-fg">=</span> Package<span class="ansi-blue-fg">.</span>open<span class="ansi-blue-fg">(</span>docx<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>main_document_part
+<span class="ansi-green-intense-fg ansi-bold">     26</span>     <span class="ansi-green-fg">if</span> document_part<span class="ansi-blue-fg">.</span>content_type <span class="ansi-blue-fg">!=</span> CT<span class="ansi-blue-fg">.</span>WML_DOCUMENT_MAIN<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">     27</span>         tmpl <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">&#34;file &#39;%s&#39; is not a Word file, content type is &#39;%s&#39;&#34;</span>
+
+<span class="ansi-green-fg">/usr/local/lib/python3.5/site-packages/docx/opc/package.py</span> in <span class="ansi-cyan-fg">open</span><span class="ansi-blue-fg">(cls, pkg_file)</span>
+<span class="ansi-green-intense-fg ansi-bold">    114</span>         <span class="ansi-blue-fg">*</span>pkg_file<span class="ansi-blue-fg">*</span><span class="ansi-blue-fg">.</span>
+<span class="ansi-green-intense-fg ansi-bold">    115</span>         &#34;&#34;&#34;
+<span class="ansi-green-fg">--&gt; 116</span><span class="ansi-red-fg">         </span>pkg_reader <span class="ansi-blue-fg">=</span> PackageReader<span class="ansi-blue-fg">.</span>from_file<span class="ansi-blue-fg">(</span>pkg_file<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    117</span>         package <span class="ansi-blue-fg">=</span> cls<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    118</span>         Unmarshaller<span class="ansi-blue-fg">.</span>unmarshal<span class="ansi-blue-fg">(</span>pkg_reader<span class="ansi-blue-fg">,</span> package<span class="ansi-blue-fg">,</span> PartFactory<span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">/usr/local/lib/python3.5/site-packages/docx/opc/pkgreader.py</span> in <span class="ansi-cyan-fg">from_file</span><span class="ansi-blue-fg">(pkg_file)</span>
+<span class="ansi-green-intense-fg ansi-bold">     30</span>         Return a <span class="ansi-blue-fg">|</span>PackageReader<span class="ansi-blue-fg">|</span> instance loaded <span class="ansi-green-fg">with</span> contents of <span class="ansi-blue-fg">*</span>pkg_file<span class="ansi-blue-fg">*</span><span class="ansi-blue-fg">.</span>
+<span class="ansi-green-intense-fg ansi-bold">     31</span>         &#34;&#34;&#34;
+<span class="ansi-green-fg">---&gt; 32</span><span class="ansi-red-fg">         </span>phys_reader <span class="ansi-blue-fg">=</span> PhysPkgReader<span class="ansi-blue-fg">(</span>pkg_file<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     33</span>         content_types <span class="ansi-blue-fg">=</span> _ContentTypeMap<span class="ansi-blue-fg">.</span>from_xml<span class="ansi-blue-fg">(</span>phys_reader<span class="ansi-blue-fg">.</span>content_types_xml<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     34</span>         pkg_srels <span class="ansi-blue-fg">=</span> PackageReader<span class="ansi-blue-fg">.</span>_srels_for<span class="ansi-blue-fg">(</span>phys_reader<span class="ansi-blue-fg">,</span> PACKAGE_URI<span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">/usr/local/lib/python3.5/site-packages/docx/opc/phys_pkg.py</span> in <span class="ansi-cyan-fg">__init__</span><span class="ansi-blue-fg">(self, pkg_file)</span>
+<span class="ansi-green-intense-fg ansi-bold">     99</span>     <span class="ansi-green-fg">def</span> __init__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> pkg_file<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    100</span>         super<span class="ansi-blue-fg">(</span>_ZipPkgReader<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>__init__<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">--&gt; 101</span><span class="ansi-red-fg">         </span>self<span class="ansi-blue-fg">.</span>_zipf <span class="ansi-blue-fg">=</span> ZipFile<span class="ansi-blue-fg">(</span>pkg_file<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">&#39;r&#39;</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    102</span> 
+<span class="ansi-green-intense-fg ansi-bold">    103</span>     <span class="ansi-green-fg">def</span> blob_for<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> pack_uri<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">/usr/local/Cellar/python3/3.5.1/Frameworks/Python.framework/Versions/3.5/lib/python3.5/zipfile.py</span> in <span class="ansi-cyan-fg">__init__</span><span class="ansi-blue-fg">(self, file, mode, compression, allowZip64)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1024</span>         <span class="ansi-green-fg">try</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">   1025</span>             <span class="ansi-green-fg">if</span> mode <span class="ansi-blue-fg">==</span> <span class="ansi-blue-fg">&#39;r&#39;</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">-&gt; 1026</span><span class="ansi-red-fg">                 </span>self<span class="ansi-blue-fg">.</span>_RealGetContents<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1027</span>             <span class="ansi-green-fg">elif</span> mode <span class="ansi-green-fg">in</span> <span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#39;w&#39;</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">&#39;x&#39;</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">   1028</span>                 <span class="ansi-red-fg"># set the modified flag so central directory gets written</span>
+
+<span class="ansi-green-fg">/usr/local/Cellar/python3/3.5.1/Frameworks/Python.framework/Versions/3.5/lib/python3.5/zipfile.py</span> in <span class="ansi-cyan-fg">_RealGetContents</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1089</span>             endrec <span class="ansi-blue-fg">=</span> _EndRecData<span class="ansi-blue-fg">(</span>fp<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1090</span>         <span class="ansi-green-fg">except</span> OSError<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">-&gt; 1091</span><span class="ansi-red-fg">             </span><span class="ansi-green-fg">raise</span> BadZipFile<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;File is not a zip file&#34;</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1092</span>         <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> endrec<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">   1093</span>             <span class="ansi-green-fg">raise</span> BadZipFile<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;File is not a zip file&#34;</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-red-fg">BadZipFile</span>: File is not a zip file</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="OCR">OCR<a class="anchor-link" href="#OCR">&#182;</a></h2><p><code>pytesseract</code> works but requires tesseract binary</p>
+
+</div>
+</div>
 </div>
     </div>
   </div>

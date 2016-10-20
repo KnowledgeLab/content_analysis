@@ -38,6 +38,7 @@ import re #for regexs
 import pandas #DataFrames
 import urllib.parse #For joining urls
 import pdfminer.pdfparser #For readin pdfs
+import docx #MS doc files
 ```
 
 We will also be working on the following files/urls
@@ -221,11 +222,19 @@ It says `'pdf'`, so thats a good sign, the rest though looks like we are having 
 slate.PDF(infoExtractionRequest.read())
 ```
 
+maybe use `PyPDF2` or `slate`
+
 # Work in progress
 
 ## Word Docs
 
 Looks like `python-docx` may work
+
+```python
+import docx
+r = requests.get('https://github.com/xiaow2/persp-analysis/raw/02772bc5baf4044ba6410170ca740f14cd6155d5/assignments/short%20paper%201.docx', stream=True)
+d = docx.Document(r.raw)
+```
 
 ## OCR
 
