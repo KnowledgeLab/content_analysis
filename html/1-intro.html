@@ -11806,6 +11806,7 @@ div#notebook {
 <span class="kn">import</span> <span class="nn">bs4</span> <span class="c1">#called &#39;BeautifulSoup&#39;, a html parser</span>
 <span class="kn">import</span> <span class="nn">re</span> <span class="c1">#for regexs</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="c1">#DataFrames</span>
+<span class="kn">import</span> <span class="nn">urllib.parse</span> <span class="c1">#For joining urls</span>
 </pre></div>
 
 </div>
@@ -11828,7 +11829,8 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wikipedia_content_analysis</span> <span class="o">=</span> <span class="s1">&#39;https://en.wikipedia.org/wiki/Content_analysis&#39;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wikipedia_base_url</span> <span class="o">=</span> <span class="s1">&#39;https://en.wikipedia.org&#39;</span>
+<span class="n">wikipedia_content_analysis</span> <span class="o">=</span> <span class="s1">&#39;https://en.wikipedia.org/wiki/Content_analysis&#39;</span>
 <span class="n">content_analysis_save</span> <span class="o">=</span> <span class="s1">&#39;wikipedia_content_analysis.html&#39;</span>
 </pre></div>
 
@@ -12056,7 +12058,7 @@ Content analysis can also be described as studying traces, which are documents f
     <span class="n">contentParagraphs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;\[\d+\]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">pTag</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
 
 <span class="c1">#convert to a DataFrame</span>
-<span class="n">contentParagraphsDF</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">contentParagraphs</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;paragraph-text&#39;</span><span class="p">])</span>
+<span class="n">contentParagraphsDF</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;paragraph-text&#39;</span> <span class="p">:</span> <span class="n">contentParagraphs</span><span class="p">})</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">contentParagraphsDF</span><span class="p">)</span>
 </pre></div>
 
@@ -12112,9 +12114,721 @@ Content analysis can also be described as studying traces, which are documents f
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Now we have a <code>DataFrame</code> of all the relevant text from the page ready to be processed</p>
+<h1 id="Spidering">Spidering<a class="anchor-link" href="#Spidering">&#182;</a></h1><p>What if we want to to get a bunch of different pages from wikipedia. We would need to get the url of each of the pages we want, usually we will want pages that are linked to by other pages, so we will need to parse pages and find the links. Right now we will be getting all the links in the body of the content analysis page.</p>
+<p>To do this we will need to find all the <code>&lt;a&gt;</code> (anchor) tags with <code>href</code>s inside of <code>&lt;p&gt;</code> tags.</p>
 
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tagLinks</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">pTag</span> <span class="ow">in</span> <span class="n">contentPTags</span><span class="p">:</span>
+    <span class="c1">#we only want hrefs that link to wiki pages</span>
+    <span class="n">tagLinks</span> <span class="o">+=</span> <span class="n">pTag</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;/wiki/&#39;</span><span class="p">),</span> <span class="n">class_</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tagLinks</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&lt;a href=&#34;/wiki/Text_(literary_theory)&#34; title=&#34;Text (literary theory)&#34;&gt;texts&lt;/a&gt;, &lt;a href=&#34;/wiki/Trace_evidence&#34; title=&#34;Trace evidence&#34;&gt;traces&lt;/a&gt;, &lt;a href=&#34;/wiki/Abductive_reasoning&#34; title=&#34;Abductive reasoning&#34;&gt;abduction&lt;/a&gt;, &lt;a href=&#34;/wiki/Hermeneutics&#34; title=&#34;Hermeneutics&#34;&gt;Hermeneutics&lt;/a&gt;]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We will be adding these new texts to our DataFrame <code>contentParagraphsDF</code> so we will need to add 2 more columns to keep track of paragraph numbers and sources.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">wikipedia_content_analysis</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;paragraph-text&#39;</span><span class="p">])</span>
+<span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;paragraph-number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;paragraph-text&#39;</span><span class="p">]))</span>
+<span class="n">contentParagraphsDF</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[10]:</div>
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>paragraph-text</th>
+      <th>source</th>
+      <th>paragraph-number</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Content analysis is "a wide and heterogeneous ...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Content analysis has come to be a sort of 'umb...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Content analysis can also be described as stud...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Despite the wide variety of options, generally...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Over the years, content analysis has been appl...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>In recent times, particularly with the advent ...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Quantitative content analysis has enjoyed a re...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td></td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td></td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>The method of content analysis enables the res...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Since the 1980s, content analysis has become a...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>The creation of coding frames is intrinsically...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>Mimetic Convergence thus aims to show the proc...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>12</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>Every content analysis should depart from a hy...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>13</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>As an evaluation approach, content analysis is...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>14</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>Qualitative content analysis is “a systematic,...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>Holsti groups fifteen uses of content analysis...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>He also places these uses into the context of ...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>17</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>The following table shows fifteen uses of cont...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>18</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>According to Dr. Klaus Krippendorff, six quest...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>19</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>The assumption is that words and phrases menti...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>Qualitatively, content analysis can involve an...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>21</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>Normally, content analysis can only be applied...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>22</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>A further step in analysis is the distinction ...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>Dermot McKeone highlighted the difference betw...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>24</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>As the uncritical use of text is today widely ...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>Neuendorf suggests that when human coders are ...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>26</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Then we can define a function to parse each linked page and add its text to our DataFrame.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#wikipedia_base_url = &#39;https://en.wikipedia.org&#39;</span>
+
+<span class="k">def</span> <span class="nf">getTextFromWikiPage</span><span class="p">(</span><span class="n">linkTag</span><span class="p">):</span>
+    <span class="c1">#We need to extract the url from the &lt;a&gt; tag</span>
+    <span class="n">relurl</span> <span class="o">=</span> <span class="n">linkTag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;href&#39;</span><span class="p">)</span>
+    <span class="c1">#The urls are relative so we need to prepend the wikipedia url</span>
+    <span class="c1">#while both of them are strings using the specialized function means</span>
+    <span class="c1">#badly formatted relurls will be fixed, if possible</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">wikipedia_base_url</span><span class="p">,</span> <span class="n">relurl</span><span class="p">)</span>
+    <span class="c1">#Make a dict to store data before adding it to the DataFrame</span>
+    <span class="n">parsDict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;source&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;paragraph-number&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;paragraph-text&#39;</span> <span class="p">:</span> <span class="p">[]}</span>
+    <span class="c1">#Now we get the page</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">bs4</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
+    <span class="c1">#enumerating gives use the paragraph number</span>
+    <span class="k">for</span> <span class="n">parNum</span><span class="p">,</span> <span class="n">pTag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">)):</span>
+        <span class="c1">#same regex as before</span>
+        <span class="n">parsDict</span><span class="p">[</span><span class="s1">&#39;paragraph-text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;\[\d+\]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">pTag</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+        <span class="n">parsDict</span><span class="p">[</span><span class="s1">&#39;paragraph-number&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parNum</span><span class="p">)</span>
+        <span class="n">parsDict</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">parsDict</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>And run it on our list of link tags</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">aTag</span> <span class="ow">in</span> <span class="n">tagLinks</span><span class="p">[:</span><span class="mi">5</span><span class="p">]:</span>
+    <span class="c1">#ignore_index means the indices will not be reset after each append</span>
+    <span class="n">contentParagraphsDF</span> <span class="o">=</span> <span class="n">contentParagraphsDF</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">getTextFromWikiPage</span><span class="p">(</span><span class="n">aTag</span><span class="p">),</span><span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">contentParagraphsDF</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[12]:</div>
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>paragraph-number</th>
+      <th>paragraph-text</th>
+      <th>source</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>Content analysis is "a wide and heterogeneous ...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>Content analysis has come to be a sort of 'umb...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>Content analysis can also be described as stud...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>Despite the wide variety of options, generally...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>Over the years, content analysis has been appl...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>In recent times, particularly with the advent ...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>Quantitative content analysis has enjoyed a re...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td></td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td></td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>9</td>
+      <td>The method of content analysis enables the res...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>10</td>
+      <td>Since the 1980s, content analysis has become a...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>11</td>
+      <td>The creation of coding frames is intrinsically...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>12</td>
+      <td>Mimetic Convergence thus aims to show the proc...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>13</td>
+      <td>Every content analysis should depart from a hy...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>14</td>
+      <td>As an evaluation approach, content analysis is...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>15</td>
+      <td>Qualitative content analysis is “a systematic,...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>16</td>
+      <td>Holsti groups fifteen uses of content analysis...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>17</td>
+      <td>He also places these uses into the context of ...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>18</td>
+      <td>The following table shows fifteen uses of cont...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>19</td>
+      <td>According to Dr. Klaus Krippendorff, six quest...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>20</td>
+      <td>The assumption is that words and phrases menti...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>21</td>
+      <td>Qualitatively, content analysis can involve an...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>22</td>
+      <td>Normally, content analysis can only be applied...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>23</td>
+      <td>A further step in analysis is the distinction ...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>24</td>
+      <td>Dermot McKeone highlighted the difference betw...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>25</td>
+      <td>As the uncritical use of text is today widely ...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>26</td>
+      <td>Neuendorf suggests that when human coders are ...</td>
+      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>0</td>
+      <td>In literary theory, a text is any object that ...</td>
+      <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>1</td>
+      <td>Within the field of literary criticism, "text"...</td>
+      <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>2</td>
+      <td>Since the history of writing predates the conc...</td>
+      <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>202</th>
+      <td>73</td>
+      <td>It has been proposed by ergonomist Donald Tayl...</td>
+      <td>https://en.wikipedia.org/wiki/Hermeneutics</td>
+    </tr>
+    <tr>
+      <th>203</th>
+      <td>74</td>
+      <td>Other scholars in the field have attempted to ...</td>
+      <td>https://en.wikipedia.org/wiki/Hermeneutics</td>
+    </tr>
+    <tr>
+      <th>204</th>
+      <td>75</td>
+      <td>In sociology, hermeneutics is the interpretati...</td>
+      <td>https://en.wikipedia.org/wiki/Hermeneutics</td>
+    </tr>
+    <tr>
+      <th>205</th>
+      <td>76</td>
+      <td>The central principle of sociological hermeneu...</td>
+      <td>https://en.wikipedia.org/wiki/Hermeneutics</td>
+    </tr>
+    <tr>
+      <th>206</th>
+      <td>77</td>
+      <td>Friedrich Schleiermacher, widely regarded as t...</td>
+      <td>https://en.wikipedia.org/wiki/Hermeneutics</td>
+    </tr>
+    <tr>
+      <th>207</th>
+      <td>78</td>
+      <td>Jürgen Habermas criticizes Gadamer's hermeneut...</td>
+      <td>https://en.wikipedia.org/wiki/Hermeneutics</td>
+    </tr>
+    <tr>
+      <th>208</th>
+      <td>79</td>
+      <td>Murray Rothbard, an economist, criticized herm...</td>
+      <td>https://en.wikipedia.org/wiki/Hermeneutics</td>
+    </tr>
+    <tr>
+      <th>209</th>
+      <td>0</td>
+      <td>Philology is the study of language in written ...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>210</th>
+      <td>1</td>
+      <td>Classical philology studies classical language...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>211</th>
+      <td>2</td>
+      <td>Any classical language can be philologically s...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>212</th>
+      <td>3</td>
+      <td>Philology, with its focus on historical develo...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>213</th>
+      <td>4</td>
+      <td></td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>214</th>
+      <td>5</td>
+      <td></td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>215</th>
+      <td>6</td>
+      <td>The term philology is derived from the Greek φ...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>216</th>
+      <td>7</td>
+      <td>The adjective φιλόλογος (philologos) meant "fo...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>217</th>
+      <td>8</td>
+      <td>As an allegory of literary erudition, Philolog...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>218</th>
+      <td>9</td>
+      <td>The meaning of "love of learning and literatur...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>219</th>
+      <td>10</td>
+      <td>The comparative linguistics branch of philolog...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>220</th>
+      <td>11</td>
+      <td>Philology also includes the study of texts and...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>221</th>
+      <td>12</td>
+      <td>A related study method known as higher critici...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>222</th>
+      <td>13</td>
+      <td>Some scholars avoid all critical methods of te...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>223</th>
+      <td>14</td>
+      <td>Another branch of philology, cognitive philolo...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>224</th>
+      <td>15</td>
+      <td>In the case of Bronze Age literature, philolog...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>225</th>
+      <td>16</td>
+      <td>Work on the ancient languages of the Near East...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>226</th>
+      <td>17</td>
+      <td>Linear B, a script used in the ancient Aegean,...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>227</th>
+      <td>18</td>
+      <td>Work continues on scripts such as the Maya, wi...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>228</th>
+      <td>19</td>
+      <td>The main character in the Academy Award Nomine...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>229</th>
+      <td>20</td>
+      <td>Dr. Edward Morbius, one of the main characters...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>230</th>
+      <td>21</td>
+      <td>Moritz-Maria von Igelfeld, the main character ...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+    <tr>
+      <th>231</th>
+      <td>22</td>
+      <td>In the Space Trilogy by C.S. Lewis, the main c...</td>
+      <td>https://en.wikipedia.org/wiki/Philology</td>
+    </tr>
+  </tbody>
+</table>
+<p>232 rows × 3 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
     </div>
   </div>
