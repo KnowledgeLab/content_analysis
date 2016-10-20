@@ -37,6 +37,7 @@ import bs4 #called 'BeautifulSoup', a html parser
 import re #for regexs
 import pandas #DataFrames
 import urllib.parse #For joining urls
+import pdfminer.pdfparser #For readin pdfs
 ```
 
 We will also be working on the following files/urls
@@ -46,6 +47,7 @@ wikipedia_base_url = 'https://en.wikipedia.org'
 wikipedia_content_analysis = 'https://en.wikipedia.org/wiki/Content_analysis'
 content_analysis_save = 'wikipedia_content_analysis.html'
 example_text_file = 'sometextfile.txt'
+information_extraction_pdf = 'https://web.stanford.edu/~jurafsky/slp3/20.pdf'
 ```
 
 # Scraping
@@ -161,7 +163,7 @@ def getTextFromWikiPage(linkTag):
 And run it on our list of link tags
 
 ```python
-for aTag in tagLinks[:5]:
+for aTag in tagLinks[:1]:
     #ignore_index means the indices will not be reset after each append
     contentParagraphsDF = contentParagraphsDF.append(getTextFromWikiPage(aTag),ignore_index=True)
 contentParagraphsDF
@@ -200,3 +202,31 @@ with open(example_text_file, encoding='latin-1') as f:
     print(f.read())
 ```
 Notice that with _latin-1_ the unicode characters are mixed up and there are too many of them. You need to keep in mind encoding when obtaining text files, as determining the encoding can sometime be a lot of work.
+
+## PDF
+
+Another common way text will be stored is in a PDF file. First we will download a pdf in Python. To do that lets grab a chapter from
+_Speech and Language Processing_, chapter 20 is on Information Extraction which seems apt. It is stored as a pdf at [https://web.stanford.edu/~jurafsky/slp3/20.pdf](https://web.stanford.edu/~jurafsky/slp3/20.pdf).
+
+```python
+#information_extraction_pdf = 'https://web.stanford.edu/~jurafsky/slp3/20.pdf'
+
+infoExtractionRequest = requests.get(information_extraction_pdf, stream=True)
+print(infoExtractionRequest.text[:1000])
+```
+
+It says `'pdf'`, so thats a good sign, the rest though looks like we are having issues with an encoding. The random characters are not though caused by our encoding being wrong they are cause by there not being an encoding for those parts at all. PDFs are nominally binary files, meaning there are sections of binary that are specific to pdf and nothing else so you need something that knows about pdf to read them. To do that we will be using [`pdfminer3k`](https://github.com/jaepil/pdfminer3k) which is a PDF processing library for Python 3.
+
+```python
+slate.PDF(infoExtractionRequest.read())
+```
+
+# Work in progress
+
+## Word Docs
+
+Looks like `python-docx` may work
+
+## OCR
+
+`pytesseract` works but requires tesseract binary

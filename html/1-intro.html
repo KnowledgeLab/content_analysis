@@ -11833,6 +11833,7 @@ div#notebook {
 <span class="n">wikipedia_content_analysis</span> <span class="o">=</span> <span class="s1">&#39;https://en.wikipedia.org/wiki/Content_analysis&#39;</span>
 <span class="n">content_analysis_save</span> <span class="o">=</span> <span class="s1">&#39;wikipedia_content_analysis.html&#39;</span>
 <span class="n">example_text_file</span> <span class="o">=</span> <span class="s1">&#39;sometextfile.txt&#39;</span>
+<span class="n">information_extraction_pdf</span> <span class="o">=</span> <span class="s1">&#39;https://web.stanford.edu/~jurafsky/slp3/20.pdf&#39;</span>
 </pre></div>
 
 </div>
@@ -12425,7 +12426,7 @@ Content analysis can also be described as studying traces, which are documents f
 <div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">aTag</span> <span class="ow">in</span> <span class="n">tagLinks</span><span class="p">[:</span><span class="mi">5</span><span class="p">]:</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">aTag</span> <span class="ow">in</span> <span class="n">tagLinks</span><span class="p">[:</span><span class="mi">1</span><span class="p">]:</span>
     <span class="c1">#ignore_index means the indices will not be reset after each append</span>
     <span class="n">contentParagraphsDF</span> <span class="o">=</span> <span class="n">contentParagraphsDF</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">getTextFromWikiPage</span><span class="p">(</span><span class="n">aTag</span><span class="p">),</span><span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">contentParagraphsDF</span>
@@ -12634,194 +12635,31 @@ Content analysis can also be described as studying traces, which are documents f
       <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
     </tr>
     <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>202</th>
-      <td>73</td>
-      <td>It has been proposed by ergonomist Donald Tayl...</td>
-      <td>https://en.wikipedia.org/wiki/Hermeneutics</td>
-    </tr>
-    <tr>
-      <th>203</th>
-      <td>74</td>
-      <td>Other scholars in the field have attempted to ...</td>
-      <td>https://en.wikipedia.org/wiki/Hermeneutics</td>
-    </tr>
-    <tr>
-      <th>204</th>
-      <td>75</td>
-      <td>In sociology, hermeneutics is the interpretati...</td>
-      <td>https://en.wikipedia.org/wiki/Hermeneutics</td>
-    </tr>
-    <tr>
-      <th>205</th>
-      <td>76</td>
-      <td>The central principle of sociological hermeneu...</td>
-      <td>https://en.wikipedia.org/wiki/Hermeneutics</td>
-    </tr>
-    <tr>
-      <th>206</th>
-      <td>77</td>
-      <td>Friedrich Schleiermacher, widely regarded as t...</td>
-      <td>https://en.wikipedia.org/wiki/Hermeneutics</td>
-    </tr>
-    <tr>
-      <th>207</th>
-      <td>78</td>
-      <td>Jürgen Habermas criticizes Gadamer's hermeneut...</td>
-      <td>https://en.wikipedia.org/wiki/Hermeneutics</td>
-    </tr>
-    <tr>
-      <th>208</th>
-      <td>79</td>
-      <td>Murray Rothbard, an economist, criticized herm...</td>
-      <td>https://en.wikipedia.org/wiki/Hermeneutics</td>
-    </tr>
-    <tr>
-      <th>209</th>
-      <td>0</td>
-      <td>Philology is the study of language in written ...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>210</th>
-      <td>1</td>
-      <td>Classical philology studies classical language...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>211</th>
-      <td>2</td>
-      <td>Any classical language can be philologically s...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>212</th>
+      <th>30</th>
       <td>3</td>
-      <td>Philology, with its focus on historical develo...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
+      <td></td>
+      <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
     </tr>
     <tr>
-      <th>213</th>
+      <th>31</th>
       <td>4</td>
       <td></td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
+      <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
     </tr>
     <tr>
-      <th>214</th>
+      <th>32</th>
       <td>5</td>
-      <td></td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
+      <td>The word text has its origins in Quintilian's ...</td>
+      <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
     </tr>
     <tr>
-      <th>215</th>
+      <th>33</th>
       <td>6</td>
-      <td>The term philology is derived from the Greek φ...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>216</th>
-      <td>7</td>
-      <td>The adjective φιλόλογος (philologos) meant "fo...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>217</th>
-      <td>8</td>
-      <td>As an allegory of literary erudition, Philolog...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>218</th>
-      <td>9</td>
-      <td>The meaning of "love of learning and literatur...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>219</th>
-      <td>10</td>
-      <td>The comparative linguistics branch of philolog...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>220</th>
-      <td>11</td>
-      <td>Philology also includes the study of texts and...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>221</th>
-      <td>12</td>
-      <td>A related study method known as higher critici...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>222</th>
-      <td>13</td>
-      <td>Some scholars avoid all critical methods of te...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>223</th>
-      <td>14</td>
-      <td>Another branch of philology, cognitive philolo...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>224</th>
-      <td>15</td>
-      <td>In the case of Bronze Age literature, philolog...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>225</th>
-      <td>16</td>
-      <td>Work on the ancient languages of the Near East...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>226</th>
-      <td>17</td>
-      <td>Linear B, a script used in the ancient Aegean,...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>227</th>
-      <td>18</td>
-      <td>Work continues on scripts such as the Maya, wi...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>228</th>
-      <td>19</td>
-      <td>The main character in the Academy Award Nomine...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>229</th>
-      <td>20</td>
-      <td>Dr. Edward Morbius, one of the main characters...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>230</th>
-      <td>21</td>
-      <td>Moritz-Maria von Igelfeld, the main character ...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
-    </tr>
-    <tr>
-      <th>231</th>
-      <td>22</td>
-      <td>In the Space Trilogy by C.S. Lewis, the main c...</td>
-      <td>https://en.wikipedia.org/wiki/Philology</td>
+      <td>Relying on literary theory, the notion of text...</td>
+      <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
     </tr>
   </tbody>
 </table>
-<p>232 rows × 3 columns</p>
 </div>
 </div>
 
@@ -12920,9 +12758,55 @@ A line with a few unusual symbols â¡ â â  â¡ â¢ â£ àµ
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Notice that with <em>latin-1</em> the unicode characters are mixed up and there are too many of them. You need to keep in mind encoding when obtaining text files, as determining the encoding can sometime be a lot of work.</p>
+<h2 id="PDF">PDF<a class="anchor-link" href="#PDF">&#182;</a></h2><p>Another common way text will be stored is in a PDF file. First we will download a pdf in Python. To do that lets grab a chapter from
+<em>Speech and Language Processing</em>, chapter 20 is on Information Extraction which seems apt. It is stored as a pdf at <a href="https://web.stanford.edu/~jurafsky/slp3/20.pdf">https://web.stanford.edu/~jurafsky/slp3/20.pdf</a>.</p>
 
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#information_extraction_pdf = &#39;https://web.stanford.edu/~jurafsky/slp3/20.pdf&#39;</span>
+
+<span class="n">infoExtractionRequest</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">information_extraction_pdf</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">infoExtractionRequest</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">1000</span><span class="p">])</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>%PDF-1.5
+%����
+97 0 obj
+&lt;&lt;
+/Length 2982      
+/Filter /FlateDecode
+&gt;&gt;
+stream
+xڝYY��~�_��T,U�����f&lt;{����Rv(
+��������� Ei���_�F�4�n�s�缹����_^����Y������&#34;7����d��s~^}:i]כHE���	�c����e��k��esp�ߋ���yS�Jf�|�?&gt;����׺�+��y7����==w��8������M&lt;�x�
+����`?���Q�*gs����#C8����8
+�G��(�s#�9�t�
+i)s|�͢H������$�����v��Շ���W[���f��{�M��M�(�M=gã�
+�蒟��&gt;���ڊQn1�,�V��י^wU��Z���u����b����`��l!�!�+��)����$����`x+�]XV�p!Y&gt;���J��)���7��Xʰ��%��e��M�ǭ������������s;
+*��\��o^=������d�8��P��P����@p��^(�&amp;N�[L�d)�H�����a����wf��!��톁�$(dIf��h�4���;J,O����4�pI��/n����0�f�����:�!���&#34;�L��t�kC��BT�&#39;0[}�)|-a���4(��f����ï��w��:�V�-#�������	bZ2���|ێ� �(O�e���P�.ς!�
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
     </div>
   </div>
