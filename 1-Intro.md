@@ -99,11 +99,13 @@ for pTag in contentPTags[:3]:
 
 We now have all the text from the page, split up by paragraph. If we wanted to get the section headers or references as well it would require a bit more work, but is doable.
 
-There is one more thing we might want to do before sending this text to be processed, remove the references indicators (`[2]`, `[3]` , etc). To do this we can use a short regular expression.
+There is one more thing we might want to do before sending this text to be processed, remove the references indicators (`[2]`, `[3]` , etc). To do this we can use a short regular expression (regex).
 
 ```python
 contentParagraphs = []
 for pTag in contentPTags:
+    #strings starting with r are raw so their \'s are not modifier characters
+    #If we didn't start with r the string would be: '\\[\\d+\\]'
     contentParagraphs.append(re.sub(r'\[\d+\]', '', pTag.text))
 
 #convert to a DataFrame
@@ -112,6 +114,30 @@ print(contentParagraphsDF)
 ```
 
 Now we have a `DataFrame` of all the relevant text from the page ready to be processed
+
+If you are not familiar with regex, it is a way of specifying searches of text. A regex engine takes in the search pattern, in the above case `'\[\d+\]'` and some string, the paragraph texts. Then it reads the input string one character at a time checking if it matches the search. For example the regex `'\d'` matches number characters.
+
+```python
+findNumber = r'\d'
+regexResults = re.search(findNumber, 'not a number, not a number, numbers 2134567890, not a number')
+regexResults
+```
+
+In Python the regex package (`re`) usually returns `Match` objects (you can have multiple pattern hits in a a single `Match`), to get the string that matched our pattern we can use the `.group()` method, and as we want the first one will will ask for the 0'th group.
+
+```python
+print(regexResults.group(0))
+```
+
+That gives us the first number, if we wanted the whole block of numbers we can add a wildcard `'+'` which requests 1 or more instances of the proceeding character.
+
+```python
+findNumbers = r'\d+'
+regexResults = re.search(findNumbers, 'not a number, not a number, numbers 2134567890, not a number')
+print(regexResults.group(0))
+```
+
+Now we have the whole block of numbers, there are a huge number of special characters in regex, for the full description of Python's implementation look at the [re docs](https://docs.python.org/3/library/re.html) there is also a short [tutorial](https://docs.python.org/3/howto/regex.html#regex-howto).
 
 # Spidering
 

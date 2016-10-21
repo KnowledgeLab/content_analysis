@@ -12047,7 +12047,7 @@ Content analysis can also be described as studying traces, which are documents f
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>We now have all the text from the page, split up by paragraph. If we wanted to get the section headers or references as well it would require a bit more work, but is doable.</p>
-<p>There is one more thing we might want to do before sending this text to be processed, remove the references indicators (<code>[2]</code>, <code>[3]</code> , etc). To do this we can use a short regular expression.</p>
+<p>There is one more thing we might want to do before sending this text to be processed, remove the references indicators (<code>[2]</code>, <code>[3]</code> , etc). To do this we can use a short regular expression (regex).</p>
 
 </div>
 </div>
@@ -12059,6 +12059,8 @@ Content analysis can also be described as studying traces, which are documents f
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">contentParagraphs</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">pTag</span> <span class="ow">in</span> <span class="n">contentPTags</span><span class="p">:</span>
+    <span class="c1">#strings starting with r are raw so their \&#39;s are not modifier characters</span>
+    <span class="c1">#If we didn&#39;t start with r the string would be: &#39;\\[\\d+\\]&#39;</span>
     <span class="n">contentParagraphs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;\[\d+\]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">pTag</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
 
 <span class="c1">#convert to a DataFrame</span>
@@ -12118,6 +12120,124 @@ Content analysis can also be described as studying traces, which are documents f
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Now we have a <code>DataFrame</code> of all the relevant text from the page ready to be processed</p>
+<p>If you are not familiar with regex, it is a way of specifying searches of text. A regex engine takes in the search pattern, in the above case <code>'\[\d+\]'</code> and some string, the paragraph texts. Then it reads the input string one character at a time checking if it matches the search. For example the regex <code>'\d'</code> matches number characters.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">findNumber</span> <span class="o">=</span> <span class="s1">r&#39;\d&#39;</span>
+<span class="n">regexResults</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">findNumber</span><span class="p">,</span> <span class="s1">&#39;not a number, not a number, numbers 2134567890, not a number&#39;</span><span class="p">)</span>
+<span class="n">regexResults</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[9]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;_sre.SRE_Match object; span=(36, 37), match=&#39;2&#39;&gt;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In Python the regex package (<code>re</code>) usually returns <code>Match</code> objects (you can have multiple pattern hits in a a single <code>Match</code>), to get the string that matched our pattern we can use the <code>.group()</code> method, and as we want the first one will will ask for the 0'th group.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">regexResults</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>2
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>That gives us the first number, if we wanted the whole block of numbers we can add a wildcard <code>'+'</code> which requests 1 or more instances of the proceeding character.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">findNumbers</span> <span class="o">=</span> <span class="s1">r&#39;\d+&#39;</span>
+<span class="n">regexResults</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">findNumbers</span><span class="p">,</span> <span class="s1">&#39;not a number, not a number, numbers 2134567890, not a number&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">regexResults</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>2134567890
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we have the whole block of numbers, there are a huge number of special characters in regex, for the full description of Python's implementation look at the <a href="https://docs.python.org/3/library/re.html">re docs</a> there is also a short <a href="https://docs.python.org/3/howto/regex.html#regex-howto">tutorial</a>.</p>
 <h1 id="Spidering">Spidering<a class="anchor-link" href="#Spidering">&#182;</a></h1><p>What if we want to to get a bunch of different pages from wikipedia. We would need to get the url of each of the pages we want, usually we will want pages that are linked to by other pages, so we will need to parse pages and find the links. Right now we will be getting all the links in the body of the content analysis page.</p>
 <p>To do this we will need to find all the <code>&lt;a&gt;</code> (anchor) tags with <code>href</code>s inside of <code>&lt;p&gt;</code> tags.</p>
 
@@ -12126,7 +12246,7 @@ Content analysis can also be described as studying traces, which are documents f
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">tagLinks</span> <span class="o">=</span> <span class="p">[]</span>
@@ -12167,7 +12287,7 @@ Content analysis can also be described as studying traces, which are documents f
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">wikipedia_content_analysis</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;paragraph-text&#39;</span><span class="p">])</span>
@@ -12183,7 +12303,7 @@ Content analysis can also be described as studying traces, which are documents f
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[10]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[13]:</div>
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
@@ -12382,7 +12502,7 @@ Content analysis can also be described as studying traces, which are documents f
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#wikipedia_base_url = &#39;https://en.wikipedia.org&#39;</span>
@@ -12425,7 +12545,7 @@ Content analysis can also be described as studying traces, which are documents f
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">aTag</span> <span class="ow">in</span> <span class="n">tagLinks</span><span class="p">[:</span><span class="mi">1</span><span class="p">]:</span>
@@ -12442,7 +12562,7 @@ Content analysis can also be described as studying traces, which are documents f
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[12]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[15]:</div>
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 <div>
@@ -12685,7 +12805,7 @@ Content analysis can also be described as studying traces, which are documents f
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#example_text_file = &#39;sometextfile.txt&#39;</span>
@@ -12714,7 +12834,7 @@ Content analysis can also be described as studying traces, which are documents f
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">example_text_file</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -12768,7 +12888,7 @@ A line with a few unusual symbols â¡ â â  â¡ â¢ â£ àµ
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#information_extraction_pdf = &#39;https://web.stanford.edu/~jurafsky/slp3/20.pdf&#39;</span>
@@ -12822,7 +12942,7 @@ i)s|�͢H������$�����v��Շ���W[���f��
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">slate</span><span class="o">.</span><span class="n">PDF</span><span class="p">(</span><span class="n">infoExtractionRequest</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
@@ -12841,7 +12961,7 @@ i)s|�͢H������$�����v��Շ���W[���f��
 <pre>
 <span class="ansi-red-fg">---------------------------------------------------------------------------</span>
 <span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-green-fg">&lt;ipython-input-16-26db9436f68a&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">&lt;ipython-input-19-26db9436f68a&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
 <span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>slate<span class="ansi-blue-fg">.</span>PDF<span class="ansi-blue-fg">(</span>infoExtractionRequest<span class="ansi-blue-fg">.</span>read<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
 
 <span class="ansi-red-fg">NameError</span>: name &#39;slate&#39; is not defined</pre>
@@ -12865,7 +12985,7 @@ i)s|�͢H������$�����v��Շ���W[���f��
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">docx</span>
@@ -12901,7 +13021,7 @@ i)s|�͢H������$�����v��Շ���W[���f��
 During handling of the above exception, another exception occurred:
 
 <span class="ansi-red-fg">BadZipFile</span>                                Traceback (most recent call last)
-<span class="ansi-green-fg">&lt;ipython-input-17-69ad08e5ba05&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">&lt;ipython-input-20-69ad08e5ba05&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
 <span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-green-fg">import</span> docx
 <span class="ansi-green-intense-fg ansi-bold">      2</span> r <span class="ansi-blue-fg">=</span> requests<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#39;https://github.com/xiaow2/persp-analysis/raw/02772bc5baf4044ba6410170ca740f14cd6155d5/assignments/short%20paper%201.docx&#39;</span><span class="ansi-blue-fg">,</span> stream<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">True</span><span class="ansi-blue-fg">)</span>
 <span class="ansi-green-fg">----&gt; 3</span><span class="ansi-red-fg"> </span>d <span class="ansi-blue-fg">=</span> docx<span class="ansi-blue-fg">.</span>Document<span class="ansi-blue-fg">(</span>r<span class="ansi-blue-fg">.</span>raw<span class="ansi-blue-fg">)</span>
