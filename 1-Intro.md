@@ -37,7 +37,8 @@ import bs4 #called 'BeautifulSoup', a html parser
 import re #for regexs
 import pandas #DataFrames
 import urllib.parse #For joining urls
-import pdfminer.pdfparser #For readin pdfs
+import io
+import PyPDF2 #For reading pdfs
 import docx #MS doc files
 ```
 
@@ -143,14 +144,30 @@ Now we have the whole block of numbers, there are a huge number of special chara
 
 What if we want to to get a bunch of different pages from wikipedia. We would need to get the url of each of the pages we want, usually we will want pages that are linked to by other pages, so we will need to parse pages and find the links. Right now we will be getting all the links in the body of the content analysis page.
 
-To do this we will need to find all the `<a>` (anchor) tags with `href`s inside of `<p>` tags.
+To do this we will need to find all the `<a>` (anchor) tags with `href`s (hyperlink references) inside of `<p>` tags. `href` can have many [different](http://stackoverflow.com/questions/4855168/what-is-href-and-why-is-it-used) [forms](https://en.wikipedia.org/wiki/Hyperlink#Hyperlinks_in_HTML) so dealing with them can be tricky generally though you be extracting from it absolute or relative links. An absolute link is one you can follow with out any modification, while a relative link has a base url that you are then appending. Wikipedia uses relative urls for its internal links so below is an example of dealing with them.
 
 ```python
-tagLinks = []
-for pTag in contentPTags:
+#wikipedia_base_url = 'https://en.wikipedia.org'
+
+otherPAgeURLS = []
+#We also want to know where the links come from so we also will get:
+#the paragraph number
+#the word the link is in
+for paragraphNum, pTag in enumerate(contentPTags):
     #we only want hrefs that link to wiki pages
-    tagLinks += pTag.findAll('a', href=re.compile('/wiki/'), class_=False)
-print(tagLinks[:4])
+    tagLinks = pTag.findAll('a', href=re.compile('/wiki/'), class_=False)
+    for aTag in tagLinks:
+        #We need to extract the url from the <a> tag
+        relurl = aTag.get('href')
+        linkText = aTag.text
+        #wikipedia_base_url is the base we can use the urllib joining function to merge them
+        #Giving a nice structured tupe like this means we can use tuple expansion later
+        otherPAgeURLS.append((
+            urllib.parse.urljoin(wikipedia_base_url, relurl),
+            paragraphNum,
+            linkText,
+        ))
+print(otherPAgeURLS[:10])
 ```
 
 We will be adding these new texts to our DataFrame `contentParagraphsDF` so we will need to add 2 more columns to keep track of paragraph numbers and sources.
@@ -158,44 +175,52 @@ We will be adding these new texts to our DataFrame `contentParagraphsDF` so we w
 ```python
 contentParagraphsDF['source'] = [wikipedia_content_analysis] * len(contentParagraphsDF['paragraph-text'])
 contentParagraphsDF['paragraph-number'] = range(len(contentParagraphsDF['paragraph-text']))
+contentParagraphsDF['source-paragraph-number'] = [None] * len(contentParagraphsDF['paragraph-text'])
+contentParagraphsDF['source-paragraph-text'] = [None] * len(contentParagraphsDF['paragraph-text'])
+
 contentParagraphsDF
 ```
 
 Then we can define a function to parse each linked page and add its text to our DataFrame.
 
 ```python
-#wikipedia_base_url = 'https://en.wikipedia.org'
 
-def getTextFromWikiPage(linkTag):
-    #We need to extract the url from the <a> tag
-    relurl = linkTag.get('href')
-    #The urls are relative so we need to prepend the wikipedia url
-    #while both of them are strings using the specialized function means
-    #badly formatted relurls will be fixed, if possible
-    url = urllib.parse.urljoin(wikipedia_base_url, relurl)
+
+def getTextFromWikiPage(targetURL, sourceParNum, sourceText):
     #Make a dict to store data before adding it to the DataFrame
-    parsDict = {'source' : [], 'paragraph-number' : [], 'paragraph-text' : []}
+    parsDict = {'source' : [], 'paragraph-number' : [], 'paragraph-text' : [], 'source-paragraph-number' : [],  'source-paragraph-text' : []}
     #Now we get the page
-    r = requests.get(url)
+    r = requests.get(targetURL)
     soup = bs4.BeautifulSoup(r.text, 'html.parser')
     #enumerating gives use the paragraph number
     for parNum, pTag in enumerate(soup.body.findAll('p')):
         #same regex as before
         parsDict['paragraph-text'].append(re.sub(r'\[\d+\]', '', pTag.text))
         parsDict['paragraph-number'].append(parNum)
-        parsDict['source'].append(url)
+        parsDict['source'].append(targetURL)
+        parsDict['source-paragraph-number'].append(sourceParNum)
+        parsDict['source-paragraph-text'].append(sourceText)
     return pandas.DataFrame(parsDict)
 ```
 
 And run it on our list of link tags
 
 ```python
-for aTag in tagLinks[:1]:
+for urlTuple in otherPAgeURLS[:3]:
     #ignore_index means the indices will not be reset after each append
-    contentParagraphsDF = contentParagraphsDF.append(getTextFromWikiPage(aTag),ignore_index=True)
+    contentParagraphsDF = contentParagraphsDF.append(getTextFromWikiPage(*urlTuple),ignore_index=True)
 contentParagraphsDF
 ```
+## Tumblr API
 
+[https://www.tumblr.com/docs/en/api/v2](https://www.tumblr.com/docs/en/api/v2)
+
+```python
+
+#r = requests.get('https://api.tumblr.com/v2/blog/scipsy.tumblr.com/info')
+#requests.get('https://api.tumblr.com/v2/blog/david.tumblr.com/avatar/512')
+
+```
 # Files
 
 What if the text we want isn't on a webpage? There are a many other sources of text available.
@@ -242,13 +267,24 @@ infoExtractionRequest = requests.get(information_extraction_pdf, stream=True)
 print(infoExtractionRequest.text[:1000])
 ```
 
-It says `'pdf'`, so thats a good sign, the rest though looks like we are having issues with an encoding. The random characters are not though caused by our encoding being wrong they are cause by there not being an encoding for those parts at all. PDFs are nominally binary files, meaning there are sections of binary that are specific to pdf and nothing else so you need something that knows about pdf to read them. To do that we will be using [`pdfminer3k`](https://github.com/jaepil/pdfminer3k) which is a PDF processing library for Python 3.
+It says `'pdf'`, so thats a good sign, the rest though looks like we are having issues with an encoding. The random characters are not though caused by our encoding being wrong they are cause by there not being an encoding for those parts at all. PDFs are nominally binary files, meaning there are sections of binary that are specific to pdf and nothing else so you need something that knows about pdf to read them. To do that we will be using [`PyPDF2`](https://github.com/mstamy2/PyPDF2) which is a PDF processing library for Python 3.
+
+**NOTE** maybe use `PyPDF2` or `slate`
+
+But first we need to take the response object and convert it into a 'file like' object so that PyPDF2 can read it. To do this we will use `io`'s `BytesIO`.
 
 ```python
-slate.PDF(infoExtractionRequest.read())
+infoExtractionBytes = io.BytesIO(infoExtractionRequest.content)
 ```
 
-maybe use `PyPDF2` or `slate`
+Now we can give it to PyPDF2
+
+```python
+inforExtractPDF = PyPDF2.PdfFileReader(infoExtractionBytes)
+print(inforExtractPDF.numPages)
+firstPage = inforExtractPDF.getPage(0)
+print(firstPage.extractText()[:1000])
+```
 
 # Work in progress
 
@@ -259,7 +295,9 @@ Looks like `python-docx` may work
 ```python
 import docx
 r = requests.get('https://github.com/xiaow2/persp-analysis/raw/02772bc5baf4044ba6410170ca740f14cd6155d5/assignments/short%20paper%201.docx', stream=True)
-d = docx.Document(r.raw)
+d = docx.Document(io.BytesIO(r.content))
+for paragraph in d.paragraphs[:7]:
+    print(paragraph.text)
 ```
 
 ## OCR

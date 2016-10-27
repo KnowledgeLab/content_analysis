@@ -11807,7 +11807,8 @@ div#notebook {
 <span class="kn">import</span> <span class="nn">re</span> <span class="c1">#for regexs</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="c1">#DataFrames</span>
 <span class="kn">import</span> <span class="nn">urllib.parse</span> <span class="c1">#For joining urls</span>
-<span class="kn">import</span> <span class="nn">pdfminer.pdfparser</span> <span class="c1">#For readin pdfs</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">PyPDF2</span> <span class="c1">#For reading pdfs</span>
 <span class="kn">import</span> <span class="nn">docx</span> <span class="c1">#MS doc files</span>
 </pre></div>
 
@@ -12239,7 +12240,7 @@ Content analysis can also be described as studying traces, which are documents f
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Now we have the whole block of numbers, there are a huge number of special characters in regex, for the full description of Python's implementation look at the <a href="https://docs.python.org/3/library/re.html">re docs</a> there is also a short <a href="https://docs.python.org/3/howto/regex.html#regex-howto">tutorial</a>.</p>
 <h1 id="Spidering">Spidering<a class="anchor-link" href="#Spidering">&#182;</a></h1><p>What if we want to to get a bunch of different pages from wikipedia. We would need to get the url of each of the pages we want, usually we will want pages that are linked to by other pages, so we will need to parse pages and find the links. Right now we will be getting all the links in the body of the content analysis page.</p>
-<p>To do this we will need to find all the <code>&lt;a&gt;</code> (anchor) tags with <code>href</code>s inside of <code>&lt;p&gt;</code> tags.</p>
+<p>To do this we will need to find all the <code>&lt;a&gt;</code> (anchor) tags with <code>href</code>s (hyperlink references) inside of <code>&lt;p&gt;</code> tags. <code>href</code> can have many <a href="http://stackoverflow.com/questions/4855168/what-is-href-and-why-is-it-used">different</a> <a href="https://en.wikipedia.org/wiki/Hyperlink#Hyperlinks_in_HTML">forms</a> so dealing with them can be tricky generally though you be extracting from it absolute or relative links. An absolute link is one you can follow with out any modification, while a relative link has a base url that you are then appending. Wikipedia uses relative urls for its internal links so below is an example of dealing with them.</p>
 
 </div>
 </div>
@@ -12249,11 +12250,27 @@ Content analysis can also be described as studying traces, which are documents f
 <div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tagLinks</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">pTag</span> <span class="ow">in</span> <span class="n">contentPTags</span><span class="p">:</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#wikipedia_base_url = &#39;https://en.wikipedia.org&#39;</span>
+
+<span class="n">otherPAgeURLS</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1">#We also want to know where the links come from so we also will get:</span>
+<span class="c1">#the paragraph number</span>
+<span class="c1">#the word the link is in</span>
+<span class="k">for</span> <span class="n">paragraphNum</span><span class="p">,</span> <span class="n">pTag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">contentPTags</span><span class="p">):</span>
     <span class="c1">#we only want hrefs that link to wiki pages</span>
-    <span class="n">tagLinks</span> <span class="o">+=</span> <span class="n">pTag</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;/wiki/&#39;</span><span class="p">),</span> <span class="n">class_</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">tagLinks</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span>
+    <span class="n">tagLinks</span> <span class="o">=</span> <span class="n">pTag</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;/wiki/&#39;</span><span class="p">),</span> <span class="n">class_</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">aTag</span> <span class="ow">in</span> <span class="n">tagLinks</span><span class="p">:</span>
+        <span class="c1">#We need to extract the url from the &lt;a&gt; tag</span>
+        <span class="n">relurl</span> <span class="o">=</span> <span class="n">aTag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;href&#39;</span><span class="p">)</span>
+        <span class="n">linkText</span> <span class="o">=</span> <span class="n">aTag</span><span class="o">.</span><span class="n">text</span>
+        <span class="c1">#wikipedia_base_url is the base we can use the urllib joining function to merge them</span>
+        <span class="c1">#Giving a nice structured tupe like this means we can use tuple expansion later</span>
+        <span class="n">otherPAgeURLS</span><span class="o">.</span><span class="n">append</span><span class="p">((</span>
+            <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">wikipedia_base_url</span><span class="p">,</span> <span class="n">relurl</span><span class="p">),</span>
+            <span class="n">paragraphNum</span><span class="p">,</span>
+            <span class="n">linkText</span><span class="p">,</span>
+        <span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">otherPAgeURLS</span><span class="p">[:</span><span class="mi">10</span><span class="p">])</span>
 </pre></div>
 
 </div>
@@ -12266,7 +12283,7 @@ Content analysis can also be described as studying traces, which are documents f
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[&lt;a href=&#34;/wiki/Text_(literary_theory)&#34; title=&#34;Text (literary theory)&#34;&gt;texts&lt;/a&gt;, &lt;a href=&#34;/wiki/Trace_evidence&#34; title=&#34;Trace evidence&#34;&gt;traces&lt;/a&gt;, &lt;a href=&#34;/wiki/Abductive_reasoning&#34; title=&#34;Abductive reasoning&#34;&gt;abduction&lt;/a&gt;, &lt;a href=&#34;/wiki/Hermeneutics&#34; title=&#34;Hermeneutics&#34;&gt;Hermeneutics&lt;/a&gt;]
+<pre>[(&#39;https://en.wikipedia.org/wiki/Text_(literary_theory)&#39;, 1, &#39;texts&#39;), (&#39;https://en.wikipedia.org/wiki/Trace_evidence&#39;, 2, &#39;traces&#39;), (&#39;https://en.wikipedia.org/wiki/Abductive_reasoning&#39;, 2, &#39;abduction&#39;), (&#39;https://en.wikipedia.org/wiki/Hermeneutics&#39;, 4, &#39;Hermeneutics&#39;), (&#39;https://en.wikipedia.org/wiki/Philology&#39;, 4, &#39;Philology&#39;), (&#39;https://en.wikipedia.org/wiki/Authentication&#39;, 4, &#39;authenticity&#39;), (&#39;https://en.wikipedia.org/wiki/Mass_communication&#39;, 5, &#39;mass communication&#39;), (&#39;https://en.wikipedia.org/wiki/Harold_Lasswell&#39;, 5, &#39;Harold Lasswell&#39;), (&#39;https://en.wikipedia.org/wiki/Bernard_Berelson&#39;, 5, &#39;Bernard Berelson&#39;), (&#39;https://en.wikipedia.org/wiki/Big_data&#39;, 6, &#39;big data&#39;)]
 </pre>
 </div>
 </div>
@@ -12292,6 +12309,9 @@ Content analysis can also be described as studying traces, which are documents f
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">wikipedia_content_analysis</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;paragraph-text&#39;</span><span class="p">])</span>
 <span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;paragraph-number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;paragraph-text&#39;</span><span class="p">]))</span>
+<span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;source-paragraph-number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;paragraph-text&#39;</span><span class="p">])</span>
+<span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;source-paragraph-text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;paragraph-text&#39;</span><span class="p">])</span>
+
 <span class="n">contentParagraphsDF</span>
 </pre></div>
 
@@ -12314,6 +12334,8 @@ Content analysis can also be described as studying traces, which are documents f
       <th>paragraph-text</th>
       <th>source</th>
       <th>paragraph-number</th>
+      <th>source-paragraph-number</th>
+      <th>source-paragraph-text</th>
     </tr>
   </thead>
   <tbody>
@@ -12322,162 +12344,216 @@ Content analysis can also be described as studying traces, which are documents f
       <td>Content analysis is "a wide and heterogeneous ...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>0</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>1</th>
       <td>Content analysis has come to be a sort of 'umb...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>1</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>2</th>
       <td>Content analysis can also be described as stud...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>2</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>3</th>
       <td>Despite the wide variety of options, generally...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>3</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>4</th>
       <td>Over the years, content analysis has been appl...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>4</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>5</th>
       <td>In recent times, particularly with the advent ...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>5</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>6</th>
       <td>Quantitative content analysis has enjoyed a re...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>6</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>7</th>
       <td></td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>7</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>8</th>
       <td></td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>8</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>9</th>
       <td>The method of content analysis enables the res...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>9</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>10</th>
       <td>Since the 1980s, content analysis has become a...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>10</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>11</th>
       <td>The creation of coding frames is intrinsically...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>11</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>12</th>
       <td>Mimetic Convergence thus aims to show the proc...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>12</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>13</th>
       <td>Every content analysis should depart from a hy...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>13</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>14</th>
       <td>As an evaluation approach, content analysis is...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>14</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>15</th>
       <td>Qualitative content analysis is “a systematic,...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>15</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>16</th>
       <td>Holsti groups fifteen uses of content analysis...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>16</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>17</th>
       <td>He also places these uses into the context of ...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>17</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>18</th>
       <td>The following table shows fifteen uses of cont...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>18</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>19</th>
       <td>According to Dr. Klaus Krippendorff, six quest...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>19</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>20</th>
       <td>The assumption is that words and phrases menti...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>20</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>21</th>
       <td>Qualitatively, content analysis can involve an...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>21</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>22</th>
       <td>Normally, content analysis can only be applied...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>22</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>23</th>
       <td>A further step in analysis is the distinction ...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>23</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>24</th>
       <td>Dermot McKeone highlighted the difference betw...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>24</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>25</th>
       <td>As the uncritical use of text is today widely ...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>25</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
     <tr>
       <th>26</th>
       <td>Neuendorf suggests that when human coders are ...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
       <td>26</td>
+      <td>None</td>
+      <td>None</td>
     </tr>
   </tbody>
 </table>
@@ -12505,26 +12581,20 @@ Content analysis can also be described as studying traces, which are documents f
 <div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#wikipedia_base_url = &#39;https://en.wikipedia.org&#39;</span>
-
-<span class="k">def</span> <span class="nf">getTextFromWikiPage</span><span class="p">(</span><span class="n">linkTag</span><span class="p">):</span>
-    <span class="c1">#We need to extract the url from the &lt;a&gt; tag</span>
-    <span class="n">relurl</span> <span class="o">=</span> <span class="n">linkTag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;href&#39;</span><span class="p">)</span>
-    <span class="c1">#The urls are relative so we need to prepend the wikipedia url</span>
-    <span class="c1">#while both of them are strings using the specialized function means</span>
-    <span class="c1">#badly formatted relurls will be fixed, if possible</span>
-    <span class="n">url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">wikipedia_base_url</span><span class="p">,</span> <span class="n">relurl</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">getTextFromWikiPage</span><span class="p">(</span><span class="n">targetURL</span><span class="p">,</span> <span class="n">sourceParNum</span><span class="p">,</span> <span class="n">sourceText</span><span class="p">):</span>
     <span class="c1">#Make a dict to store data before adding it to the DataFrame</span>
-    <span class="n">parsDict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;source&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;paragraph-number&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;paragraph-text&#39;</span> <span class="p">:</span> <span class="p">[]}</span>
+    <span class="n">parsDict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;source&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;paragraph-number&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;paragraph-text&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;source-paragraph-number&#39;</span> <span class="p">:</span> <span class="p">[],</span>  <span class="s1">&#39;source-paragraph-text&#39;</span> <span class="p">:</span> <span class="p">[]}</span>
     <span class="c1">#Now we get the page</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">targetURL</span><span class="p">)</span>
     <span class="n">soup</span> <span class="o">=</span> <span class="n">bs4</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
     <span class="c1">#enumerating gives use the paragraph number</span>
     <span class="k">for</span> <span class="n">parNum</span><span class="p">,</span> <span class="n">pTag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">)):</span>
         <span class="c1">#same regex as before</span>
         <span class="n">parsDict</span><span class="p">[</span><span class="s1">&#39;paragraph-text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;\[\d+\]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">pTag</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
         <span class="n">parsDict</span><span class="p">[</span><span class="s1">&#39;paragraph-number&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parNum</span><span class="p">)</span>
-        <span class="n">parsDict</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">parsDict</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">targetURL</span><span class="p">)</span>
+        <span class="n">parsDict</span><span class="p">[</span><span class="s1">&#39;source-paragraph-number&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sourceParNum</span><span class="p">)</span>
+        <span class="n">parsDict</span><span class="p">[</span><span class="s1">&#39;source-paragraph-text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sourceText</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">parsDict</span><span class="p">)</span>
 </pre></div>
 
@@ -12548,9 +12618,9 @@ Content analysis can also be described as studying traces, which are documents f
 <div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">aTag</span> <span class="ow">in</span> <span class="n">tagLinks</span><span class="p">[:</span><span class="mi">1</span><span class="p">]:</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">urlTuple</span> <span class="ow">in</span> <span class="n">otherPAgeURLS</span><span class="p">[:</span><span class="mi">3</span><span class="p">]:</span>
     <span class="c1">#ignore_index means the indices will not be reset after each append</span>
-    <span class="n">contentParagraphsDF</span> <span class="o">=</span> <span class="n">contentParagraphsDF</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">getTextFromWikiPage</span><span class="p">(</span><span class="n">aTag</span><span class="p">),</span><span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">contentParagraphsDF</span> <span class="o">=</span> <span class="n">contentParagraphsDF</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">getTextFromWikiPage</span><span class="p">(</span><span class="o">*</span><span class="n">urlTuple</span><span class="p">),</span><span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">contentParagraphsDF</span>
 </pre></div>
 
@@ -12573,6 +12643,8 @@ Content analysis can also be described as studying traces, which are documents f
       <th>paragraph-number</th>
       <th>paragraph-text</th>
       <th>source</th>
+      <th>source-paragraph-number</th>
+      <th>source-paragraph-text</th>
     </tr>
   </thead>
   <tbody>
@@ -12581,212 +12653,521 @@ Content analysis can also be described as studying traces, which are documents f
       <td>0</td>
       <td>Content analysis is "a wide and heterogeneous ...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>1</th>
       <td>1</td>
       <td>Content analysis has come to be a sort of 'umb...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>2</th>
       <td>2</td>
       <td>Content analysis can also be described as stud...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>3</th>
       <td>3</td>
       <td>Despite the wide variety of options, generally...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>4</th>
       <td>4</td>
       <td>Over the years, content analysis has been appl...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>5</th>
       <td>5</td>
       <td>In recent times, particularly with the advent ...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>6</th>
       <td>6</td>
       <td>Quantitative content analysis has enjoyed a re...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>7</th>
       <td>7</td>
       <td></td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>8</th>
       <td>8</td>
       <td></td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>9</th>
       <td>9</td>
       <td>The method of content analysis enables the res...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>10</th>
       <td>10</td>
       <td>Since the 1980s, content analysis has become a...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>11</th>
       <td>11</td>
       <td>The creation of coding frames is intrinsically...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>12</th>
       <td>12</td>
       <td>Mimetic Convergence thus aims to show the proc...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>13</th>
       <td>13</td>
       <td>Every content analysis should depart from a hy...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>14</th>
       <td>14</td>
       <td>As an evaluation approach, content analysis is...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>15</th>
       <td>15</td>
       <td>Qualitative content analysis is “a systematic,...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>16</th>
       <td>16</td>
       <td>Holsti groups fifteen uses of content analysis...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>17</th>
       <td>17</td>
       <td>He also places these uses into the context of ...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>18</th>
       <td>18</td>
       <td>The following table shows fifteen uses of cont...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>19</th>
       <td>19</td>
       <td>According to Dr. Klaus Krippendorff, six quest...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>20</th>
       <td>20</td>
       <td>The assumption is that words and phrases menti...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>21</th>
       <td>21</td>
       <td>Qualitatively, content analysis can involve an...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>22</th>
       <td>22</td>
       <td>Normally, content analysis can only be applied...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>23</th>
       <td>23</td>
       <td>A further step in analysis is the distinction ...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>24</th>
       <td>24</td>
       <td>Dermot McKeone highlighted the difference betw...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>25</th>
       <td>25</td>
       <td>As the uncritical use of text is today widely ...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>26</th>
       <td>26</td>
       <td>Neuendorf suggests that when human coders are ...</td>
       <td>https://en.wikipedia.org/wiki/Content_analysis</td>
+      <td>NaN</td>
+      <td>NaN</td>
     </tr>
     <tr>
       <th>27</th>
       <td>0</td>
       <td>In literary theory, a text is any object that ...</td>
       <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
+      <td>1</td>
+      <td>texts</td>
     </tr>
     <tr>
       <th>28</th>
       <td>1</td>
       <td>Within the field of literary criticism, "text"...</td>
       <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
+      <td>1</td>
+      <td>texts</td>
     </tr>
     <tr>
       <th>29</th>
       <td>2</td>
       <td>Since the history of writing predates the conc...</td>
       <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
+      <td>1</td>
+      <td>texts</td>
     </tr>
     <tr>
-      <th>30</th>
-      <td>3</td>
-      <td></td>
-      <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
     </tr>
     <tr>
-      <th>31</th>
-      <td>4</td>
-      <td></td>
-      <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
+      <th>99</th>
+      <td>53</td>
+      <td>The hypothesis is framed, but not asserted, in...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
     </tr>
     <tr>
-      <th>32</th>
-      <td>5</td>
-      <td>The word text has its origins in Quintilian's ...</td>
-      <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
+      <th>100</th>
+      <td>54</td>
+      <td>Note that the hypothesis ("A") could be of a r...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
     </tr>
     <tr>
-      <th>33</th>
-      <td>6</td>
-      <td>Relying on literary theory, the notion of text...</td>
-      <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
+      <th>101</th>
+      <td>55</td>
+      <td>Peirce did not remain quite convinced about an...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>102</th>
+      <td>56</td>
+      <td>In 1901 Peirce wrote, "There would be no logic...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>103</th>
+      <td>57</td>
+      <td>"Consider what effects, that might conceivably...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>104</th>
+      <td>58</td>
+      <td>It is a method for fruitful clarification of c...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>105</th>
+      <td>59</td>
+      <td>Peirce came over the years to divide (philosop...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>106</th>
+      <td>60</td>
+      <td>Peirce had, from the start, seen the modes of ...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>107</th>
+      <td>61</td>
+      <td>As early as 1866, Peirce held that:</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>108</th>
+      <td>62</td>
+      <td>1. Hypothesis (abductive inference) is inferen...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>109</th>
+      <td>63</td>
+      <td>In 1902, Peirce wrote that, in abduction: "It ...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>110</th>
+      <td>64</td>
+      <td>At the critical level Peirce examined the form...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>111</th>
+      <td>65</td>
+      <td>The phrase "inference to the best explanation"...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>112</th>
+      <td>66</td>
+      <td>At the methodeutical level Peirce held that a ...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>113</th>
+      <td>67</td>
+      <td>Norwood Russell Hanson, a philosopher of scien...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>114</th>
+      <td>68</td>
+      <td>Further development of the concept can be foun...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>115</th>
+      <td>69</td>
+      <td>Applications in artificial intelligence includ...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>116</th>
+      <td>70</td>
+      <td>In medicine, abduction can be seen as a compon...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>117</th>
+      <td>71</td>
+      <td>Abduction can also be used to model automated ...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>118</th>
+      <td>72</td>
+      <td>In intelligence analysis, analysis of competin...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>119</th>
+      <td>73</td>
+      <td>Belief revision, the process of adapting belie...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>120</th>
+      <td>74</td>
+      <td>In the philosophy of science, abduction has be...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>121</th>
+      <td>75</td>
+      <td>In historical linguistics, abduction during la...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>122</th>
+      <td>76</td>
+      <td>In anthropology, Alfred Gell in his influentia...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>123</th>
+      <td>77</td>
+      <td>Consequently, to discover is simply to expedit...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>124</th>
+      <td>78</td>
+      <td>It allows any flight of imagination, provided ...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>125</th>
+      <td>79</td>
+      <td>Methodeutic has a special interest in Abductio...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>126</th>
+      <td>80</td>
+      <td>.... What is good abduction? What should an ex...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>127</th>
+      <td>81</td>
+      <td>The mind seeks to bring the facts, as modified...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
+    </tr>
+    <tr>
+      <th>128</th>
+      <td>82</td>
+      <td>Thus, twenty skillful hypotheses will ascertai...</td>
+      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
+      <td>2</td>
+      <td>abduction</td>
     </tr>
   </tbody>
 </table>
+<p>129 rows × 5 columns</p>
 </div>
 </div>
 
 </div>
 
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Tumblr-API">Tumblr API<a class="anchor-link" href="#Tumblr-API">&#182;</a></h2><p><a href="https://www.tumblr.com/docs/en/api/v2">https://www.tumblr.com/docs/en/api/v2</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#r = requests.get(&#39;https://api.tumblr.com/v2/blog/scipsy.tumblr.com/info&#39;)</span>
+<span class="c1">#requests.get(&#39;https://api.tumblr.com/v2/blog/david.tumblr.com/avatar/512&#39;)</span>
+</pre></div>
+
+</div>
 </div>
 </div>
 
@@ -12805,7 +13186,7 @@ Content analysis can also be described as studying traces, which are documents f
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#example_text_file = &#39;sometextfile.txt&#39;</span>
@@ -12834,7 +13215,7 @@ Content analysis can also be described as studying traces, which are documents f
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">example_text_file</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -12888,7 +13269,7 @@ A line with a few unusual symbols â¡ â â  â¡ â¢ â£ àµ
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#information_extraction_pdf = &#39;https://web.stanford.edu/~jurafsky/slp3/20.pdf&#39;</span>
@@ -12935,17 +13316,45 @@ i)s|�͢H������$�����v��Շ���W[���f��
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>It says <code>'pdf'</code>, so thats a good sign, the rest though looks like we are having issues with an encoding. The random characters are not though caused by our encoding being wrong they are cause by there not being an encoding for those parts at all. PDFs are nominally binary files, meaning there are sections of binary that are specific to pdf and nothing else so you need something that knows about pdf to read them. To do that we will be using <a href="https://github.com/jaepil/pdfminer3k"><code>pdfminer3k</code></a> which is a PDF processing library for Python 3.</p>
+<p>It says <code>'pdf'</code>, so thats a good sign, the rest though looks like we are having issues with an encoding. The random characters are not though caused by our encoding being wrong they are cause by there not being an encoding for those parts at all. PDFs are nominally binary files, meaning there are sections of binary that are specific to pdf and nothing else so you need something that knows about pdf to read them. To do that we will be using <a href="https://github.com/mstamy2/PyPDF2"><code>PyPDF2</code></a> which is a PDF processing library for Python 3.</p>
+<p><strong>NOTE</strong> maybe use <code>PyPDF2</code> or <code>slate</code></p>
+<p>But first we need to take the response object and convert it into a 'file like' object so that PyPDF2 can read it. To do this we will use <code>io</code>'s <code>BytesIO</code>.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">slate</span><span class="o">.</span><span class="n">PDF</span><span class="p">(</span><span class="n">infoExtractionRequest</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">infoExtractionBytes</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">infoExtractionRequest</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we can give it to PyPDF2</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">inforExtractPDF</span> <span class="o">=</span> <span class="n">PyPDF2</span><span class="o">.</span><span class="n">PdfFileReader</span><span class="p">(</span><span class="n">infoExtractionBytes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">inforExtractPDF</span><span class="o">.</span><span class="n">numPages</span><span class="p">)</span>
+<span class="n">firstPage</span> <span class="o">=</span> <span class="n">inforExtractPDF</span><span class="o">.</span><span class="n">getPage</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">firstPage</span><span class="o">.</span><span class="n">extractText</span><span class="p">()[:</span><span class="mi">1000</span><span class="p">])</span>
 </pre></div>
 
 </div>
@@ -12957,14 +13366,33 @@ i)s|�͢H������$�����v��Շ���W[���f��
 
 
 <div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-green-fg">&lt;ipython-input-19-26db9436f68a&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
-<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>slate<span class="ansi-blue-fg">.</span>PDF<span class="ansi-blue-fg">(</span>infoExtractionRequest<span class="ansi-blue-fg">.</span>read<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>31
+SpeechandLanguageProcessing.DanielJurafsky&amp;JamesH.Martin.Copyright
+c
 
-<span class="ansi-red-fg">NameError</span>: name &#39;slate&#39; is not defined</pre>
+2015.All
+rightsreserved.DraftofJune26,2015.
+CHAPTER
+20
+InformationExtraction
+IamtheverymodelofamodernMajor-General,
+I&#39;veinformationvegetable,animal,andmineral,
+IknowthekingsofEngland,andIquotethehistorical
+FromMarathontoWaterloo,inordercategorical...
+GilbertandSullivan,
+PiratesofPenzance
+Imaginethatyouareananalystwithaninvestmentthattracksairlinestocks.
+You&#39;regiventhetaskofdeterminingtherelationship(ifany)betweenairlinean-
+nouncementsoffareincreasesandthebehavioroftheirstocksthenextday.His-
+toricaldataaboutstockpricesiseasytocomeby,butwhatabouttheairlinean-
+nouncements?Youwillneedtoknowatleastthenameoftheairline,thenatureof
+theproposedfarehike,thedatesoftheannouncement,andpossiblytheresponseof
+otherairlines.Fortunately,thesecanbeallfoundinnewsarticleslikethisone:
+Citinghighfuelprices,UnitedAirlinessaidFridayithasincreasedfares
+by$6perroundtripontosomecitiesalsoservedbylower-
+costcarriers.AmericanAirlines,aunitofAMRCo
+</pre>
 </div>
 </div>
 
@@ -12977,7 +13405,6 @@ i)s|�͢H������$�����v��Շ���W[���f��
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>maybe use <code>PyPDF2</code> or <code>slate</code></p>
 <h1 id="Work-in-progress">Work in progress<a class="anchor-link" href="#Work-in-progress">&#182;</a></h1><h2 id="Word-Docs">Word Docs<a class="anchor-link" href="#Word-Docs">&#182;</a></h2><p>Looks like <code>python-docx</code> may work</p>
 
 </div>
@@ -12985,12 +13412,14 @@ i)s|�͢H������$�����v��Շ���W[���f��
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">docx</span>
 <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://github.com/xiaow2/persp-analysis/raw/02772bc5baf4044ba6410170ca740f14cd6155d5/assignments/short%20paper%201.docx&#39;</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">d</span> <span class="o">=</span> <span class="n">docx</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">raw</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">docx</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">paragraph</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">paragraphs</span><span class="p">[:</span><span class="mi">7</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">paragraph</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -13002,73 +13431,15 @@ i)s|�͢H������$�����v��Շ���W[���f��
 
 
 <div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">UnsupportedOperation</span>                      Traceback (most recent call last)
-<span class="ansi-green-fg">/usr/local/Cellar/python3/3.5.1/Frameworks/Python.framework/Versions/3.5/lib/python3.5/zipfile.py</span> in <span class="ansi-cyan-fg">_RealGetContents</span><span class="ansi-blue-fg">(self)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1088</span>         <span class="ansi-green-fg">try</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">-&gt; 1089</span><span class="ansi-red-fg">             </span>endrec <span class="ansi-blue-fg">=</span> _EndRecData<span class="ansi-blue-fg">(</span>fp<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1090</span>         <span class="ansi-green-fg">except</span> OSError<span class="ansi-blue-fg">:</span>
-
-<span class="ansi-green-fg">/usr/local/Cellar/python3/3.5.1/Frameworks/Python.framework/Versions/3.5/lib/python3.5/zipfile.py</span> in <span class="ansi-cyan-fg">_EndRecData</span><span class="ansi-blue-fg">(fpin)</span>
-<span class="ansi-green-intense-fg ansi-bold">    240</span>     <span class="ansi-red-fg"># Determine file size</span>
-<span class="ansi-green-fg">--&gt; 241</span><span class="ansi-red-fg">     </span>fpin<span class="ansi-blue-fg">.</span>seek<span class="ansi-blue-fg">(</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">2</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    242</span>     filesize <span class="ansi-blue-fg">=</span> fpin<span class="ansi-blue-fg">.</span>tell<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
-
-<span class="ansi-red-fg">UnsupportedOperation</span>: seek
-
-During handling of the above exception, another exception occurred:
-
-<span class="ansi-red-fg">BadZipFile</span>                                Traceback (most recent call last)
-<span class="ansi-green-fg">&lt;ipython-input-20-69ad08e5ba05&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-green-fg">import</span> docx
-<span class="ansi-green-intense-fg ansi-bold">      2</span> r <span class="ansi-blue-fg">=</span> requests<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#39;https://github.com/xiaow2/persp-analysis/raw/02772bc5baf4044ba6410170ca740f14cd6155d5/assignments/short%20paper%201.docx&#39;</span><span class="ansi-blue-fg">,</span> stream<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">True</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-fg">----&gt; 3</span><span class="ansi-red-fg"> </span>d <span class="ansi-blue-fg">=</span> docx<span class="ansi-blue-fg">.</span>Document<span class="ansi-blue-fg">(</span>r<span class="ansi-blue-fg">.</span>raw<span class="ansi-blue-fg">)</span>
-
-<span class="ansi-green-fg">/usr/local/lib/python3.5/site-packages/docx/api.py</span> in <span class="ansi-cyan-fg">Document</span><span class="ansi-blue-fg">(docx)</span>
-<span class="ansi-green-intense-fg ansi-bold">     23</span>     &#34;&#34;&#34;
-<span class="ansi-green-intense-fg ansi-bold">     24</span>     docx <span class="ansi-blue-fg">=</span> _default_docx_path<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">if</span> docx <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">None</span> <span class="ansi-green-fg">else</span> docx
-<span class="ansi-green-fg">---&gt; 25</span><span class="ansi-red-fg">     </span>document_part <span class="ansi-blue-fg">=</span> Package<span class="ansi-blue-fg">.</span>open<span class="ansi-blue-fg">(</span>docx<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>main_document_part
-<span class="ansi-green-intense-fg ansi-bold">     26</span>     <span class="ansi-green-fg">if</span> document_part<span class="ansi-blue-fg">.</span>content_type <span class="ansi-blue-fg">!=</span> CT<span class="ansi-blue-fg">.</span>WML_DOCUMENT_MAIN<span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">     27</span>         tmpl <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">&#34;file &#39;%s&#39; is not a Word file, content type is &#39;%s&#39;&#34;</span>
-
-<span class="ansi-green-fg">/usr/local/lib/python3.5/site-packages/docx/opc/package.py</span> in <span class="ansi-cyan-fg">open</span><span class="ansi-blue-fg">(cls, pkg_file)</span>
-<span class="ansi-green-intense-fg ansi-bold">    114</span>         <span class="ansi-blue-fg">*</span>pkg_file<span class="ansi-blue-fg">*</span><span class="ansi-blue-fg">.</span>
-<span class="ansi-green-intense-fg ansi-bold">    115</span>         &#34;&#34;&#34;
-<span class="ansi-green-fg">--&gt; 116</span><span class="ansi-red-fg">         </span>pkg_reader <span class="ansi-blue-fg">=</span> PackageReader<span class="ansi-blue-fg">.</span>from_file<span class="ansi-blue-fg">(</span>pkg_file<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    117</span>         package <span class="ansi-blue-fg">=</span> cls<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    118</span>         Unmarshaller<span class="ansi-blue-fg">.</span>unmarshal<span class="ansi-blue-fg">(</span>pkg_reader<span class="ansi-blue-fg">,</span> package<span class="ansi-blue-fg">,</span> PartFactory<span class="ansi-blue-fg">)</span>
-
-<span class="ansi-green-fg">/usr/local/lib/python3.5/site-packages/docx/opc/pkgreader.py</span> in <span class="ansi-cyan-fg">from_file</span><span class="ansi-blue-fg">(pkg_file)</span>
-<span class="ansi-green-intense-fg ansi-bold">     30</span>         Return a <span class="ansi-blue-fg">|</span>PackageReader<span class="ansi-blue-fg">|</span> instance loaded <span class="ansi-green-fg">with</span> contents of <span class="ansi-blue-fg">*</span>pkg_file<span class="ansi-blue-fg">*</span><span class="ansi-blue-fg">.</span>
-<span class="ansi-green-intense-fg ansi-bold">     31</span>         &#34;&#34;&#34;
-<span class="ansi-green-fg">---&gt; 32</span><span class="ansi-red-fg">         </span>phys_reader <span class="ansi-blue-fg">=</span> PhysPkgReader<span class="ansi-blue-fg">(</span>pkg_file<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">     33</span>         content_types <span class="ansi-blue-fg">=</span> _ContentTypeMap<span class="ansi-blue-fg">.</span>from_xml<span class="ansi-blue-fg">(</span>phys_reader<span class="ansi-blue-fg">.</span>content_types_xml<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">     34</span>         pkg_srels <span class="ansi-blue-fg">=</span> PackageReader<span class="ansi-blue-fg">.</span>_srels_for<span class="ansi-blue-fg">(</span>phys_reader<span class="ansi-blue-fg">,</span> PACKAGE_URI<span class="ansi-blue-fg">)</span>
-
-<span class="ansi-green-fg">/usr/local/lib/python3.5/site-packages/docx/opc/phys_pkg.py</span> in <span class="ansi-cyan-fg">__init__</span><span class="ansi-blue-fg">(self, pkg_file)</span>
-<span class="ansi-green-intense-fg ansi-bold">     99</span>     <span class="ansi-green-fg">def</span> __init__<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> pkg_file<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">    100</span>         super<span class="ansi-blue-fg">(</span>_ZipPkgReader<span class="ansi-blue-fg">,</span> self<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">.</span>__init__<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-fg">--&gt; 101</span><span class="ansi-red-fg">         </span>self<span class="ansi-blue-fg">.</span>_zipf <span class="ansi-blue-fg">=</span> ZipFile<span class="ansi-blue-fg">(</span>pkg_file<span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">&#39;r&#39;</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    102</span> 
-<span class="ansi-green-intense-fg ansi-bold">    103</span>     <span class="ansi-green-fg">def</span> blob_for<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">,</span> pack_uri<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-
-<span class="ansi-green-fg">/usr/local/Cellar/python3/3.5.1/Frameworks/Python.framework/Versions/3.5/lib/python3.5/zipfile.py</span> in <span class="ansi-cyan-fg">__init__</span><span class="ansi-blue-fg">(self, file, mode, compression, allowZip64)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1024</span>         <span class="ansi-green-fg">try</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">   1025</span>             <span class="ansi-green-fg">if</span> mode <span class="ansi-blue-fg">==</span> <span class="ansi-blue-fg">&#39;r&#39;</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">-&gt; 1026</span><span class="ansi-red-fg">                 </span>self<span class="ansi-blue-fg">.</span>_RealGetContents<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1027</span>             <span class="ansi-green-fg">elif</span> mode <span class="ansi-green-fg">in</span> <span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#39;w&#39;</span><span class="ansi-blue-fg">,</span> <span class="ansi-blue-fg">&#39;x&#39;</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">   1028</span>                 <span class="ansi-red-fg"># set the modified flag so central directory gets written</span>
-
-<span class="ansi-green-fg">/usr/local/Cellar/python3/3.5.1/Frameworks/Python.framework/Versions/3.5/lib/python3.5/zipfile.py</span> in <span class="ansi-cyan-fg">_RealGetContents</span><span class="ansi-blue-fg">(self)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1089</span>             endrec <span class="ansi-blue-fg">=</span> _EndRecData<span class="ansi-blue-fg">(</span>fp<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1090</span>         <span class="ansi-green-fg">except</span> OSError<span class="ansi-blue-fg">:</span>
-<span class="ansi-green-fg">-&gt; 1091</span><span class="ansi-red-fg">             </span><span class="ansi-green-fg">raise</span> BadZipFile<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;File is not a zip file&#34;</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1092</span>         <span class="ansi-green-fg">if</span> <span class="ansi-green-fg">not</span> endrec<span class="ansi-blue-fg">:</span>
-<span class="ansi-green-intense-fg ansi-bold">   1093</span>             <span class="ansi-green-fg">raise</span> BadZipFile<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;File is not a zip file&#34;</span><span class="ansi-blue-fg">)</span>
-
-<span class="ansi-red-fg">BadZipFile</span>: File is not a zip file</pre>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Wenxi Xiao
+Professor Benjamin Soltoff
+MACS 30000
+10 October 2016
+Ethics of “Taste, Ties, and Time”
+	In 2008, sociologist Kevin Lewis and colleagues conduced a research project, entitled “Taste, Ties, and Time (3T),” to examine how race and cultural tastes could affect people’s social relationships. Researchers collected 1,640 college students’ Facebook profiles from Facebook.com and combined these data with the students’ school records, creating a new social network dataset. Through subsequent quantitative analyses of the dataset researchers concluded that gender, race, and socioeconomic status all influenced how these students behaved in social networks. In addition, the results showed that students’ Facebook friendships were correlated with their cultural preferences. Lewis and colleagues’ findings were published in the journal Social Networks and opened up a new branch in social science research. Despite its scientific potential, the project attracted critics from the public as well as the scientific community. The researchers were accused of violating research ethics, such that they scraped data without gaining informed consent and invading the students’ personal privacy by releasing the dataset to other researchers (Zimmer, 2010). Consequently, the students in the 3T project were identified, resulting a withdrawal of the dataset (Salganik, in open review). In this essay, I evaluate how the 3T project adheres to Salganik&#39;s four principles of ethical research, which are Respect for Persons, Beneficence, Justice, and Respect for Law and Public Interest.
+	First of all, the 3T project violates the first principle, Respect for Persons, which is to ensure research participants’ autonomy (Salganik, in open review). According to the principle of Respect for Persons, people are entitled to be on their own free will to decide whether or not to participate in a given study. Additionally, special population such as children and prisoners are required to be treated with additional cautions. Researchers implement Respect for Persons by obtaining participants’ informed consent, a comprehensive written document allowing participants to be aware of the study’s procedures and potential risks. In the 3T project, researchers used students’ Facebook profiles data without the students’ awareness, not to mention obtaining informed consent. Such conduct clearly disobeyed the Respect for Persons principle. Although Lewis and colleagues claimed that when people registered for a Facebook account they agreed to allow Facebook to use their online data for research purposes by checking the term of use, it is still the researchers’ responsibility to explicitly give the students an opportunity to choose if they wanted their data to be included. After all, not many people carefully read all the items in term of use. Admittedly, violating the principle of Respect for Persons does not doom a study to a forbidden fate, but rather it alerts the researchers that their study needs amendments for being a more ethical one. 
+</pre>
 </div>
 </div>
 
