@@ -17,6 +17,10 @@
     + APIs
         + REST
         + tumblr
+            + Newly registered consumers are rate limited to 250 requests per hour, and 5,000 requests per day. If your application requires more requests for either of these periods, please use the 'Request rate limit removal' link on an app above.
+            + Reid McIlroy-Young OAuth
+                + Consumer Key: TgqpubaBeckUPRHWUCTHIe2DzGYyZ0hXYFenh2tiyZMGv874h8
+                + Secret Key:  GTXHKip2c8TJyMz9A2iRhrV1cx03FSaSaznXGoVvCW2Fx5lyCv
 + reading files
     + encodings
     + unicode
@@ -40,6 +44,9 @@ import urllib.parse #For joining urls
 import io
 import PyPDF2 #For reading pdfs
 import docx #MS doc files
+import json #For Tumblr api responses
+import pytumblr #For Tumblr api
+import oauth2 #For Tumblr authentication
 ```
 
 We will also be working on the following files/urls
@@ -184,8 +191,6 @@ contentParagraphsDF
 Then we can define a function to parse each linked page and add its text to our DataFrame.
 
 ```python
-
-
 def getTextFromWikiPage(targetURL, sourceParNum, sourceText):
     #Make a dict to store data before adding it to the DataFrame
     parsDict = {'source' : [], 'paragraph-number' : [], 'paragraph-text' : [], 'source-paragraph-number' : [],  'source-paragraph-text' : []}
@@ -213,14 +218,92 @@ contentParagraphsDF
 ```
 ## Tumblr API
 
-[https://www.tumblr.com/docs/en/api/v2](https://www.tumblr.com/docs/en/api/v2)
+Generally website owners do not like you scraping their sites. Scraping if done badly can act like a DOS attack so you should be careful about how often you make calls to a site. Some site though want automated tools to access their data, so they create [application programming interface (APIs)](https://en.wikipedia.org/wiki/Application_programming_interface). An API specifies a procedure for an application (or script) to access their data. Often this is though a [representational state transfer (REST)](https://en.wikipedia.org/wiki/Representational_state_transfer) web service, which just means if you make correctly formatted HTTP requests they will return nicely formatted data.
+
+A nice example for us to study is [Tumblr](https://www.tumblr.com), they have a [simple RESTful API](https://www.tumblr.com/docs/en/api/v1) that allows you to read posts without any complicated html parsing.
+
+We can get the first 20 posts from a blog by making an http GET request to `'http://{blog}.tumblr.com/api/read/json'`, were `{blog}` is the name of the target blog. Lets try and get the posts from [http://lolcats-lol-cat.tumblr.com/](http://lolcats-lol-cat.tumblr.com/).
 
 ```python
 
-#r = requests.get('https://api.tumblr.com/v2/blog/scipsy.tumblr.com/info')
-#requests.get('https://api.tumblr.com/v2/blog/david.tumblr.com/avatar/512')
+tumblrAPItarget = 'http://{}.tumblr.com/api/read/json'
 
+r = requests.get(tumblrAPItarget.format('lolcats-lol-cat'))
+
+print(r.text[:1000])
 ```
+
+This might not look very good, but it has a lot fewer angle braces than html, which is nice. What we have is [JSON](https://en.wikipedia.org/wiki/JSON) a 'human readable' text based data transmission format based on javascript. Luckily, we can convert it to a python `dict`.
+
+```python
+#We need to load only the stuff between the curly braces
+d = json.loads(r.text[len('var tumblr_api_read = '):-2])
+print(d.keys())
+print(len(d['posts']))
+```
+
+If we read the [API specification](https://www.tumblr.com/docs/en/api/v1), we will see there are a lot of things we can get if, we add things to our GET request. First we can get posts by their id number, lets get post `146020177084`.
+
+```python
+
+r = requests.get(tumblrAPItarget.format('lolcats-lol-cat'), params = {'id' : 146020177084})
+d = json.loads(r.text[len('var tumblr_api_read = '):-2])
+d['posts'][0].keys()
+d['posts'][0]['photo-url-1280']
+
+with open('lolcat.gif', 'wb') as f:
+    gifRequest = requests.get(d['posts'][0]['photo-url-1280'], stream = True)
+    f.write(gifRequest.content)
+```
+
+![Our downloaded gif](lolcat.gif)
+
+
+
++ Consumer Key: TgqpubaBeckUPRHWUCTHIe2DzGYyZ0hXYFenh2tiyZMGv874h8
++ Secret Key:  GTXHKip2c8TJyMz9A2iRhrV1cx03FSaSaznXGoVvCW2Fx5lyCv
+
+[https://www.tumblr.com/docs/en/api/v2](https://www.tumblr.com/docs/en/api/v2)
+
+```python
+#get the most recent 20 posts
+target = 'http://procedural-generation.tumblr.com/api/read/json'
+
+r = requests.get(target)
+
+d = json.loads(r.text[len('var tumblr_api_read = '):-2])
+
+#get a specific post
+
+r = requests.get(target, params = {'id' : '152256405098'})
+
+d = json.loads(r.text[len('var tumblr_api_read = '):-2])
+```
+
+
+```python
+'''
+REQUEST_TOKEN_URL = 'http://www.tumblr.com/oauth/request_token'
+AUTHORIZATION_URL = 'http://www.tumblr.com/oauth/authorize'
+ACCESS_TOKEN_URL = 'http://www.tumblr.com/oauth/access_token'
+
+tumblrKey = 'TgqpubaBeckUPRHWUCTHIe2DzGYyZ0hXYFenh2tiyZMGv874h8'
+tumblrSecret = 'GTXHKip2c8TJyMz9A2iRhrV1cx03FSaSaznXGoVvCW2Fx5lyCv'
+consumer = oauth2.Consumer(tumblrKey, tumblrSecret)
+client = oauth2.Client(consumer)
+
+#The token is part of content, which is provided as a binary query string
+responseDict, content = client.request(REQUEST_TOKEN_URL, "GET")
+content = urllib.parse.parse_qs(content.decode('utf-8'))
+oathToken = content['oauth_token'][0]
+oathTokenSecret = content['oauth_token_secret'][0]
+
+print("The OATH token is: {}\nThe OATH token secret is: {}".format(oathToken, oathTokenSecret))
+'''
+```
+
+We now have all the pieces we need to query the Tumblr API
+
 # Files
 
 What if the text we want isn't on a webpage? There are a many other sources of text available.
