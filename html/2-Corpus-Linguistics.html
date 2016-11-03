@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8" />
-<title>1-intro</title>
+<title>2-Corpus-Linguistics</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -11752,54 +11752,33 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Layout">Layout<a class="anchor-link" href="#Layout">&#182;</a></h1><ul>
-<li><p>opening</p>
+<li>Searching text for keywords</li>
+<li>Distribution of terms</li>
+<li>Correlation</li>
+<li><p>From last year:</p>
 <ul>
-<li>contents</li>
-<li>files used</li>
-<li>packages used</li>
+<li>Word frequencies</li>
+<li>Conditional frequencies</li>
+<li>Statistically significant collocations</li>
+<li>Distinguishing or Important words and phrases (Wordls!)</li>
+<li>POS-tagged words and phrases</li>
+<li>Lemmatized words and phrases</li>
+<li>Dictionary-based annotations.</li>
 </ul>
 </li>
-<li><p>Scraping</p>
-<ul>
-<li>Images<ul>
-<li>OCR</li>
+<li><p>stemmers?</p>
+</li>
+<li>Sources<ul>
+<li>US senate press releases<ul>
+<li>e.g. <a href="http://www.reid.senate.gov/press_releases">http://www.reid.senate.gov/press_releases</a></li>
 </ul>
 </li>
-<li>raw text</li>
-<li>html</li>
-<li>PDFs</li>
-<li>word doc etc.</li>
-</ul>
-</li>
-<li>spidering<ul>
-<li>wikipedia</li>
-<li>APIs<ul>
-<li>REST</li>
-<li>tumblr<ul>
-<li>Newly registered consumers are rate limited to 250 requests per hour, and 5,000 requests per day. If your application requires more requests for either of these periods, please use the 'Request rate limit removal' link on an app above.</li>
-<li>Reid McIlroy-Young OAuth<ul>
-<li>Consumer Key: TgqpubaBeckUPRHWUCTHIe2DzGYyZ0hXYFenh2tiyZMGv874h8</li>
-<li>Secret Key:  GTXHKip2c8TJyMz9A2iRhrV1cx03FSaSaznXGoVvCW2Fx5lyCv</li>
+<li>Tumblr</li>
+<li>Literature</li>
 </ul>
 </li>
 </ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>reading files<ul>
-<li>encodings</li>
-<li>unicode</li>
-</ul>
-</li>
-<li>filtering</li>
-<li>data structures<ul>
-<li>pandas</li>
-</ul>
-</li>
-</ul>
-<h1 id="Week-1---Intro">Week 1 - Intro<a class="anchor-link" href="#Week-1---Intro">&#182;</a></h1><p>Intro stuff ...</p>
+<h1 id="Week-2---Corpus-Linguistics">Week 2 - Corpus Linguistics<a class="anchor-link" href="#Week-2---Corpus-Linguistics">&#182;</a></h1><p>Intro stuff</p>
 <p>For this notebook we will be using the following packages</p>
 
 </div>
@@ -11810,22 +11789,10 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span> <span class="c1">#http requests</span>
-<span class="kn">import</span> <span class="nn">bs4</span> <span class="c1">#called &#39;BeautifulSoup&#39;, a html parser</span>
-<span class="kn">import</span> <span class="nn">re</span> <span class="c1">#for regexs</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="c1">#DataFrames</span>
-<span class="kn">import</span> <span class="nn">urllib.parse</span> <span class="c1">#For joining urls</span>
-<span class="kn">import</span> <span class="nn">io</span>
-<span class="kn">import</span> <span class="nn">PyPDF2</span> <span class="c1">#For reading pdfs</span>
-<span class="kn">import</span> <span class="nn">docx</span> <span class="c1">#MS doc files</span>
-<span class="kn">import</span> <span class="nn">json</span> <span class="c1">#For Tumblr api responses</span>
-<span class="kn">import</span> <span class="nn">oauth2</span> <span class="c1">#For Tumblr authentication</span>
-
-<span class="c1">#Stuff for pdfs</span>
-<span class="kn">import</span> <span class="nn">pdfminer.pdfinterp</span>
-<span class="kn">import</span> <span class="nn">pdfminer.converter</span>
-<span class="kn">import</span> <span class="nn">pdfminer.layout</span>
-<span class="kn">import</span> <span class="nn">pdfminer.pdfpage</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">nltk</span>
+<span class="kn">import</span> <span class="nn">pandas</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline  
 </pre></div>
 
 </div>
@@ -11838,7 +11805,8 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>We will also be working on the following files/urls</p>
+<h1 id="Getting-our-corpuses">Getting our corpuses<a class="anchor-link" href="#Getting-our-corpuses">&#182;</a></h1><p>To get started we will need some targets, lets start by downloading one of the corpuses from <code>nltk</code>. Lets take a look at how that works.</p>
+<p>first we can get a list of corpuses avaible from the Gutenburg corpus</p>
 
 </div>
 </div>
@@ -11848,14 +11816,26 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wikipedia_base_url</span> <span class="o">=</span> <span class="s1">&#39;https://en.wikipedia.org&#39;</span>
-<span class="n">wikipedia_content_analysis</span> <span class="o">=</span> <span class="s1">&#39;https://en.wikipedia.org/wiki/Content_analysis&#39;</span>
-<span class="n">content_analysis_save</span> <span class="o">=</span> <span class="s1">&#39;wikipedia_content_analysis.html&#39;</span>
-<span class="n">example_text_file</span> <span class="o">=</span> <span class="s1">&#39;sometextfile.txt&#39;</span>
-<span class="n">information_extraction_pdf</span> <span class="o">=</span> <span class="s1">&#39;https://web.stanford.edu/~jurafsky/slp3/20.pdf&#39;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">nltk</span><span class="o">.</span><span class="n">corpus</span><span class="o">.</span><span class="n">gutenberg</span><span class="o">.</span><span class="n">fileids</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nltk</span><span class="o">.</span><span class="n">corpus</span><span class="o">.</span><span class="n">gutenberg</span><span class="o">.</span><span class="n">fileids</span><span class="p">()))</span>
 </pre></div>
 
 </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[&#39;austen-emma.txt&#39;, &#39;austen-persuasion.txt&#39;, &#39;austen-sense.txt&#39;, &#39;bible-kjv.txt&#39;, &#39;blake-poems.txt&#39;, &#39;bryant-stories.txt&#39;, &#39;burgess-busterbrown.txt&#39;, &#39;carroll-alice.txt&#39;, &#39;chesterton-ball.txt&#39;, &#39;chesterton-brown.txt&#39;, &#39;chesterton-thursday.txt&#39;, &#39;edgeworth-parents.txt&#39;, &#39;melville-moby_dick.txt&#39;, &#39;milton-paradise.txt&#39;, &#39;shakespeare-caesar.txt&#39;, &#39;shakespeare-hamlet.txt&#39;, &#39;shakespeare-macbeth.txt&#39;, &#39;whitman-leaves.txt&#39;]
+18
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -11865,8 +11845,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Scraping">Scraping<a class="anchor-link" href="#Scraping">&#182;</a></h1><p>Before we can start analyzing content we need to obtain it. Sometimes it will be provided to us before hand, but often we will need to download it. As a starting example we will attempt to download the wikipedia page on content analysis. The page is located at <a href="https://en.wikipedia.org/wiki/Content_analysis">https://en.wikipedia.org/wiki/Content_analysis</a> so lets start with that.</p>
-<p>We can do this by making an HTTP GET request to that url, a GET request is simply a request to the server to provide the contents given by some url. The other request we will be using in this class is called a POST request and requests the server to take some content we provide. While the Python standard library does have the ability do make GET requests we will be using the <a href="http://docs.python-requests.org/en/master/"><em>requests</em></a> package as it is <em>'the only Non-GMO HTTP library for Python'</em>, also it provides a nicer interface.</p>
+<p>We can also look at the individual works</p>
 
 </div>
 </div>
@@ -11876,8 +11855,7 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#wikipedia_content_analysis = &#39;https://en.wikipedia.org/wiki/Content_analysis&#39;</span>
-<span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://en.wikipedia.org/wiki/Content_analysis&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nltk</span><span class="o">.</span><span class="n">corpus</span><span class="o">.</span><span class="n">gutenberg</span><span class="o">.</span><span class="n">raw</span><span class="p">(</span><span class="s1">&#39;shakespeare-macbeth.txt&#39;</span><span class="p">)[:</span><span class="mi">1000</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -11892,7 +11870,7 @@ div#notebook {
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;Response [200]&gt;</pre>
+<pre>&#34;[The Tragedie of Macbeth by William Shakespeare 1603]\n\n\nActus Primus. Scoena Prima.\n\nThunder and Lightning. Enter three Witches.\n\n  1. When shall we three meet againe?\nIn Thunder, Lightning, or in Raine?\n  2. When the Hurley-burley&#39;s done,\nWhen the Battaile&#39;s lost, and wonne\n\n   3. That will be ere the set of Sunne\n\n   1. Where the place?\n  2. Vpon the Heath\n\n   3. There to meet with Macbeth\n\n   1. I come, Gray-Malkin\n\n   All. Padock calls anon: faire is foule, and foule is faire,\nHouer through the fogge and filthie ayre.\n\nExeunt.\n\n\nScena Secunda.\n\nAlarum within. Enter King Malcome, Donalbaine, Lenox, with\nattendants,\nmeeting a bleeding Captaine.\n\n  King. What bloody man is that? he can report,\nAs seemeth by his plight, of the Reuolt\nThe newest state\n\n   Mal. This is the Serieant,\nWho like a good and hardie Souldier fought\n&#39;Gainst my Captiuitie: Haile braue friend;\nSay to the King, the knowledge of the Broyle,\nAs thou didst leaue it\n\n   Cap. Doubtfull it stood,\nAs two spent Swimmers, t&#34;</pre>
 </div>
 
 </div>
@@ -11906,7 +11884,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><code>'Response [200]'</code> means the server responded with what we asked for. If you get another number (e.g. 404) it likely means there was some kind of error, these codes are called HTTP response codes and a list of them can be found <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">here</a>. The response object contains all the data the server sent including the website's contents and the HTTP header. We are interested in the contents which we can access with the <code>.text</code> attribute.</p>
+<p>All the listed works have been nicely marked up and classified for us so we can do much better than just looking at raw text.</p>
 
 </div>
 </div>
@@ -11916,8 +11894,8 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wikiContentRequest</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://en.wikipedia.org/wiki/Content_analysis&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">wikiContentRequest</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">1000</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">nltk</span><span class="o">.</span><span class="n">corpus</span><span class="o">.</span><span class="n">gutenberg</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s1">&#39;shakespeare-macbeth.txt&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">nltk</span><span class="o">.</span><span class="n">corpus</span><span class="o">.</span><span class="n">gutenberg</span><span class="o">.</span><span class="n">sents</span><span class="p">(</span><span class="s1">&#39;shakespeare-macbeth.txt&#39;</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -11930,13 +11908,8 @@ div#notebook {
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>&lt;!DOCTYPE html&gt;
-&lt;html class=&#34;client-nojs&#34; lang=&#34;en&#34; dir=&#34;ltr&#34;&gt;
-&lt;head&gt;
-&lt;meta charset=&#34;UTF-8&#34;/&gt;
-&lt;title&gt;Content analysis - Wikipedia&lt;/title&gt;
-&lt;script&gt;document.documentElement.className = document.documentElement.className.replace( /(^|\s)client-nojs(\s|$)/, &#34;$1client-js$2&#34; );&lt;/script&gt;
-&lt;script&gt;(window.RLQ=window.RLQ||[]).push(function(){mw.config.set({&#34;wgCanonicalNamespace&#34;:&#34;&#34;,&#34;wgCanonicalSpecialPageName&#34;:false,&#34;wgNamespaceNumber&#34;:0,&#34;wgPageName&#34;:&#34;Content_analysis&#34;,&#34;wgTitle&#34;:&#34;Content analysis&#34;,&#34;wgCurRevisionId&#34;:735443188,&#34;wgRevisionId&#34;:735443188,&#34;wgArticleId&#34;:473317,&#34;wgIsArticle&#34;:true,&#34;wgIsRedirect&#34;:false,&#34;wgAction&#34;:&#34;view&#34;,&#34;wgUserName&#34;:null,&#34;wgUserGroups&#34;:[&#34;*&#34;],&#34;wgCategories&#34;:[&#34;Articles needing cleanup from April 2008&#34;,&#34;All articles needing cleanup&#34;,&#34;Cleanup tagged articles without a reason field from April 2008&#34;,&#34;Wikipedia pages needing cleanup from April 2008&#34;,&#34;Articles needing expert attention with no reason or talk parameter&#34;,&#34;Articles needing expert attention from April 2008&#34;,&#34;All artic
+<pre>[&#39;[&#39;, &#39;The&#39;, &#39;Tragedie&#39;, &#39;of&#39;, &#39;Macbeth&#39;, &#39;by&#39;, ...]
+[[&#39;[&#39;, &#39;The&#39;, &#39;Tragedie&#39;, &#39;of&#39;, &#39;Macbeth&#39;, &#39;by&#39;, &#39;William&#39;, &#39;Shakespeare&#39;, &#39;1603&#39;, &#39;]&#39;], [&#39;Actus&#39;, &#39;Primus&#39;, &#39;.&#39;], ...]
 </pre>
 </div>
 </div>
@@ -11950,7 +11923,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This is not what we were looking for, because it is the start of the HTML that makes up the website. This is HTML and is meant to be read by computers. Luckily we have a computer to parse it for us. To do the parsing we will use <a href="https://www.crummy.com/software/BeautifulSoup/"><em>Beautiful Soup</em></a> which is a better parser than the one in the standard library.</p>
+<p>If we want to do some analysis we can start by simply counting the number of times each word occurs.</p>
 
 </div>
 </div>
@@ -11960,8 +11933,24 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wikiContentSoup</span> <span class="o">=</span> <span class="n">bs4</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">wikiContentRequest</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">wikiContentSoup</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">200</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">wordCounter</span><span class="p">(</span><span class="n">wordLst</span><span class="p">):</span>
+    <span class="n">wordCounts</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">wordLst</span><span class="p">:</span>
+        <span class="c1">#We usually need to normalize the case</span>
+        <span class="n">wLower</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">wLower</span> <span class="ow">in</span> <span class="n">wordCounts</span><span class="p">:</span>
+            <span class="n">wordCounts</span><span class="p">[</span><span class="n">wLower</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">wordCounts</span><span class="p">[</span><span class="n">wLower</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="c1">#convert to DataFrame</span>
+    <span class="n">countsForFrame</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;word&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;count&#39;</span> <span class="p">:</span> <span class="p">[]}</span>
+    <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">wordCounts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">countsForFrame</span><span class="p">[</span><span class="s1">&#39;word&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="n">countsForFrame</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">countsForFrame</span><span class="p">)</span>
+
+<span class="n">countedWords</span> <span class="o">=</span> <span class="n">wordCounter</span><span class="p">(</span><span class="n">nltk</span><span class="o">.</span><span class="n">corpus</span><span class="o">.</span><span class="n">gutenberg</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s1">&#39;shakespeare-macbeth.txt&#39;</span><span class="p">))</span>
+<span class="n">countedWords</span>
 </pre></div>
 
 </div>
@@ -11972,17 +11961,330 @@ div#notebook {
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>
+<div class="output_area"><div class="prompt output_prompt">Out[5]:</div>
 
-
-
-Content analysis - Wikipedia
-document.documentElement.className = document.documentElement.className.replace( /(^|\s)client-nojs(\s|$)/, &#34;$1client-js$2&#34; );
-(window.RLQ=window.RLQ||[]).push(functio
-</pre>
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>count</th>
+      <th>word</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>meale</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>entreat</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>32</td>
+      <td>too</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1</td>
+      <td>gummes</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1</td>
+      <td>noblenesse</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>1</td>
+      <td>flong</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>1</td>
+      <td>holp</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2</td>
+      <td>lecherie</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>1</td>
+      <td>durst</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>1</td>
+      <td>twas</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>1</td>
+      <td>pit</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>1</td>
+      <td>banquoh</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>1</td>
+      <td>growne</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>1</td>
+      <td>naught</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>1</td>
+      <td>luxurious</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>1</td>
+      <td>wishest</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>4</td>
+      <td>approach</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>2</td>
+      <td>heads</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>1</td>
+      <td>seale</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>4</td>
+      <td>seruice</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>1</td>
+      <td>knockes</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>14</td>
+      <td>without</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>17</td>
+      <td>men</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>1</td>
+      <td>drunke</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>1</td>
+      <td>smyling</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>1</td>
+      <td>boundlesse</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>2</td>
+      <td>kinsmen</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>1</td>
+      <td>stealing</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>1</td>
+      <td>receyu</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>6</td>
+      <td>colours</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>3434</th>
+      <td>1</td>
+      <td>stolne</td>
+    </tr>
+    <tr>
+      <th>3435</th>
+      <td>1</td>
+      <td>auoyded</td>
+    </tr>
+    <tr>
+      <th>3436</th>
+      <td>3</td>
+      <td>pull</td>
+    </tr>
+    <tr>
+      <th>3437</th>
+      <td>1</td>
+      <td>griefes</td>
+    </tr>
+    <tr>
+      <th>3438</th>
+      <td>2</td>
+      <td>going</td>
+    </tr>
+    <tr>
+      <th>3439</th>
+      <td>5</td>
+      <td>point</td>
+    </tr>
+    <tr>
+      <th>3440</th>
+      <td>1</td>
+      <td>feuorous</td>
+    </tr>
+    <tr>
+      <th>3441</th>
+      <td>1</td>
+      <td>rt</td>
+    </tr>
+    <tr>
+      <th>3442</th>
+      <td>4</td>
+      <td>soule</td>
+    </tr>
+    <tr>
+      <th>3443</th>
+      <td>1</td>
+      <td>letters</td>
+    </tr>
+    <tr>
+      <th>3444</th>
+      <td>3</td>
+      <td>bee</td>
+    </tr>
+    <tr>
+      <th>3445</th>
+      <td>1</td>
+      <td>treasonous</td>
+    </tr>
+    <tr>
+      <th>3446</th>
+      <td>1</td>
+      <td>plague</td>
+    </tr>
+    <tr>
+      <th>3447</th>
+      <td>1</td>
+      <td>vniust</td>
+    </tr>
+    <tr>
+      <th>3448</th>
+      <td>11</td>
+      <td>face</td>
+    </tr>
+    <tr>
+      <th>3449</th>
+      <td>1</td>
+      <td>alreadie</td>
+    </tr>
+    <tr>
+      <th>3450</th>
+      <td>2</td>
+      <td>smile</td>
+    </tr>
+    <tr>
+      <th>3451</th>
+      <td>2</td>
+      <td>rebellious</td>
+    </tr>
+    <tr>
+      <th>3452</th>
+      <td>1</td>
+      <td>shard</td>
+    </tr>
+    <tr>
+      <th>3453</th>
+      <td>1</td>
+      <td>south</td>
+    </tr>
+    <tr>
+      <th>3454</th>
+      <td>2</td>
+      <td>teares</td>
+    </tr>
+    <tr>
+      <th>3455</th>
+      <td>12</td>
+      <td>hands</td>
+    </tr>
+    <tr>
+      <th>3456</th>
+      <td>5</td>
+      <td>harme</td>
+    </tr>
+    <tr>
+      <th>3457</th>
+      <td>3</td>
+      <td>sickly</td>
+    </tr>
+    <tr>
+      <th>3458</th>
+      <td>1</td>
+      <td>shaft</td>
+    </tr>
+    <tr>
+      <th>3459</th>
+      <td>1</td>
+      <td>also</td>
+    </tr>
+    <tr>
+      <th>3460</th>
+      <td>1</td>
+      <td>truest</td>
+    </tr>
+    <tr>
+      <th>3461</th>
+      <td>2</td>
+      <td>cleane</td>
+    </tr>
+    <tr>
+      <th>3462</th>
+      <td>1</td>
+      <td>runs</td>
+    </tr>
+    <tr>
+      <th>3463</th>
+      <td>1</td>
+      <td>hurts</td>
+    </tr>
+  </tbody>
+</table>
+<p>3464 rows × 2 columns</p>
 </div>
+</div>
+
 </div>
 
 </div>
@@ -11994,8 +12296,9 @@ document.documentElement.className = document.documentElement.className.replace(
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This is better but there's a bunch of random whitespace and we have way more than just the text of the article. This is because what we requested is the whole webpage, not just the text for the article.</p>
-<p>We need to extract only the text we care about, in order to do this we will need to inspect the html. One way to do this is to simply go to the website with a browser and use its inspection or view source tool, but if there is javascript or other dynamic loading occurring on the page it is very likely that what Python receives is not what you will see. So we will need to view what Python receives. To do this we can save the html <code>requests</code> obtained.</p>
+<p>Notice how <code>wordCounter()</code> is not a very complicated function. That is because the hard parts have already been done by <code>nltk</code>. If we were using unprocessed text we would have to tokenize and determine what to do with the non-word characters.</p>
+<p>Lets plot our counts and see what it looks like.</p>
+<p>First we need to sort the words by count.</p>
 
 </div>
 </div>
@@ -12005,36 +12308,355 @@ document.documentElement.className = document.documentElement.className.replace(
 <div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#content_analysis_save = &#39;wikipedia_content_analysis.html&#39;</span>
-
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">content_analysis_save</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">wikiContentRequest</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Doing this in place as we don&#39;t need the unsorted DataFrame</span>
+<span class="n">countedWords</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">countedWords</span>
 </pre></div>
 
 </div>
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[6]:</div>
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>count</th>
+      <th>word</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1226</th>
+      <td>1962</td>
+      <td>,</td>
+    </tr>
+    <tr>
+      <th>3303</th>
+      <td>1235</td>
+      <td>.</td>
+    </tr>
+    <tr>
+      <th>2327</th>
+      <td>650</td>
+      <td>the</td>
+    </tr>
+    <tr>
+      <th>1243</th>
+      <td>637</td>
+      <td>'</td>
+    </tr>
+    <tr>
+      <th>62</th>
+      <td>546</td>
+      <td>and</td>
+    </tr>
+    <tr>
+      <th>1118</th>
+      <td>477</td>
+      <td>:</td>
+    </tr>
+    <tr>
+      <th>1156</th>
+      <td>384</td>
+      <td>to</td>
+    </tr>
+    <tr>
+      <th>3110</th>
+      <td>348</td>
+      <td>i</td>
+    </tr>
+    <tr>
+      <th>2284</th>
+      <td>338</td>
+      <td>of</td>
+    </tr>
+    <tr>
+      <th>1134</th>
+      <td>241</td>
+      <td>a</td>
+    </tr>
+    <tr>
+      <th>333</th>
+      <td>241</td>
+      <td>?</td>
+    </tr>
+    <tr>
+      <th>1794</th>
+      <td>238</td>
+      <td>that</td>
+    </tr>
+    <tr>
+      <th>2819</th>
+      <td>224</td>
+      <td>d</td>
+    </tr>
+    <tr>
+      <th>1187</th>
+      <td>206</td>
+      <td>you</td>
+    </tr>
+    <tr>
+      <th>442</th>
+      <td>203</td>
+      <td>my</td>
+    </tr>
+    <tr>
+      <th>224</th>
+      <td>201</td>
+      <td>in</td>
+    </tr>
+    <tr>
+      <th>1169</th>
+      <td>188</td>
+      <td>is</td>
+    </tr>
+    <tr>
+      <th>3015</th>
+      <td>165</td>
+      <td>not</td>
+    </tr>
+    <tr>
+      <th>163</th>
+      <td>161</td>
+      <td>it</td>
+    </tr>
+    <tr>
+      <th>1635</th>
+      <td>153</td>
+      <td>with</td>
+    </tr>
+    <tr>
+      <th>1192</th>
+      <td>146</td>
+      <td>his</td>
+    </tr>
+    <tr>
+      <th>1898</th>
+      <td>137</td>
+      <td>macb</td>
+    </tr>
+    <tr>
+      <th>2998</th>
+      <td>137</td>
+      <td>be</td>
+    </tr>
+    <tr>
+      <th>808</th>
+      <td>131</td>
+      <td>s</td>
+    </tr>
+    <tr>
+      <th>1145</th>
+      <td>126</td>
+      <td>your</td>
+    </tr>
+    <tr>
+      <th>537</th>
+      <td>123</td>
+      <td>our</td>
+    </tr>
+    <tr>
+      <th>1185</th>
+      <td>122</td>
+      <td>haue</td>
+    </tr>
+    <tr>
+      <th>1741</th>
+      <td>120</td>
+      <td>but</td>
+    </tr>
+    <tr>
+      <th>3207</th>
+      <td>118</td>
+      <td>what</td>
+    </tr>
+    <tr>
+      <th>1538</th>
+      <td>113</td>
+      <td>me</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>1491</th>
+      <td>1</td>
+      <td>familiar</td>
+    </tr>
+    <tr>
+      <th>1470</th>
+      <td>1</td>
+      <td>befor</td>
+    </tr>
+    <tr>
+      <th>1492</th>
+      <td>1</td>
+      <td>giants</td>
+    </tr>
+    <tr>
+      <th>1493</th>
+      <td>1</td>
+      <td>inhabitants</td>
+    </tr>
+    <tr>
+      <th>1494</th>
+      <td>1</td>
+      <td>schreame</td>
+    </tr>
+    <tr>
+      <th>1497</th>
+      <td>1</td>
+      <td>rate</td>
+    </tr>
+    <tr>
+      <th>1498</th>
+      <td>1</td>
+      <td>intelligence</td>
+    </tr>
+    <tr>
+      <th>1500</th>
+      <td>1</td>
+      <td>lt</td>
+    </tr>
+    <tr>
+      <th>1504</th>
+      <td>1</td>
+      <td>acts</td>
+    </tr>
+    <tr>
+      <th>1471</th>
+      <td>1</td>
+      <td>vaulting</td>
+    </tr>
+    <tr>
+      <th>1467</th>
+      <td>1</td>
+      <td>amazedly</td>
+    </tr>
+    <tr>
+      <th>1444</th>
+      <td>1</td>
+      <td>yesterdayes</td>
+    </tr>
+    <tr>
+      <th>1454</th>
+      <td>1</td>
+      <td>monkie</td>
+    </tr>
+    <tr>
+      <th>1445</th>
+      <td>1</td>
+      <td>toad</td>
+    </tr>
+    <tr>
+      <th>1446</th>
+      <td>1</td>
+      <td>brag</td>
+    </tr>
+    <tr>
+      <th>1448</th>
+      <td>1</td>
+      <td>filling</td>
+    </tr>
+    <tr>
+      <th>1450</th>
+      <td>1</td>
+      <td>girle</td>
+    </tr>
+    <tr>
+      <th>1451</th>
+      <td>1</td>
+      <td>contriuer</td>
+    </tr>
+    <tr>
+      <th>1452</th>
+      <td>1</td>
+      <td>appeares</td>
+    </tr>
+    <tr>
+      <th>1453</th>
+      <td>1</td>
+      <td>hags</td>
+    </tr>
+    <tr>
+      <th>1455</th>
+      <td>1</td>
+      <td>speaker</td>
+    </tr>
+    <tr>
+      <th>1466</th>
+      <td>1</td>
+      <td>seest</td>
+    </tr>
+    <tr>
+      <th>1457</th>
+      <td>1</td>
+      <td>heereafter</td>
+    </tr>
+    <tr>
+      <th>1458</th>
+      <td>1</td>
+      <td>flesh</td>
+    </tr>
+    <tr>
+      <th>1459</th>
+      <td>1</td>
+      <td>distemper</td>
+    </tr>
+    <tr>
+      <th>1460</th>
+      <td>1</td>
+      <td>tedious</td>
+    </tr>
+    <tr>
+      <th>1462</th>
+      <td>1</td>
+      <td>riddles</td>
+    </tr>
+    <tr>
+      <th>1464</th>
+      <td>1</td>
+      <td>designe</td>
+    </tr>
+    <tr>
+      <th>1465</th>
+      <td>1</td>
+      <td>proud</td>
+    </tr>
+    <tr>
+      <th>3463</th>
+      <td>1</td>
+      <td>hurts</td>
+    </tr>
+  </tbody>
+</table>
+<p>3464 rows × 2 columns</p>
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
 </div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Now lets open the file (<code>wikipedia_content_analysis.html</code>) we just created with a web browser. It should look sort of like the original but missing all the images and formatting.</p>
-<p>As there is very little standardization on structuring webpages figuring out how best to extract what you want is an art. Looking at this page it looks like all the main textual content is within <code>&lt;p&gt;</code>(paragraph) tags inside the <code>&lt;body&gt;</code> tag.</p>
+
+</div>
 
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">contentPTags</span> <span class="o">=</span> <span class="n">wikiContentSoup</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">pTag</span> <span class="ow">in</span> <span class="n">contentPTags</span><span class="p">[:</span><span class="mi">3</span><span class="p">]:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">pTag</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">countedWords</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">])</span>
 </pre></div>
 
 </div>
@@ -12045,2143 +12667,184 @@ document.documentElement.className = document.documentElement.className.replace(
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Content analysis is &#34;a wide and heterogeneous set of manual or computer-assisted techniques for contextualized interpretations of documents produced by communication processes in the strict sense of that phrase (any kind of text, written, iconic, multimedia, etc.) or signification processes (traces and artifacts), having as ultimate goal the production of valid and trustworthy inferences.&#34;
-Content analysis has come to be a sort of &#39;umbrella term&#39; referring to an almost boundless set of quite diverse research approaches and techniques. Broadly, it can refer to methods for studying and/or retrieving meaningful information from documents.[1] In a more focused way, content analysis refers to a family of techniques for studying the &#34;mute evidence&#34; of texts and artifacts.[2] There are 5 types of texts in content analysis:
-Content analysis can also be described as studying traces, which are documents from past times, and artifacts, which are non-linguistic documents. Texts are understood to be produced by communication processes in a broad sense of that phrase - often gaining mean through abduction.[1][3]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>We now have all the text from the page, split up by paragraph. If we wanted to get the section headers or references as well it would require a bit more work, but is doable.</p>
-<p>There is one more thing we might want to do before sending this text to be processed, remove the references indicators (<code>[2]</code>, <code>[3]</code> , etc). To do this we can use a short regular expression (regex).</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">contentParagraphs</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">pTag</span> <span class="ow">in</span> <span class="n">contentPTags</span><span class="p">:</span>
-    <span class="c1">#strings starting with r are raw so their \&#39;s are not modifier characters</span>
-    <span class="c1">#If we didn&#39;t start with r the string would be: &#39;\\[\\d+\\]&#39;</span>
-    <span class="n">contentParagraphs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;\[\d+\]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">pTag</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
-
-<span class="c1">#convert to a DataFrame</span>
-<span class="n">contentParagraphsDF</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;paragraph-text&#39;</span> <span class="p">:</span> <span class="n">contentParagraphs</span><span class="p">})</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">contentParagraphsDF</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>                                       paragraph-text
-0   Content analysis is &#34;a wide and heterogeneous ...
-1   Content analysis has come to be a sort of &#39;umb...
-2   Content analysis can also be described as stud...
-3   Despite the wide variety of options, generally...
-4   Over the years, content analysis has been appl...
-5   In recent times, particularly with the advent ...
-6   Quantitative content analysis has enjoyed a re...
-7                                                    
-8                                                    
-9   The method of content analysis enables the res...
-10  Since the 1980s, content analysis has become a...
-11  The creation of coding frames is intrinsically...
-12  Mimetic Convergence thus aims to show the proc...
-13  Every content analysis should depart from a hy...
-14  As an evaluation approach, content analysis is...
-15  Qualitative content analysis is “a systematic,...
-16  Holsti groups fifteen uses of content analysis...
-17  He also places these uses into the context of ...
-18  The following table shows fifteen uses of cont...
-19  According to Dr. Klaus Krippendorff, six quest...
-20  The assumption is that words and phrases menti...
-21  Qualitatively, content analysis can involve an...
-22  Normally, content analysis can only be applied...
-23  A further step in analysis is the distinction ...
-24  Dermot McKeone highlighted the difference betw...
-25  As the uncritical use of text is today widely ...
-26  Neuendorf suggests that when human coders are ...
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Now we have a <code>DataFrame</code> of all the relevant text from the page ready to be processed</p>
-<p>If you are not familiar with regex, it is a way of specifying searches of text. A regex engine takes in the search pattern, in the above case <code>'\[\d+\]'</code> and some string, the paragraph texts. Then it reads the input string one character at a time checking if it matches the search. For example the regex <code>'\d'</code> matches number characters.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">findNumber</span> <span class="o">=</span> <span class="s1">r&#39;\d&#39;</span>
-<span class="n">regexResults</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">findNumber</span><span class="p">,</span> <span class="s1">&#39;not a number, not a number, numbers 2134567890, not a number&#39;</span><span class="p">)</span>
-<span class="n">regexResults</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[9]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[7]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>&lt;_sre.SRE_Match object; span=(36, 37), match=&#39;2&#39;&gt;</pre>
+<pre>[&lt;matplotlib.lines.Line2D at 0x114b50cf8&gt;]</pre>
 </div>
 
 </div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>In Python the regex package (<code>re</code>) usually returns <code>Match</code> objects (you can have multiple pattern hits in a a single <code>Match</code>), to get the string that matched our pattern we can use the <code>.group()</code> method, and as we want the first one will will ask for the 0'th group.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">regexResults</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
 
 <div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>2
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>That gives us the first number, if we wanted the whole block of numbers we can add a wildcard <code>'+'</code> which requests 1 or more instances of the proceeding character.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">findNumbers</span> <span class="o">=</span> <span class="s1">r&#39;\d+&#39;</span>
-<span class="n">regexResults</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">findNumbers</span><span class="p">,</span> <span class="s1">&#39;not a number, not a number, numbers 2134567890, not a number&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">regexResults</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>2134567890
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Now we have the whole block of numbers, there are a huge number of special characters in regex, for the full description of Python's implementation look at the <a href="https://docs.python.org/3/library/re.html">re docs</a> there is also a short <a href="https://docs.python.org/3/howto/regex.html#regex-howto">tutorial</a>.</p>
-<h1 id="Spidering">Spidering<a class="anchor-link" href="#Spidering">&#182;</a></h1><p>What if we want to to get a bunch of different pages from wikipedia. We would need to get the url of each of the pages we want, usually we will want pages that are linked to by other pages, so we will need to parse pages and find the links. Right now we will be getting all the links in the body of the content analysis page.</p>
-<p>To do this we will need to find all the <code>&lt;a&gt;</code> (anchor) tags with <code>href</code>s (hyperlink references) inside of <code>&lt;p&gt;</code> tags. <code>href</code> can have many <a href="http://stackoverflow.com/questions/4855168/what-is-href-and-why-is-it-used">different</a> <a href="https://en.wikipedia.org/wiki/Hyperlink#Hyperlinks_in_HTML">forms</a> so dealing with them can be tricky generally though you be extracting from it absolute or relative links. An absolute link is one you can follow with out any modification, while a relative link has a base url that you are then appending. Wikipedia uses relative urls for its internal links so below is an example of dealing with them.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#wikipedia_base_url = &#39;https://en.wikipedia.org&#39;</span>
-
-<span class="n">otherPAgeURLS</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="c1">#We also want to know where the links come from so we also will get:</span>
-<span class="c1">#the paragraph number</span>
-<span class="c1">#the word the link is in</span>
-<span class="k">for</span> <span class="n">paragraphNum</span><span class="p">,</span> <span class="n">pTag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">contentPTags</span><span class="p">):</span>
-    <span class="c1">#we only want hrefs that link to wiki pages</span>
-    <span class="n">tagLinks</span> <span class="o">=</span> <span class="n">pTag</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;/wiki/&#39;</span><span class="p">),</span> <span class="n">class_</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">aTag</span> <span class="ow">in</span> <span class="n">tagLinks</span><span class="p">:</span>
-        <span class="c1">#We need to extract the url from the &lt;a&gt; tag</span>
-        <span class="n">relurl</span> <span class="o">=</span> <span class="n">aTag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;href&#39;</span><span class="p">)</span>
-        <span class="n">linkText</span> <span class="o">=</span> <span class="n">aTag</span><span class="o">.</span><span class="n">text</span>
-        <span class="c1">#wikipedia_base_url is the base we can use the urllib joining function to merge them</span>
-        <span class="c1">#Giving a nice structured tupe like this means we can use tuple expansion later</span>
-        <span class="n">otherPAgeURLS</span><span class="o">.</span><span class="n">append</span><span class="p">((</span>
-            <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">wikipedia_base_url</span><span class="p">,</span> <span class="n">relurl</span><span class="p">),</span>
-            <span class="n">paragraphNum</span><span class="p">,</span>
-            <span class="n">linkText</span><span class="p">,</span>
-        <span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">otherPAgeURLS</span><span class="p">[:</span><span class="mi">10</span><span class="p">])</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[(&#39;https://en.wikipedia.org/wiki/Text_(literary_theory)&#39;, 1, &#39;texts&#39;), (&#39;https://en.wikipedia.org/wiki/Trace_evidence&#39;, 2, &#39;traces&#39;), (&#39;https://en.wikipedia.org/wiki/Abductive_reasoning&#39;, 2, &#39;abduction&#39;), (&#39;https://en.wikipedia.org/wiki/Hermeneutics&#39;, 4, &#39;Hermeneutics&#39;), (&#39;https://en.wikipedia.org/wiki/Philology&#39;, 4, &#39;Philology&#39;), (&#39;https://en.wikipedia.org/wiki/Authentication&#39;, 4, &#39;authenticity&#39;), (&#39;https://en.wikipedia.org/wiki/Mass_communication&#39;, 5, &#39;mass communication&#39;), (&#39;https://en.wikipedia.org/wiki/Harold_Lasswell&#39;, 5, &#39;Harold Lasswell&#39;), (&#39;https://en.wikipedia.org/wiki/Bernard_Berelson&#39;, 5, &#39;Bernard Berelson&#39;), (&#39;https://en.wikipedia.org/wiki/Big_data&#39;, 6, &#39;big data&#39;)]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>We will be adding these new texts to our DataFrame <code>contentParagraphsDF</code> so we will need to add 2 more columns to keep track of paragraph numbers and sources.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">wikipedia_content_analysis</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;paragraph-text&#39;</span><span class="p">])</span>
-<span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;paragraph-number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;paragraph-text&#39;</span><span class="p">]))</span>
-<span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;source-paragraph-number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;paragraph-text&#39;</span><span class="p">])</span>
-<span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;source-paragraph-text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">contentParagraphsDF</span><span class="p">[</span><span class="s1">&#39;paragraph-text&#39;</span><span class="p">])</span>
-
-<span class="n">contentParagraphsDF</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[13]:</div>
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>paragraph-text</th>
-      <th>source</th>
-      <th>paragraph-number</th>
-      <th>source-paragraph-number</th>
-      <th>source-paragraph-text</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>Content analysis is "a wide and heterogeneous ...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>0</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>Content analysis has come to be a sort of 'umb...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>1</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>Content analysis can also be described as stud...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>2</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>Despite the wide variety of options, generally...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>3</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>Over the years, content analysis has been appl...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>4</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>In recent times, particularly with the advent ...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>5</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>Quantitative content analysis has enjoyed a re...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>6</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td></td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>7</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td></td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>8</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>The method of content analysis enables the res...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>9</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>Since the 1980s, content analysis has become a...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>10</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>The creation of coding frames is intrinsically...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>11</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>Mimetic Convergence thus aims to show the proc...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>12</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>Every content analysis should depart from a hy...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>13</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>As an evaluation approach, content analysis is...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>14</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>Qualitative content analysis is “a systematic,...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>15</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>Holsti groups fifteen uses of content analysis...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>16</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>He also places these uses into the context of ...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>17</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>The following table shows fifteen uses of cont...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>18</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>According to Dr. Klaus Krippendorff, six quest...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>19</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>The assumption is that words and phrases menti...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>20</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>Qualitatively, content analysis can involve an...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>21</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>Normally, content analysis can only be applied...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>22</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>23</th>
-      <td>A further step in analysis is the distinction ...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>23</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>24</th>
-      <td>Dermot McKeone highlighted the difference betw...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>24</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>25</th>
-      <td>As the uncritical use of text is today widely ...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>25</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-    <tr>
-      <th>26</th>
-      <td>Neuendorf suggests that when human coders are ...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>26</td>
-      <td>None</td>
-      <td>None</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Then we can define a function to parse each linked page and add its text to our DataFrame.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">getTextFromWikiPage</span><span class="p">(</span><span class="n">targetURL</span><span class="p">,</span> <span class="n">sourceParNum</span><span class="p">,</span> <span class="n">sourceText</span><span class="p">):</span>
-    <span class="c1">#Make a dict to store data before adding it to the DataFrame</span>
-    <span class="n">parsDict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;source&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;paragraph-number&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;paragraph-text&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;source-paragraph-number&#39;</span> <span class="p">:</span> <span class="p">[],</span>  <span class="s1">&#39;source-paragraph-text&#39;</span> <span class="p">:</span> <span class="p">[]}</span>
-    <span class="c1">#Now we get the page</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">targetURL</span><span class="p">)</span>
-    <span class="n">soup</span> <span class="o">=</span> <span class="n">bs4</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span>
-    <span class="c1">#enumerating gives use the paragraph number</span>
-    <span class="k">for</span> <span class="n">parNum</span><span class="p">,</span> <span class="n">pTag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">)):</span>
-        <span class="c1">#same regex as before</span>
-        <span class="n">parsDict</span><span class="p">[</span><span class="s1">&#39;paragraph-text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">r&#39;\[\d+\]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">pTag</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
-        <span class="n">parsDict</span><span class="p">[</span><span class="s1">&#39;paragraph-number&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parNum</span><span class="p">)</span>
-        <span class="n">parsDict</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">targetURL</span><span class="p">)</span>
-        <span class="n">parsDict</span><span class="p">[</span><span class="s1">&#39;source-paragraph-number&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sourceParNum</span><span class="p">)</span>
-        <span class="n">parsDict</span><span class="p">[</span><span class="s1">&#39;source-paragraph-text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sourceText</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">parsDict</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>And run it on our list of link tags</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">urlTuple</span> <span class="ow">in</span> <span class="n">otherPAgeURLS</span><span class="p">[:</span><span class="mi">3</span><span class="p">]:</span>
-    <span class="c1">#ignore_index means the indices will not be reset after each append</span>
-    <span class="n">contentParagraphsDF</span> <span class="o">=</span> <span class="n">contentParagraphsDF</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">getTextFromWikiPage</span><span class="p">(</span><span class="o">*</span><span class="n">urlTuple</span><span class="p">),</span><span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">contentParagraphsDF</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[15]:</div>
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>paragraph-number</th>
-      <th>paragraph-text</th>
-      <th>source</th>
-      <th>source-paragraph-number</th>
-      <th>source-paragraph-text</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0</td>
-      <td>Content analysis is "a wide and heterogeneous ...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1</td>
-      <td>Content analysis has come to be a sort of 'umb...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>2</td>
-      <td>Content analysis can also be described as stud...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>3</td>
-      <td>Despite the wide variety of options, generally...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>4</td>
-      <td>Over the years, content analysis has been appl...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>5</td>
-      <td>In recent times, particularly with the advent ...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>6</td>
-      <td>Quantitative content analysis has enjoyed a re...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>7</td>
-      <td></td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>8</td>
-      <td></td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>9</td>
-      <td>The method of content analysis enables the res...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>10</td>
-      <td>Since the 1980s, content analysis has become a...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>11</td>
-      <td>The creation of coding frames is intrinsically...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>12</td>
-      <td>Mimetic Convergence thus aims to show the proc...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>13</td>
-      <td>Every content analysis should depart from a hy...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>14</td>
-      <td>As an evaluation approach, content analysis is...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>15</td>
-      <td>Qualitative content analysis is “a systematic,...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>16</td>
-      <td>Holsti groups fifteen uses of content analysis...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>17</td>
-      <td>He also places these uses into the context of ...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>18</td>
-      <td>The following table shows fifteen uses of cont...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>19</td>
-      <td>According to Dr. Klaus Krippendorff, six quest...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>20</td>
-      <td>The assumption is that words and phrases menti...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>21</td>
-      <td>Qualitatively, content analysis can involve an...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>22</td>
-      <td>Normally, content analysis can only be applied...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>23</th>
-      <td>23</td>
-      <td>A further step in analysis is the distinction ...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>24</th>
-      <td>24</td>
-      <td>Dermot McKeone highlighted the difference betw...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>25</th>
-      <td>25</td>
-      <td>As the uncritical use of text is today widely ...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>26</th>
-      <td>26</td>
-      <td>Neuendorf suggests that when human coders are ...</td>
-      <td>https://en.wikipedia.org/wiki/Content_analysis</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>27</th>
-      <td>0</td>
-      <td>In literary theory, a text is any object that ...</td>
-      <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
-      <td>1</td>
-      <td>texts</td>
-    </tr>
-    <tr>
-      <th>28</th>
-      <td>1</td>
-      <td>Within the field of literary criticism, "text"...</td>
-      <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
-      <td>1</td>
-      <td>texts</td>
-    </tr>
-    <tr>
-      <th>29</th>
-      <td>2</td>
-      <td>Since the history of writing predates the conc...</td>
-      <td>https://en.wikipedia.org/wiki/Text_(literary_t...</td>
-      <td>1</td>
-      <td>texts</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>99</th>
-      <td>53</td>
-      <td>The hypothesis is framed, but not asserted, in...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>100</th>
-      <td>54</td>
-      <td>Note that the hypothesis ("A") could be of a r...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>101</th>
-      <td>55</td>
-      <td>Peirce did not remain quite convinced about an...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>102</th>
-      <td>56</td>
-      <td>In 1901 Peirce wrote, "There would be no logic...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>103</th>
-      <td>57</td>
-      <td>"Consider what effects, that might conceivably...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>104</th>
-      <td>58</td>
-      <td>It is a method for fruitful clarification of c...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>105</th>
-      <td>59</td>
-      <td>Peirce came over the years to divide (philosop...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>106</th>
-      <td>60</td>
-      <td>Peirce had, from the start, seen the modes of ...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>107</th>
-      <td>61</td>
-      <td>As early as 1866, Peirce held that:</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>108</th>
-      <td>62</td>
-      <td>1. Hypothesis (abductive inference) is inferen...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>109</th>
-      <td>63</td>
-      <td>In 1902, Peirce wrote that, in abduction: "It ...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>110</th>
-      <td>64</td>
-      <td>At the critical level Peirce examined the form...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>111</th>
-      <td>65</td>
-      <td>The phrase "inference to the best explanation"...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>112</th>
-      <td>66</td>
-      <td>At the methodeutical level Peirce held that a ...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>113</th>
-      <td>67</td>
-      <td>Norwood Russell Hanson, a philosopher of scien...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>114</th>
-      <td>68</td>
-      <td>Further development of the concept can be foun...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>115</th>
-      <td>69</td>
-      <td>Applications in artificial intelligence includ...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>116</th>
-      <td>70</td>
-      <td>In medicine, abduction can be seen as a compon...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>117</th>
-      <td>71</td>
-      <td>Abduction can also be used to model automated ...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>118</th>
-      <td>72</td>
-      <td>In intelligence analysis, analysis of competin...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>119</th>
-      <td>73</td>
-      <td>Belief revision, the process of adapting belie...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>120</th>
-      <td>74</td>
-      <td>In the philosophy of science, abduction has be...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>121</th>
-      <td>75</td>
-      <td>In historical linguistics, abduction during la...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>122</th>
-      <td>76</td>
-      <td>In anthropology, Alfred Gell in his influentia...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>123</th>
-      <td>77</td>
-      <td>Consequently, to discover is simply to expedit...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>124</th>
-      <td>78</td>
-      <td>It allows any flight of imagination, provided ...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>125</th>
-      <td>79</td>
-      <td>Methodeutic has a special interest in Abductio...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>126</th>
-      <td>80</td>
-      <td>.... What is good abduction? What should an ex...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>127</th>
-      <td>81</td>
-      <td>The mind seeks to bring the facts, as modified...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-    <tr>
-      <th>128</th>
-      <td>82</td>
-      <td>Thus, twenty skillful hypotheses will ascertai...</td>
-      <td>https://en.wikipedia.org/wiki/Abductive_reasoning</td>
-      <td>2</td>
-      <td>abduction</td>
-    </tr>
-  </tbody>
-</table>
-<p>129 rows × 5 columns</p>
-</div>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Tumblr-API">Tumblr API<a class="anchor-link" href="#Tumblr-API">&#182;</a></h2><p>Generally website owners do not like you scraping their sites. Scraping if done badly can act like a DOS attack so you should be careful about how often you make calls to a site. Some site though want automated tools to access their data, so they create <a href="https://en.wikipedia.org/wiki/Application_programming_interface">application programming interface (APIs)</a>. An API specifies a procedure for an application (or script) to access their data. Often this is though a <a href="https://en.wikipedia.org/wiki/Representational_state_transfer">representational state transfer (REST)</a> web service, which just means if you make correctly formatted HTTP requests they will return nicely formatted data.</p>
-<p>A nice example for us to study is <a href="https://www.tumblr.com">Tumblr</a>, they have a <a href="https://www.tumblr.com/docs/en/api/v1">simple RESTful API</a> that allows you to read posts without any complicated html parsing.</p>
-<p>We can get the first 20 posts from a blog by making an http GET request to <code>'http://{blog}.tumblr.com/api/read/json'</code>, were <code>{blog}</code> is the name of the target blog. Lets try and get the posts from <a href="http://lolcats-lol-cat.tumblr.com/">http://lolcats-lol-cat.tumblr.com/</a> (Note the blog says at the top 'One hour one pic lolcats', but the canonical name that Tumblr uses is in the URL 'lolcats-lol-cat').</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tumblrAPItarget</span> <span class="o">=</span> <span class="s1">&#39;http://</span><span class="si">{}</span><span class="s1">.tumblr.com/api/read/json&#39;</span>
-
-<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tumblrAPItarget</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;lolcats-lol-cat&#39;</span><span class="p">))</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">1000</span><span class="p">])</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>var tumblr_api_read = {&#34;tumblelog&#34;:{&#34;title&#34;:&#34;One hour one pic lolcats&#34;,&#34;description&#34;:&#34;&#34;,&#34;name&#34;:&#34;lolcats-lol-cat&#34;,&#34;timezone&#34;:&#34;Europe\/Paris&#34;,&#34;cname&#34;:false,&#34;feeds&#34;:[]},&#34;posts-start&#34;:0,&#34;posts-total&#34;:2619,&#34;posts-type&#34;:false,&#34;posts&#34;:[{&#34;id&#34;:&#34;152655732399&#34;,&#34;url&#34;:&#34;http:\/\/lolcats-lol-cat.tumblr.com\/post\/152655732399&#34;,&#34;url-with-slug&#34;:&#34;http:\/\/lolcats-lol-cat.tumblr.com\/post\/152655732399\/transparent-cat-weird-white-funny-cat&#34;,&#34;type&#34;:&#34;photo&#34;,&#34;date-gmt&#34;:&#34;2016-11-02 21:00:21 GMT&#34;,&#34;date&#34;:&#34;Wed, 02 Nov 2016 22:00:21&#34;,&#34;bookmarklet&#34;:0,&#34;mobile&#34;:0,&#34;feed-item&#34;:&#34;&#34;,&#34;from-feed-id&#34;:0,&#34;unix-timestamp&#34;:1478120421,&#34;format&#34;:&#34;html&#34;,&#34;reblog-key&#34;:&#34;H9hcWtZ2&#34;,&#34;slug&#34;:&#34;transparent-cat-weird-white-funny-cat&#34;,&#34;is-submission&#34;:false,&#34;like-button&#34;:&#34;&lt;div class=\&#34;like_button\&#34; data-post-id=\&#34;152655732399\&#34; data-blog-name=\&#34;lolcats-lol-cat\&#34; id=\&#34;like_button_152655732399\&#34;&gt;&lt;iframe id=\&#34;like_iframe_152655732399\&#34; src=\&#34;http:\/\/assets.tumblr.com\/assets\/html\/like_iframe.html?_v=399aee1ea58b6007c2190a8138f100e5#name=lolca
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>This might not look very good, but it has a lot fewer angle braces than html, which is nice. What we have is <a href="https://en.wikipedia.org/wiki/JSON">JSON</a> a 'human readable' text based data transmission format based on javascript. Luckily, we can convert it to a python <code>dict</code>.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#We need to load only the stuff between the curly braces</span>
-<span class="n">d</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;var tumblr_api_read = &#39;</span><span class="p">):</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;posts&#39;</span><span class="p">]))</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>dict_keys([&#39;tumblelog&#39;, &#39;posts-total&#39;, &#39;posts-type&#39;, &#39;posts-start&#39;, &#39;posts&#39;])
-20
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>If we read the <a href="https://www.tumblr.com/docs/en/api/v1">API specification</a>, we will see there are a lot of things we can get if, we add things to our GET request. First we can get posts by their id number, lets get post <code>146020177084</code>.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tumblrAPItarget</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;lolcats-lol-cat&#39;</span><span class="p">),</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span> <span class="p">:</span> <span class="mi">146020177084</span><span class="p">})</span>
-<span class="n">d</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;var tumblr_api_read = &#39;</span><span class="p">):</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
-<span class="n">d</span><span class="p">[</span><span class="s1">&#39;posts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-<span class="n">d</span><span class="p">[</span><span class="s1">&#39;posts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;photo-url-1280&#39;</span><span class="p">]</span>
-
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;lolcat.gif&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">gifRequest</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;posts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;photo-url-1280&#39;</span><span class="p">],</span> <span class="n">stream</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">gifRequest</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p><img src="lolcat.gif" alt="Our downloaded gif"></p>
-<p>Such beauty, now we could get the text from all the posts as well as some metadata, like the post date, caption or the tags. But, we could instead get the links to all the images.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Putting a max in case the blog has millions of images</span>
-<span class="c1">#The given max will be rounded up to the nearest multiple of 50</span>
-<span class="k">def</span> <span class="nf">tumblrImageScrape</span><span class="p">(</span><span class="n">blogName</span><span class="p">,</span> <span class="n">maxImages</span> <span class="o">=</span> <span class="mi">200</span><span class="p">):</span>
-    <span class="c1">#Restating this here so the function isn&#39;t dependent on any external variables</span>
-    <span class="n">tumblrAPItarget</span> <span class="o">=</span> <span class="s1">&#39;http://</span><span class="si">{}</span><span class="s1">.tumblr.com/api/read/json&#39;</span>
-
-    <span class="c1">#There are a bunch of possible locations for the photo url</span>
-    <span class="n">possiblePhotoSuffixes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1280</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
-
-    <span class="c1">#We will convert this to a DataFrame at the end</span>
-    <span class="n">postsData</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;id&#39;</span> <span class="p">:</span> <span class="p">[],</span>
-        <span class="s1">&#39;photo-url&#39;</span> <span class="p">:</span> <span class="p">[],</span>
-        <span class="s1">&#39;date&#39;</span> <span class="p">:</span> <span class="p">[],</span>
-        <span class="s1">&#39;tags&#39;</span> <span class="p">:</span> <span class="p">[],</span>
-        <span class="s1">&#39;photo-type&#39;</span> <span class="p">:</span> <span class="p">[]</span>
-    <span class="p">}</span>
-
-    <span class="c1">#Tumblr limits us to a max of 50 posts per request</span>
-    <span class="k">for</span> <span class="n">requestNum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">maxImages</span> <span class="o">//</span> <span class="mi">50</span><span class="p">):</span>
-        <span class="n">requestParams</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;start&#39;</span> <span class="p">:</span> <span class="n">requestNum</span> <span class="o">*</span> <span class="mi">50</span><span class="p">,</span>
-            <span class="s1">&#39;num&#39;</span> <span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
-            <span class="s1">&#39;type&#39;</span> <span class="p">:</span> <span class="s1">&#39;photo&#39;</span>
-        <span class="p">}</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tumblrAPItarget</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">blogName</span><span class="p">),</span> <span class="n">params</span> <span class="o">=</span> <span class="n">requestParams</span><span class="p">)</span>
-        <span class="n">requestDict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;var tumblr_api_read = &#39;</span><span class="p">):</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
-        <span class="k">for</span> <span class="n">postDict</span> <span class="ow">in</span> <span class="n">requestDict</span><span class="p">[</span><span class="s1">&#39;posts&#39;</span><span class="p">]:</span>
-            <span class="c1">#We are dealing with uncleaned data, we cannot trust it</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">postsData</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">postDict</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
-                <span class="n">postsData</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">postDict</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
-                <span class="n">postsData</span><span class="p">[</span><span class="s1">&#39;tags&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">postDict</span><span class="p">[</span><span class="s1">&#39;tags&#39;</span><span class="p">])</span>
-            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Post </span><span class="si">{}</span><span class="s2"> from </span><span class="si">{}</span><span class="s2"> is missing: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">postDict</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">blogName</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-
-            <span class="n">foundSuffix</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">for</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="n">possiblePhotoSuffixes</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">photoURL</span> <span class="o">=</span> <span class="n">postDict</span><span class="p">[</span><span class="s1">&#39;photo-url-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">suffix</span><span class="p">)]</span>
-                    <span class="n">postsData</span><span class="p">[</span><span class="s1">&#39;photo-url&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">photoURL</span><span class="p">)</span>
-                    <span class="n">postsData</span><span class="p">[</span><span class="s1">&#39;photo-type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">photoURL</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-                    <span class="n">foundSuffix</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="k">break</span>
-                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                    <span class="k">pass</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">foundSuffix</span><span class="p">:</span>
-                <span class="c1">#Make sure your error messages are useful</span>
-                <span class="c1">#You will be one of the users</span>
-                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Post </span><span class="si">{}</span><span class="s2"> from </span><span class="si">{}</span><span class="s2"> is missing a photo url&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">postDict</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">blogName</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">postsData</span><span class="p">)</span>
-<span class="n">tumblrImageScrape</span><span class="p">(</span><span class="s1">&#39;lolcats-lol-cat&#39;</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
-</pre></div>
 
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[19]:</div>
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>date</th>
-      <th>id</th>
-      <th>photo-type</th>
-      <th>photo-url</th>
-      <th>tags</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>Wed, 02 Nov 2016 22:00:21</td>
-      <td>152655732399</td>
-      <td>gif</td>
-      <td>http://68.media.tumblr.com/e0aaf79744b3003d16f...</td>
-      <td>[gif, lolcat, lolcats, cat, funny, transparent...</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>Wed, 02 Nov 2016 04:00:28</td>
-      <td>152625158741</td>
-      <td>gif</td>
-      <td>http://68.media.tumblr.com/ce19172b18d52de1d19...</td>
-      <td>[gif, lolcat, lolcats, cat, funny, kitty, pets...</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>Tue, 01 Nov 2016 10:00:19</td>
-      <td>152590689618</td>
-      <td>gif</td>
-      <td>http://68.media.tumblr.com/c7b28a411454237df99...</td>
-      <td>[gif, lolcat, lolcats, cat, funny, help, work,...</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>Sun, 30 Oct 2016 05:00:21</td>
-      <td>152493058611</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/5da6d2101c124ac5c30...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>Mon, 24 Oct 2016 10:00:37</td>
-      <td>152240532041</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/c9a75cca91098deb25e...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>Fri, 21 Oct 2016 22:00:43</td>
-      <td>152125209570</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/9f7708233fcddf5d0e2...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>Sat, 15 Oct 2016 08:00:28</td>
-      <td>151825876698</td>
-      <td>gif</td>
-      <td>http://68.media.tumblr.com/5f4366cf7375a1e5677...</td>
-      <td>[gif, lolcat, lolcats, cat, funny, illustratio...</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>Sat, 08 Oct 2016 12:00:25</td>
-      <td>151508896281</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/92e6d4ec7fdeec96ff3...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>Sat, 08 Oct 2016 10:00:11</td>
-      <td>151506450378</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/d2358ee631f71b8d2c0...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>Wed, 05 Oct 2016 02:00:47</td>
-      <td>151357360495</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/6cf81365bc68cb8fd17...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>Thu, 29 Sep 2016 02:00:21</td>
-      <td>151075591801</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/24b8855f6e525a0a3a1...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>Thu, 22 Sep 2016 10:00:18</td>
-      <td>150765069101</td>
-      <td>png</td>
-      <td>http://68.media.tumblr.com/6fab060a18deec51c5d...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>Sat, 17 Sep 2016 04:00:32</td>
-      <td>150517613333</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/fe07795651bf722048d...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>Sat, 17 Sep 2016 02:00:40</td>
-      <td>150513586650</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/63369d156c1cf774b1a...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>Thu, 15 Sep 2016 14:00:37</td>
-      <td>150442786223</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/b7ea5f4df7314e9441c...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>Thu, 15 Sep 2016 12:00:34</td>
-      <td>150440192230</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/f4966559ea2d202dfde...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>Thu, 15 Sep 2016 10:00:26</td>
-      <td>150437927050</td>
-      <td>png</td>
-      <td>http://68.media.tumblr.com/d4a588a32eea79eacae...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>Thu, 08 Sep 2016 10:00:35</td>
-      <td>150113352088</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/ce92c51852f7ce52259...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>Mon, 05 Sep 2016 12:00:21</td>
-      <td>149974124382</td>
-      <td>png</td>
-      <td>http://68.media.tumblr.com/319d68989fa0082a43d...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>Sat, 03 Sep 2016 12:00:25</td>
-      <td>149877403979</td>
-      <td>png</td>
-      <td>http://68.media.tumblr.com/e3413b688a2d1349880...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>Wed, 31 Aug 2016 02:00:27</td>
-      <td>149721802154</td>
-      <td>png</td>
-      <td>http://68.media.tumblr.com/7830189de83fb9e4fbd...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>Sat, 27 Aug 2016 14:00:39</td>
-      <td>149550741818</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/f6e7bf815645757a264...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>Wed, 24 Aug 2016 02:00:22</td>
-      <td>149390168666</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/aa2cf1aa04e595932e7...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>23</th>
-      <td>Sat, 20 Aug 2016 02:00:38</td>
-      <td>149197307846</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/a252f65bd1c8c757c80...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>24</th>
-      <td>Thu, 18 Aug 2016 16:00:20</td>
-      <td>149127885429</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/11ccc0cb26826c934d8...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>25</th>
-      <td>Mon, 15 Aug 2016 02:00:48</td>
-      <td>148954802804</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/68e998300c29007f056...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>26</th>
-      <td>Fri, 12 Aug 2016 16:01:40</td>
-      <td>148836683947</td>
-      <td>gif</td>
-      <td>http://68.media.tumblr.com/89ee201721b2fb18cd1...</td>
-      <td>[gif, lolcat, lolcats, cat, funny, animation, ...</td>
-    </tr>
-    <tr>
-      <th>27</th>
-      <td>Fri, 12 Aug 2016 12:01:16</td>
-      <td>148830823686</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/4e7f3e90eae005779d7...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>28</th>
-      <td>Fri, 12 Aug 2016 10:01:09</td>
-      <td>148828102184</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/1de3429e06c3cd3bd2b...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>29</th>
-      <td>Tue, 09 Aug 2016 18:00:46</td>
-      <td>148694150534</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/c551a5511d158ae35e4...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>30</th>
-      <td>Mon, 08 Aug 2016 02:00:31</td>
-      <td>148612754037</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/098a44c904cbd1e85e9...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>31</th>
-      <td>Sat, 06 Aug 2016 10:00:43</td>
-      <td>148534179811</td>
-      <td>png</td>
-      <td>http://68.media.tumblr.com/3927caf5cd7fa8bde1d...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>32</th>
-      <td>Fri, 29 Jul 2016 16:00:40</td>
-      <td>148149387214</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/c078fc21432061a41ec...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>33</th>
-      <td>Sun, 24 Jul 2016 14:00:30</td>
-      <td>147890761788</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/bfb8994d1d6fcc14db1...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>34</th>
-      <td>Tue, 19 Jul 2016 04:01:09</td>
-      <td>147622173639</td>
-      <td>gif</td>
-      <td>http://68.media.tumblr.com/33c47f8ee7e3b339962...</td>
-      <td>[gif, lolcat, lolcats, cat, funny, pokemon, pi...</td>
-    </tr>
-    <tr>
-      <th>35</th>
-      <td>Mon, 18 Jul 2016 14:01:09</td>
-      <td>147590424893</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/f9f9dc7eb93e0318981...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>36</th>
-      <td>Sun, 17 Jul 2016 06:00:25</td>
-      <td>147524647568</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/5eaae2d6e5503e01bcb...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>37</th>
-      <td>Sat, 16 Jul 2016 14:00:45</td>
-      <td>147490960707</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/51ae3d3468f8e0cfc33...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>38</th>
-      <td>Sat, 16 Jul 2016 12:00:39</td>
-      <td>147488396516</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/ca7ea8f260d375e6cb9...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>39</th>
-      <td>Thu, 14 Jul 2016 20:00:59</td>
-      <td>147403434760</td>
-      <td>png</td>
-      <td>http://68.media.tumblr.com/4e9f2da9e0beab9654a...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>40</th>
-      <td>Thu, 14 Jul 2016 12:00:38</td>
-      <td>147388195456</td>
-      <td>png</td>
-      <td>http://68.media.tumblr.com/f62a86855bb0ed8bf1e...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>41</th>
-      <td>Tue, 12 Jul 2016 06:00:19</td>
-      <td>147272040277</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/e410bc99a005f7da2d7...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>42</th>
-      <td>Sun, 10 Jul 2016 12:00:40</td>
-      <td>147181986135</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/8c2f16d72880b674c0f...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>43</th>
-      <td>Fri, 08 Jul 2016 08:00:25</td>
-      <td>147081244170</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/1693ef0413931b4f0ba...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>44</th>
-      <td>Thu, 07 Jul 2016 22:01:12</td>
-      <td>147057304808</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/562befa173d729d208a...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>45</th>
-      <td>Thu, 07 Jul 2016 20:00:38</td>
-      <td>147052730234</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/d5b50cda34db2d35f72...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>46</th>
-      <td>Sun, 03 Jul 2016 02:00:56</td>
-      <td>146821243942</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/2a133a89b7517577ae3...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>47</th>
-      <td>Sat, 02 Jul 2016 04:00:22</td>
-      <td>146779011803</td>
-      <td>gif</td>
-      <td>http://68.media.tumblr.com/6b34bf0bc68c08fb041...</td>
-      <td>[gif, lolcat, lolcats, cat, funny]</td>
-    </tr>
-    <tr>
-      <th>48</th>
-      <td>Thu, 30 Jun 2016 14:00:55</td>
-      <td>146701076534</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/864468a24c60c78f179...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>49</th>
-      <td>Thu, 30 Jun 2016 12:00:49</td>
-      <td>146698416674</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/9d0618d138bd3c4c815...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Now we have the urls of a bunch of images and can run OCR on them.</p>
-<h2 id="Stuff-for-the-v2-Tumblr-API">Stuff for the v2 Tumblr API<a class="anchor-link" href="#Stuff-for-the-v2-Tumblr-API">&#182;</a></h2><p>probably unnecessary</p>
-<ul>
-<li>Consumer Key: TgqpubaBeckUPRHWUCTHIe2DzGYyZ0hXYFenh2tiyZMGv874h8</li>
-<li>Secret Key:  GTXHKip2c8TJyMz9A2iRhrV1cx03FSaSaznXGoVvCW2Fx5lyCv</li>
-</ul>
-<p><a href="https://www.tumblr.com/docs/en/api/v2">https://www.tumblr.com/docs/en/api/v2</a></p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#get the most recent 20 posts</span>
-<span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;http://procedural-generation.tumblr.com/api/read/json&#39;</span>
-
-<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-
-<span class="n">d</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;var tumblr_api_read = &#39;</span><span class="p">):</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
-
-<span class="c1">#get a specific post</span>
-
-<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span> <span class="p">:</span> <span class="s1">&#39;152256405098&#39;</span><span class="p">})</span>
-
-<span class="n">d</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;var tumblr_api_read = &#39;</span><span class="p">):</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">REQUEST_TOKEN_URL = &#39;http://www.tumblr.com/oauth/request_token&#39;</span>
-<span class="sd">AUTHORIZATION_URL = &#39;http://www.tumblr.com/oauth/authorize&#39;</span>
-<span class="sd">ACCESS_TOKEN_URL = &#39;http://www.tumblr.com/oauth/access_token&#39;</span>
-
-<span class="sd">tumblrKey = &#39;TgqpubaBeckUPRHWUCTHIe2DzGYyZ0hXYFenh2tiyZMGv874h8&#39;</span>
-<span class="sd">tumblrSecret = &#39;GTXHKip2c8TJyMz9A2iRhrV1cx03FSaSaznXGoVvCW2Fx5lyCv&#39;</span>
-<span class="sd">consumer = oauth2.Consumer(tumblrKey, tumblrSecret)</span>
-<span class="sd">client = oauth2.Client(consumer)</span>
-
-<span class="sd">#The token is part of content, which is provided as a binary query string</span>
-<span class="sd">responseDict, content = client.request(REQUEST_TOKEN_URL, &quot;GET&quot;)</span>
-<span class="sd">content = urllib.parse.parse_qs(content.decode(&#39;utf-8&#39;))</span>
-<span class="sd">oathToken = content[&#39;oauth_token&#39;][0]</span>
-<span class="sd">oathTokenSecret = content[&#39;oauth_token_secret&#39;][0]</span>
-
-<span class="sd">print(&quot;The OATH token is: {}\nThe OATH token secret is: {}&quot;.format(oathToken, oathTokenSecret))</span>
-<span class="sd">&#39;&#39;&#39;</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[21]:</div>
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>&#39;\nREQUEST_TOKEN_URL = \&#39;http://www.tumblr.com/oauth/request_token\&#39;\nAUTHORIZATION_URL = \&#39;http://www.tumblr.com/oauth/authorize\&#39;\nACCESS_TOKEN_URL = \&#39;http://www.tumblr.com/oauth/access_token\&#39;\n\ntumblrKey = \&#39;TgqpubaBeckUPRHWUCTHIe2DzGYyZ0hXYFenh2tiyZMGv874h8\&#39;\ntumblrSecret = \&#39;GTXHKip2c8TJyMz9A2iRhrV1cx03FSaSaznXGoVvCW2Fx5lyCv\&#39;\nconsumer = oauth2.Consumer(tumblrKey, tumblrSecret)\nclient = oauth2.Client(consumer)\n\n#The token is part of content, which is provided as a binary query string\nresponseDict, content = client.request(REQUEST_TOKEN_URL, &#34;GET&#34;)\ncontent = urllib.parse.parse_qs(content.decode(\&#39;utf-8\&#39;))\noathToken = content[\&#39;oauth_token\&#39;][0]\noathTokenSecret = content[\&#39;oauth_token_secret\&#39;][0]\n\nprint(&#34;The OATH token is: {}\nThe OATH token secret is: {}&#34;.format(oathToken, oathTokenSecret))\n&#39;</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="OCR">OCR<a class="anchor-link" href="#OCR">&#182;</a></h2><p>Something about subprocess</p>
-<p><code>pytesseract</code> works but requires tesseract binary</p>
-<h1 id="Files">Files<a class="anchor-link" href="#Files">&#182;</a></h1><p>What if the text we want isn't on a webpage? There are a many other sources of text available.</p>
-<h2 id="Raw-text">Raw text<a class="anchor-link" href="#Raw-text">&#182;</a></h2><p>The most basic form of storing text is as a <em>raw text</em> document. Source code (<code>.py</code>, <code>.r</code>, etc) is usually raw text as are text files (<code>.txt</code>) and many other things. Opening an unknown file with a text editor is often a great way of learning what the file is.</p>
-<p>We can create a text file with the <code>open()</code> function</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#example_text_file = &#39;sometextfile.txt&#39;</span>
-<span class="c1">#stringToWrite = &#39;A line\nAnother line\nA line with a few unusual symbols \u2421 \u241B \u20A0 \u20A1 \u20A2 \u20A3 \u0D60\n&#39;</span>
-<span class="n">stringToWrite</span> <span class="o">=</span> <span class="s1">&#39;A line</span><span class="se">\n</span><span class="s1">Another line</span><span class="se">\n</span><span class="s1">A line with a few unusual symbols ␡ ␛ ₠ ₡ ₢ ₣ ൠ</span><span class="se">\n</span><span class="s1">&#39;</span>
-
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">example_text_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">stringToWrite</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Notice though the <code>encoding='utf-8'</code> argument, the encoding specifies how we map the bits from the file to the glyphs (and whitespace characters like tab (<code>'\t'</code>) or newline (<code>'\n'</code>)) on the screen. When dealing only with latin letters, arabic numerals and the other symbols on America keyboards you usually do not have to worry about encodings as the ones used today are backwards compatible with <a href="https://en.wikipedia.org/wiki/ASCII">ASCII</a> which gives the binary representation of 128 characters.</p>
-<p>Some people though use other characters. To solve this there is <a href="https://en.wikipedia.org/wiki/Unicode">Unicode</a> which gives numbers to symbols, e.g. 041 is <code>'A'</code> and 03A3 is <code>'Σ'</code> (number starting with 0 indicates they are hexadecimal), often non-ASCII characters are called Unicode characters. Unfortunately there are many ways used to map combinations of bits to Unicode symbols. The ones you are likely to encounter are called by Python <em>utf-8</em>, <em>utf-16</em> and <em>latin-1</em>. <em>utf-8</em> is the standard for Linux and Mac OS while both <em>utf-16</em> and <em>latin-1</em> are used by windows. If you use the wrong encoding characters can appear wrong, sometimes change in number or Python could raise an exception. Lets see what happens when we open the file we just created with different encodings.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">example_text_file</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This is with the correct encoding:&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">example_text_file</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;latin-1&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This is with the wrong encoding:&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>This is with the correct encoding:
-A line
-Another line
-A line with a few unusual symbols ␡ ␛ ₠ ₡ ₢ ₣ ൠ
-
-This is with the wrong encoding:
-A line
-Another line
-A line with a few unusual symbols â¡ â â  â¡ â¢ â£ àµ 
-
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Notice that with <em>latin-1</em> the unicode characters are mixed up and there are too many of them. You need to keep in mind encoding when obtaining text files, as determining the encoding can sometime be a lot of work.</p>
-<h2 id="PDF">PDF<a class="anchor-link" href="#PDF">&#182;</a></h2><p>Another common way text will be stored is in a PDF file. First we will download a pdf in Python. To do that lets grab a chapter from
-<em>Speech and Language Processing</em>, chapter 20 is on Information Extraction which seems apt. It is stored as a pdf at <a href="https://web.stanford.edu/~jurafsky/slp3/20.pdf">https://web.stanford.edu/~jurafsky/slp3/20.pdf</a>.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[24]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#information_extraction_pdf = &#39;https://web.stanford.edu/~jurafsky/slp3/20.pdf&#39;</span>
-
-<span class="n">infoExtractionRequest</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">information_extraction_pdf</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">infoExtractionRequest</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">1000</span><span class="p">])</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>%PDF-1.5
-%����
-97 0 obj
-&lt;&lt;
-/Length 2982      
-/Filter /FlateDecode
-&gt;&gt;
-stream
-xڝYY��~�_��T,U�����f&lt;{����Rv(
-��������� Ei���_�F�4�n�s�缹����_^����Y������&#34;7����d��s~^}:i]כHE���	�c����e��k��esp�ߋ���yS�Jf�|�?&gt;����׺�+��y7����==w��8������M&lt;�x�
-����`?���Q�*gs����#C8����8
-�G��(�s#�9�t�
-i)s|�͢H������$�����v��Շ���W[���f��{�M��M�(�M=gã�
-�蒟��&gt;���ڊQn1�,�V��י^wU��Z���u����b����`��l!�!�+��)����$����`x+�]XV�p!Y&gt;���J��)���7��Xʰ��%��e��M�ǭ������������s;
-*��\��o^=������d�8��P��P����@p��^(�&amp;N�[L�d)�H�����a����wf��!��톁�$(dIf��h�4���;J,O����4�pI��/n����0�f�����:�!���&#34;�L��t�kC��BT�&#39;0[}�)|-a���4(��f����ï��w��:�V�-#�������	bZ2���|ێ� �(O�e���P�.ς!�
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>It says <code>'pdf'</code>, so thats a good sign, the rest though looks like we are having issues with an encoding. The random characters are not though caused by our encoding being wrong they are cause by there not being an encoding for those parts at all. PDFs are nominally binary files, meaning there are sections of binary that are specific to pdf and nothing else so you need something that knows about pdf to read them. To do that we will be using <a href="https://github.com/mstamy2/PyPDF2"><code>PyPDF2</code></a> which is a PDF processing library for Python 3.</p>
-<p><strong>NOTE</strong> maybe use <code>PyPDF2</code> or <code>slate</code></p>
-<p>Because PDFs are a very complicated file format pdfminer requires a large amount of boilerplate code to extract text, we have written a function that takes in an open PDF file and returns the text so you don't have to.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">readPDF</span><span class="p">(</span><span class="n">pdfFile</span><span class="p">):</span>
-    <span class="c1">#Based on code from http://stackoverflow.com/a/20905381/4955164</span>
-    <span class="n">rsrcmgr</span> <span class="o">=</span> <span class="n">pdfminer</span><span class="o">.</span><span class="n">pdfinterp</span><span class="o">.</span><span class="n">PDFResourceManager</span><span class="p">()</span>
-    <span class="n">retstr</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
-    <span class="n">layoutParams</span> <span class="o">=</span> <span class="n">pdfminer</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">LAParams</span><span class="p">()</span>
-    <span class="n">device</span> <span class="o">=</span> <span class="n">pdfminer</span><span class="o">.</span><span class="n">converter</span><span class="o">.</span><span class="n">TextConverter</span><span class="p">(</span><span class="n">rsrcmgr</span><span class="p">,</span> <span class="n">retstr</span><span class="p">,</span> <span class="n">laparams</span> <span class="o">=</span> <span class="n">layoutParams</span><span class="p">)</span>
-    <span class="c1">#We need a device and an interpreter</span>
-    <span class="n">interpreter</span> <span class="o">=</span> <span class="n">pdfminer</span><span class="o">.</span><span class="n">pdfinterp</span><span class="o">.</span><span class="n">PDFPageInterpreter</span><span class="p">(</span><span class="n">rsrcmgr</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
-    <span class="n">password</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-    <span class="n">maxpages</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">caching</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">pagenos</span><span class="o">=</span><span class="nb">set</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="n">pdfminer</span><span class="o">.</span><span class="n">pdfpage</span><span class="o">.</span><span class="n">PDFPage</span><span class="o">.</span><span class="n">get_pages</span><span class="p">(</span><span class="n">pdfFile</span><span class="p">,</span> <span class="n">pagenos</span><span class="p">,</span> <span class="n">maxpages</span><span class="o">=</span><span class="n">maxpages</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span><span class="n">caching</span><span class="o">=</span><span class="n">caching</span><span class="p">,</span> <span class="n">check_extractable</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="n">interpreter</span><span class="o">.</span><span class="n">process_page</span><span class="p">(</span><span class="n">page</span><span class="p">)</span>
-    <span class="n">device</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="n">returnedString</span> <span class="o">=</span> <span class="n">retstr</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
-    <span class="n">retstr</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">returnedString</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>But first we need to take the response object and convert it into a 'file like' object so that pdfminer can read it. To do this we will use <code>io</code>'s <code>BytesIO</code>.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[26]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">infoExtractionBytes</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">infoExtractionRequest</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Now we can give it to pdfminer.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[27]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">readPDF</span><span class="p">(</span><span class="n">infoExtractionBytes</span><span class="p">)[:</span><span class="mi">1000</span><span class="p">])</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Speech and Language Processing. Daniel Jurafsky &amp; James H. Martin.
-rights reserved.
-
-Draft of June 26, 2015.
-
-Copyright c(cid:13) 2015.
-
-All
 
-CHAPTER
-
-20 Information Extraction
-
-I am the very model of a modern Major-General,
-I’ve information vegetable, animal, and mineral,
-I know the kings of England, and I quote the ﬁghts historical
-From Marathon to Waterloo, in order categorical...
-Gilbert and Sullivan, Pirates of Penzance
-
-Imagine that you are an analyst with an investment ﬁrm that tracks airline stocks.
-You’re given the task of determining the relationship (if any) between airline an-
-nouncements of fare increases and the behavior of their stocks the next day. His-
-torical data about stock prices is easy to come by, but what about the airline an-
-nouncements? You will need to know at least the name of the airline, the nature of
-the proposed fare hike, the dates of the announcement, and possibly the response of
-other airlines. Fortunately, these can be all found in news articles lik
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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
+"
+>
 </div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>From here we can either look at the full text or fiddle with our PDF reader and get more information about individual blocks of text.</p>
-<h2 id="Word-Docs">Word Docs<a class="anchor-link" href="#Word-Docs">&#182;</a></h2><p><em>NOTE</em> The package is called</p>
-<p>The other type of document you are likely to encounter is the <code>.docx</code>, these are actually a version of <a href="https://en.wikipedia.org/wiki/Office_Open_XML">XML</a>, just like HTML, and like HTML we will use a specialized parser.</p>
-<p>For this class we will use <a href="https://python-docx.readthedocs.io/en/latest/"><code>python-docx</code></a> which provides a nice simple interface for reading <code>.docx</code> files</p>
 
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[28]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">docx</span>
-<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://github.com/xiaow2/persp-analysis/raw/02772bc5baf4044ba6410170ca740f14cd6155d5/assignments/short%20paper%201.docx&#39;</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">d</span> <span class="o">=</span> <span class="n">docx</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">))</span>
-<span class="k">for</span> <span class="n">paragraph</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">paragraphs</span><span class="p">[:</span><span class="mi">7</span><span class="p">]:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">paragraph</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Wenxi Xiao
-Professor Benjamin Soltoff
-MACS 30000
-10 October 2016
-Ethics of “Taste, Ties, and Time”
-	In 2008, sociologist Kevin Lewis and colleagues conduced a research project, entitled “Taste, Ties, and Time (3T),” to examine how race and cultural tastes could affect people’s social relationships. Researchers collected 1,640 college students’ Facebook profiles from Facebook.com and combined these data with the students’ school records, creating a new social network dataset. Through subsequent quantitative analyses of the dataset researchers concluded that gender, race, and socioeconomic status all influenced how these students behaved in social networks. In addition, the results showed that students’ Facebook friendships were correlated with their cultural preferences. Lewis and colleagues’ findings were published in the journal Social Networks and opened up a new branch in social science research. Despite its scientific potential, the project attracted critics from the public as well as the scientific community. The researchers were accused of violating research ethics, such that they scraped data without gaining informed consent and invading the students’ personal privacy by releasing the dataset to other researchers (Zimmer, 2010). Consequently, the students in the 3T project were identified, resulting a withdrawal of the dataset (Salganik, in open review). In this essay, I evaluate how the 3T project adheres to Salganik&#39;s four principles of ethical research, which are Respect for Persons, Beneficence, Justice, and Respect for Law and Public Interest.
-	First of all, the 3T project violates the first principle, Respect for Persons, which is to ensure research participants’ autonomy (Salganik, in open review). According to the principle of Respect for Persons, people are entitled to be on their own free will to decide whether or not to participate in a given study. Additionally, special population such as children and prisoners are required to be treated with additional cautions. Researchers implement Respect for Persons by obtaining participants’ informed consent, a comprehensive written document allowing participants to be aware of the study’s procedures and potential risks. In the 3T project, researchers used students’ Facebook profiles data without the students’ awareness, not to mention obtaining informed consent. Such conduct clearly disobeyed the Respect for Persons principle. Although Lewis and colleagues claimed that when people registered for a Facebook account they agreed to allow Facebook to use their online data for research purposes by checking the term of use, it is still the researchers’ responsibility to explicitly give the students an opportunity to choose if they wanted their data to be included. After all, not many people carefully read all the items in term of use. Admittedly, violating the principle of Respect for Persons does not doom a study to a forbidden fate, but rather it alerts the researchers that their study needs amendments for being a more ethical one. 
-</pre>
-</div>
 </div>
 
 </div>
