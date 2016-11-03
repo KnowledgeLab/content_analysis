@@ -45,8 +45,13 @@ import io
 import PyPDF2 #For reading pdfs
 import docx #MS doc files
 import json #For Tumblr api responses
-import pytumblr #For Tumblr api
 import oauth2 #For Tumblr authentication
+
+#Stuff for pdfs
+import pdfminer.pdfinterp
+import pdfminer.converter
+import pdfminer.layout
+import pdfminer.pdfpage
 ```
 
 We will also be working on the following files/urls
@@ -222,7 +227,7 @@ Generally website owners do not like you scraping their sites. Scraping if done 
 
 A nice example for us to study is [Tumblr](https://www.tumblr.com), they have a [simple RESTful API](https://www.tumblr.com/docs/en/api/v1) that allows you to read posts without any complicated html parsing.
 
-We can get the first 20 posts from a blog by making an http GET request to `'http://{blog}.tumblr.com/api/read/json'`, were `{blog}` is the name of the target blog. Lets try and get the posts from [http://lolcats-lol-cat.tumblr.com/](http://lolcats-lol-cat.tumblr.com/).
+We can get the first 20 posts from a blog by making an http GET request to `'http://{blog}.tumblr.com/api/read/json'`, were `{blog}` is the name of the target blog. Lets try and get the posts from [http://lolcats-lol-cat.tumblr.com/](http://lolcats-lol-cat.tumblr.com/) (Note the blog says at the top 'One hour one pic lolcats', but the canonical name that Tumblr uses is in the URL 'lolcats-lol-cat').
 
 ```python
 
@@ -258,7 +263,69 @@ with open('lolcat.gif', 'wb') as f:
 
 ![Our downloaded gif](lolcat.gif)
 
+Such beauty, now we could get the text from all the posts as well as some metadata, like the post date, caption or the tags. But, we could instead get the links to all the images.
 
+```python
+#Putting a max in case the blog has millions of images
+#The given max will be rounded up to the nearest multiple of 50
+def tumblrImageScrape(blogName, maxImages = 200):
+    #Restating this here so the function isn't dependent on any external variables
+    tumblrAPItarget = 'http://{}.tumblr.com/api/read/json'
+
+    #There are a bunch of possible locations for the photo url
+    possiblePhotoSuffixes = [1280, 500, 400, 250, 100]
+
+    #We will convert this to a DataFrame at the end
+    postsData = {
+        'id' : [],
+        'photo-url' : [],
+        'date' : [],
+        'tags' : [],
+        'photo-type' : []
+    }
+
+    #Tumblr limits us to a max of 50 posts per request
+    for requestNum in range(maxImages // 50):
+        requestParams = {
+            'start' : requestNum * 50,
+            'num' : 50,
+            'type' : 'photo'
+        }
+        r = requests.get(tumblrAPItarget.format(blogName), params = requestParams)
+        requestDict = json.loads(r.text[len('var tumblr_api_read = '):-2])
+        for postDict in requestDict['posts']:
+            #We are dealing with uncleaned data, we cannot trust it
+            try:
+                postsData['id'].append(postDict['id'])
+                postsData['date'].append(postDict['date'])
+                postsData['tags'].append(postDict['tags'])
+            except KeyError as e:
+                raise KeyError("Post {} from {} is missing: {}".format(postDict['id'], blogName, e))
+
+            foundSuffix = False
+            for suffix in possiblePhotoSuffixes:
+                try:
+                    photoURL = postDict['photo-url-{}'.format(suffix)]
+                    postsData['photo-url'].append(photoURL)
+                    postsData['photo-type'].append(photoURL.split('.')[-1])
+                    foundSuffix = True
+                    break
+                except KeyError:
+                    pass
+            if not foundSuffix:
+                #Make sure your error messages are useful
+                #You will be one of the users
+                raise KeyError("Post {} from {} is missing a photo url".format(postDict['id'], blogName))
+
+    return pandas.DataFrame(postsData)
+tumblrImageScrape('lolcats-lol-cat', 50)
+```
+
+Now we have the urls of a bunch of images and can run OCR on them.
+
+## Stuff for the v2 Tumblr API
+
+probably unnecessary
 
 + Consumer Key: TgqpubaBeckUPRHWUCTHIe2DzGYyZ0hXYFenh2tiyZMGv874h8
 + Secret Key:  GTXHKip2c8TJyMz9A2iRhrV1cx03FSaSaznXGoVvCW2Fx5lyCv
@@ -302,7 +369,11 @@ print("The OATH token is: {}\nThe OATH token secret is: {}".format(oathToken, oa
 '''
 ```
 
-We now have all the pieces we need to query the Tumblr API
+## OCR
+
+Something about subprocess
+
+`pytesseract` works but requires tesseract binary
 
 # Files
 
@@ -354,26 +425,50 @@ It says `'pdf'`, so thats a good sign, the rest though looks like we are having 
 
 **NOTE** maybe use `PyPDF2` or `slate`
 
-But first we need to take the response object and convert it into a 'file like' object so that PyPDF2 can read it. To do this we will use `io`'s `BytesIO`.
+Because PDFs are a very complicated file format pdfminer requires a large amount of boilerplate code to extract text, we have written a function that takes in an open PDF file and returns the text so you don't have to.
+
+```python
+def readPDF(pdfFile):
+    #Based on code from http://stackoverflow.com/a/20905381/4955164
+    rsrcmgr = pdfminer.pdfinterp.PDFResourceManager()
+    retstr = io.StringIO()
+    layoutParams = pdfminer.layout.LAParams()
+    device = pdfminer.converter.TextConverter(rsrcmgr, retstr, laparams = layoutParams)
+    #We need a device and an interpreter
+    interpreter = pdfminer.pdfinterp.PDFPageInterpreter(rsrcmgr, device)
+    password = ''
+    maxpages = 0
+    caching = True
+    pagenos=set()
+    for page in pdfminer.pdfpage.PDFPage.get_pages(pdfFile, pagenos, maxpages=maxpages, password=password,caching=caching, check_extractable=True):
+        interpreter.process_page(page)
+    device.close()
+    returnedString = retstr.getvalue()
+    retstr.close()
+    return returnedString
+```
+
+But first we need to take the response object and convert it into a 'file like' object so that pdfminer can read it. To do this we will use `io`'s `BytesIO`.
 
 ```python
 infoExtractionBytes = io.BytesIO(infoExtractionRequest.content)
 ```
 
-Now we can give it to PyPDF2
+Now we can give it to pdfminer.
 
 ```python
-inforExtractPDF = PyPDF2.PdfFileReader(infoExtractionBytes)
-print(inforExtractPDF.numPages)
-firstPage = inforExtractPDF.getPage(0)
-print(firstPage.extractText()[:1000])
+print(readPDF(infoExtractionBytes)[:1000])
 ```
 
-# Work in progress
+From here we can either look at the full text or fiddle with our PDF reader and get more information about individual blocks of text.
 
 ## Word Docs
 
-Looks like `python-docx` may work
+*NOTE* The package is called
+
+The other type of document you are likely to encounter is the `.docx`, these are actually a version of [XML](https://en.wikipedia.org/wiki/Office_Open_XML), just like HTML, and like HTML we will use a specialized parser.
+
+For this class we will use [`python-docx`](https://python-docx.readthedocs.io/en/latest/) which provides a nice simple interface for reading `.docx` files
 
 ```python
 import docx
@@ -382,7 +477,3 @@ d = docx.Document(io.BytesIO(r.content))
 for paragraph in d.paragraphs[:7]:
     print(paragraph.text)
 ```
-
-## OCR
-
-`pytesseract` works but requires tesseract binary
