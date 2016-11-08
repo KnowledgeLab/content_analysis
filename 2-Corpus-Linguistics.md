@@ -3,16 +3,21 @@
 + Searching text for keywords
 + Distribution of terms
 + Correlation
++
 + From last year:
     + Word frequencies
     + Conditional frequencies
     + Statistically significant collocations
     + Distinguishing or Important words and phrases (Wordls!)
+        + tfidf
     + POS-tagged words and phrases
     + Lemmatized words and phrases
+        + stemmers
     + Dictionary-based annotations.
 
-+ stemmers?
++ divergences
+    + kale
+
 + Sources
     + US senate press releases
         + e.g. [http://www.reid.senate.gov/press_releases](http://www.reid.senate.gov/press_releases)

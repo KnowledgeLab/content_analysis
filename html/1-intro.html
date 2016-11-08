@@ -11752,15 +11752,13 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Layout">Layout<a class="anchor-link" href="#Layout">&#182;</a></h1><ul>
-<li><p>opening</p>
-<ul>
+<li>opening<ul>
 <li>contents</li>
 <li>files used</li>
 <li>packages used</li>
 </ul>
 </li>
-<li><p>Scraping</p>
-<ul>
+<li>Scraping<ul>
 <li>Images<ul>
 <li>OCR</li>
 </ul>
@@ -11810,22 +11808,23 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span> <span class="c1">#http requests</span>
-<span class="kn">import</span> <span class="nn">bs4</span> <span class="c1">#called &#39;BeautifulSoup&#39;, a html parser</span>
-<span class="kn">import</span> <span class="nn">re</span> <span class="c1">#for regexs</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="c1">#DataFrames</span>
-<span class="kn">import</span> <span class="nn">urllib.parse</span> <span class="c1">#For joining urls</span>
-<span class="kn">import</span> <span class="nn">io</span>
-<span class="kn">import</span> <span class="nn">PyPDF2</span> <span class="c1">#For reading pdfs</span>
-<span class="kn">import</span> <span class="nn">docx</span> <span class="c1">#MS doc files</span>
-<span class="kn">import</span> <span class="nn">json</span> <span class="c1">#For Tumblr api responses</span>
-<span class="kn">import</span> <span class="nn">oauth2</span> <span class="c1">#For Tumblr authentication</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#All these packages need to be installed from pip</span>
+<span class="kn">import</span> <span class="nn">requests</span> <span class="c1">#for http requests</span>
+<span class="kn">import</span> <span class="nn">bs4</span> <span class="c1">#called &#39;BeautifulSoup&#39;, an html parser</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="c1">#gives us DataFrames</span>
+<span class="kn">import</span> <span class="nn">docx</span> <span class="c1">#reading MS doc files, install as `python-docx`</span>
 
 <span class="c1">#Stuff for pdfs</span>
 <span class="kn">import</span> <span class="nn">pdfminer.pdfinterp</span>
 <span class="kn">import</span> <span class="nn">pdfminer.converter</span>
 <span class="kn">import</span> <span class="nn">pdfminer.layout</span>
 <span class="kn">import</span> <span class="nn">pdfminer.pdfpage</span>
+
+<span class="c1">#These come with Python</span>
+<span class="kn">import</span> <span class="nn">re</span> <span class="c1">#for regexs</span>
+<span class="kn">import</span> <span class="nn">urllib.parse</span> <span class="c1">#For joining urls</span>
+<span class="kn">import</span> <span class="nn">io</span> <span class="c1">#for making http requests look like files</span>
+<span class="kn">import</span> <span class="nn">json</span> <span class="c1">#For Tumblr api responses</span>
 </pre></div>
 
 </div>
@@ -13198,7 +13197,7 @@ Content analysis can also be described as studying traces, which are documents f
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>var tumblr_api_read = {&#34;tumblelog&#34;:{&#34;title&#34;:&#34;One hour one pic lolcats&#34;,&#34;description&#34;:&#34;&#34;,&#34;name&#34;:&#34;lolcats-lol-cat&#34;,&#34;timezone&#34;:&#34;Europe\/Paris&#34;,&#34;cname&#34;:false,&#34;feeds&#34;:[]},&#34;posts-start&#34;:0,&#34;posts-total&#34;:2619,&#34;posts-type&#34;:false,&#34;posts&#34;:[{&#34;id&#34;:&#34;152655732399&#34;,&#34;url&#34;:&#34;http:\/\/lolcats-lol-cat.tumblr.com\/post\/152655732399&#34;,&#34;url-with-slug&#34;:&#34;http:\/\/lolcats-lol-cat.tumblr.com\/post\/152655732399\/transparent-cat-weird-white-funny-cat&#34;,&#34;type&#34;:&#34;photo&#34;,&#34;date-gmt&#34;:&#34;2016-11-02 21:00:21 GMT&#34;,&#34;date&#34;:&#34;Wed, 02 Nov 2016 22:00:21&#34;,&#34;bookmarklet&#34;:0,&#34;mobile&#34;:0,&#34;feed-item&#34;:&#34;&#34;,&#34;from-feed-id&#34;:0,&#34;unix-timestamp&#34;:1478120421,&#34;format&#34;:&#34;html&#34;,&#34;reblog-key&#34;:&#34;H9hcWtZ2&#34;,&#34;slug&#34;:&#34;transparent-cat-weird-white-funny-cat&#34;,&#34;is-submission&#34;:false,&#34;like-button&#34;:&#34;&lt;div class=\&#34;like_button\&#34; data-post-id=\&#34;152655732399\&#34; data-blog-name=\&#34;lolcats-lol-cat\&#34; id=\&#34;like_button_152655732399\&#34;&gt;&lt;iframe id=\&#34;like_iframe_152655732399\&#34; src=\&#34;http:\/\/assets.tumblr.com\/assets\/html\/like_iframe.html?_v=399aee1ea58b6007c2190a8138f100e5#name=lolca
+<pre>var tumblr_api_read = {&#34;tumblelog&#34;:{&#34;title&#34;:&#34;One hour one pic lolcats&#34;,&#34;description&#34;:&#34;&#34;,&#34;name&#34;:&#34;lolcats-lol-cat&#34;,&#34;timezone&#34;:&#34;Europe\/Paris&#34;,&#34;cname&#34;:false,&#34;feeds&#34;:[]},&#34;posts-start&#34;:0,&#34;posts-total&#34;:2620,&#34;posts-type&#34;:false,&#34;posts&#34;:[{&#34;id&#34;:&#34;152894506281&#34;,&#34;url&#34;:&#34;http:\/\/lolcats-lol-cat.tumblr.com\/post\/152894506281&#34;,&#34;url-with-slug&#34;:&#34;http:\/\/lolcats-lol-cat.tumblr.com\/post\/152894506281\/cat-kitty-selfie-mirror-staring-the-current&#34;,&#34;type&#34;:&#34;photo&#34;,&#34;date-gmt&#34;:&#34;2016-11-08 11:00:33 GMT&#34;,&#34;date&#34;:&#34;Tue, 08 Nov 2016 12:00:33&#34;,&#34;bookmarklet&#34;:0,&#34;mobile&#34;:0,&#34;feed-item&#34;:&#34;&#34;,&#34;from-feed-id&#34;:0,&#34;unix-timestamp&#34;:1478602833,&#34;format&#34;:&#34;html&#34;,&#34;reblog-key&#34;:&#34;tfr40vYd&#34;,&#34;slug&#34;:&#34;cat-kitty-selfie-mirror-staring-the-current&#34;,&#34;is-submission&#34;:false,&#34;like-button&#34;:&#34;&lt;div class=\&#34;like_button\&#34; data-post-id=\&#34;152894506281\&#34; data-blog-name=\&#34;lolcats-lol-cat\&#34; id=\&#34;like_button_152894506281\&#34;&gt;&lt;iframe id=\&#34;like_iframe_152894506281\&#34; src=\&#34;http:\/\/assets.tumblr.com\/assets\/html\/like_iframe.html?_v=399aee1ea58b6007c2190a8138f100e
 </pre>
 </div>
 </div>
@@ -13238,7 +13237,7 @@ Content analysis can also be described as studying traces, which are documents f
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>dict_keys([&#39;tumblelog&#39;, &#39;posts-total&#39;, &#39;posts-type&#39;, &#39;posts-start&#39;, &#39;posts&#39;])
+<pre>dict_keys([&#39;posts-start&#39;, &#39;posts-type&#39;, &#39;posts&#39;, &#39;posts-total&#39;, &#39;tumblelog&#39;])
 20
 </pre>
 </div>
@@ -13283,7 +13282,7 @@ Content analysis can also be described as studying traces, which are documents f
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><img src="lolcat.gif" alt="Our downloaded gif"></p>
+<p><img src='lolcat.gif'></p>
 <p>Such beauty, now we could get the text from all the posts as well as some metadata, like the post date, caption or the tags. But, we could instead get the links to all the images.</p>
 
 </div>
@@ -13294,7 +13293,7 @@ Content analysis can also be described as studying traces, which are documents f
 <div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Putting a max in case the blog has millions of images</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Putting a max incase the blog has millions of images</span>
 <span class="c1">#The given max will be rounded up to the nearest multiple of 50</span>
 <span class="k">def</span> <span class="nf">tumblrImageScrape</span><span class="p">(</span><span class="n">blogName</span><span class="p">,</span> <span class="n">maxImages</span> <span class="o">=</span> <span class="mi">200</span><span class="p">):</span>
     <span class="c1">#Restating this here so the function isn&#39;t dependent on any external variables</span>
@@ -13303,7 +13302,11 @@ Content analysis can also be described as studying traces, which are documents f
     <span class="c1">#There are a bunch of possible locations for the photo url</span>
     <span class="n">possiblePhotoSuffixes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1280</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
 
-    <span class="c1">#We will convert this to a DataFrame at the end</span>
+    <span class="c1">#These are the pieces of information we will be gathering,</span>
+    <span class="c1">#at the end we will convert this to a DataFrame.</span>
+    <span class="c1">#There are a few other ones we could get like the captions</span>
+    <span class="c1">#you can read the Tumblr documentation to learn how to get them</span>
+    <span class="c1">#https://www.tumblr.com/docs/en/api/v1</span>
     <span class="n">postsData</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;id&#39;</span> <span class="p">:</span> <span class="p">[],</span>
         <span class="s1">&#39;photo-url&#39;</span> <span class="p">:</span> <span class="p">[],</span>
@@ -13322,7 +13325,8 @@ Content analysis can also be described as studying traces, which are documents f
         <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tumblrAPItarget</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">blogName</span><span class="p">),</span> <span class="n">params</span> <span class="o">=</span> <span class="n">requestParams</span><span class="p">)</span>
         <span class="n">requestDict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;var tumblr_api_read = &#39;</span><span class="p">):</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">postDict</span> <span class="ow">in</span> <span class="n">requestDict</span><span class="p">[</span><span class="s1">&#39;posts&#39;</span><span class="p">]:</span>
-            <span class="c1">#We are dealing with uncleaned data, we cannot trust it</span>
+            <span class="c1">#We are dealing with uncleaned data, we can&#39;t trust it.</span>
+            <span class="c1">#Specifically, not all posts are guaranteed to have the fields we want</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">postsData</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">postDict</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
                 <span class="n">postsData</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">postDict</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])</span>
@@ -13375,6 +13379,14 @@ Content analysis can also be described as studying traces, which are documents f
   <tbody>
     <tr>
       <th>0</th>
+      <td>Tue, 08 Nov 2016 12:00:33</td>
+      <td>152894506281</td>
+      <td>gif</td>
+      <td>http://68.media.tumblr.com/b51f001944edbd78644...</td>
+      <td>[gif, lolcat, lolcats, cat, funny, kitty, self...</td>
+    </tr>
+    <tr>
+      <th>1</th>
       <td>Wed, 02 Nov 2016 22:00:21</td>
       <td>152655732399</td>
       <td>gif</td>
@@ -13382,7 +13394,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[gif, lolcat, lolcats, cat, funny, transparent...</td>
     </tr>
     <tr>
-      <th>1</th>
+      <th>2</th>
       <td>Wed, 02 Nov 2016 04:00:28</td>
       <td>152625158741</td>
       <td>gif</td>
@@ -13390,7 +13402,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[gif, lolcat, lolcats, cat, funny, kitty, pets...</td>
     </tr>
     <tr>
-      <th>2</th>
+      <th>3</th>
       <td>Tue, 01 Nov 2016 10:00:19</td>
       <td>152590689618</td>
       <td>gif</td>
@@ -13398,7 +13410,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[gif, lolcat, lolcats, cat, funny, help, work,...</td>
     </tr>
     <tr>
-      <th>3</th>
+      <th>4</th>
       <td>Sun, 30 Oct 2016 05:00:21</td>
       <td>152493058611</td>
       <td>jpg</td>
@@ -13406,7 +13418,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>4</th>
+      <th>5</th>
       <td>Mon, 24 Oct 2016 10:00:37</td>
       <td>152240532041</td>
       <td>jpg</td>
@@ -13414,7 +13426,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>5</th>
+      <th>6</th>
       <td>Fri, 21 Oct 2016 22:00:43</td>
       <td>152125209570</td>
       <td>jpg</td>
@@ -13422,7 +13434,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>6</th>
+      <th>7</th>
       <td>Sat, 15 Oct 2016 08:00:28</td>
       <td>151825876698</td>
       <td>gif</td>
@@ -13430,7 +13442,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[gif, lolcat, lolcats, cat, funny, illustratio...</td>
     </tr>
     <tr>
-      <th>7</th>
+      <th>8</th>
       <td>Sat, 08 Oct 2016 12:00:25</td>
       <td>151508896281</td>
       <td>jpg</td>
@@ -13438,7 +13450,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>8</th>
+      <th>9</th>
       <td>Sat, 08 Oct 2016 10:00:11</td>
       <td>151506450378</td>
       <td>jpg</td>
@@ -13446,7 +13458,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>9</th>
+      <th>10</th>
       <td>Wed, 05 Oct 2016 02:00:47</td>
       <td>151357360495</td>
       <td>jpg</td>
@@ -13454,7 +13466,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>10</th>
+      <th>11</th>
       <td>Thu, 29 Sep 2016 02:00:21</td>
       <td>151075591801</td>
       <td>jpg</td>
@@ -13462,7 +13474,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>11</th>
+      <th>12</th>
       <td>Thu, 22 Sep 2016 10:00:18</td>
       <td>150765069101</td>
       <td>png</td>
@@ -13470,7 +13482,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>12</th>
+      <th>13</th>
       <td>Sat, 17 Sep 2016 04:00:32</td>
       <td>150517613333</td>
       <td>jpg</td>
@@ -13478,7 +13490,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>13</th>
+      <th>14</th>
       <td>Sat, 17 Sep 2016 02:00:40</td>
       <td>150513586650</td>
       <td>jpg</td>
@@ -13486,7 +13498,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>14</th>
+      <th>15</th>
       <td>Thu, 15 Sep 2016 14:00:37</td>
       <td>150442786223</td>
       <td>jpg</td>
@@ -13494,7 +13506,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>15</th>
+      <th>16</th>
       <td>Thu, 15 Sep 2016 12:00:34</td>
       <td>150440192230</td>
       <td>jpg</td>
@@ -13502,7 +13514,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>16</th>
+      <th>17</th>
       <td>Thu, 15 Sep 2016 10:00:26</td>
       <td>150437927050</td>
       <td>png</td>
@@ -13510,7 +13522,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>17</th>
+      <th>18</th>
       <td>Thu, 08 Sep 2016 10:00:35</td>
       <td>150113352088</td>
       <td>jpg</td>
@@ -13518,7 +13530,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>18</th>
+      <th>19</th>
       <td>Mon, 05 Sep 2016 12:00:21</td>
       <td>149974124382</td>
       <td>png</td>
@@ -13526,7 +13538,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>19</th>
+      <th>20</th>
       <td>Sat, 03 Sep 2016 12:00:25</td>
       <td>149877403979</td>
       <td>png</td>
@@ -13534,7 +13546,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>20</th>
+      <th>21</th>
       <td>Wed, 31 Aug 2016 02:00:27</td>
       <td>149721802154</td>
       <td>png</td>
@@ -13542,7 +13554,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>21</th>
+      <th>22</th>
       <td>Sat, 27 Aug 2016 14:00:39</td>
       <td>149550741818</td>
       <td>jpg</td>
@@ -13550,7 +13562,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>22</th>
+      <th>23</th>
       <td>Wed, 24 Aug 2016 02:00:22</td>
       <td>149390168666</td>
       <td>jpg</td>
@@ -13558,7 +13570,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>23</th>
+      <th>24</th>
       <td>Sat, 20 Aug 2016 02:00:38</td>
       <td>149197307846</td>
       <td>jpg</td>
@@ -13566,7 +13578,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>24</th>
+      <th>25</th>
       <td>Thu, 18 Aug 2016 16:00:20</td>
       <td>149127885429</td>
       <td>jpg</td>
@@ -13574,7 +13586,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>25</th>
+      <th>26</th>
       <td>Mon, 15 Aug 2016 02:00:48</td>
       <td>148954802804</td>
       <td>jpg</td>
@@ -13582,7 +13594,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>26</th>
+      <th>27</th>
       <td>Fri, 12 Aug 2016 16:01:40</td>
       <td>148836683947</td>
       <td>gif</td>
@@ -13590,7 +13602,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[gif, lolcat, lolcats, cat, funny, animation, ...</td>
     </tr>
     <tr>
-      <th>27</th>
+      <th>28</th>
       <td>Fri, 12 Aug 2016 12:01:16</td>
       <td>148830823686</td>
       <td>jpg</td>
@@ -13598,7 +13610,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>28</th>
+      <th>29</th>
       <td>Fri, 12 Aug 2016 10:01:09</td>
       <td>148828102184</td>
       <td>jpg</td>
@@ -13606,7 +13618,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>29</th>
+      <th>30</th>
       <td>Tue, 09 Aug 2016 18:00:46</td>
       <td>148694150534</td>
       <td>jpg</td>
@@ -13614,7 +13626,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>30</th>
+      <th>31</th>
       <td>Mon, 08 Aug 2016 02:00:31</td>
       <td>148612754037</td>
       <td>jpg</td>
@@ -13622,7 +13634,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>31</th>
+      <th>32</th>
       <td>Sat, 06 Aug 2016 10:00:43</td>
       <td>148534179811</td>
       <td>png</td>
@@ -13630,7 +13642,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>32</th>
+      <th>33</th>
       <td>Fri, 29 Jul 2016 16:00:40</td>
       <td>148149387214</td>
       <td>jpg</td>
@@ -13638,7 +13650,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>33</th>
+      <th>34</th>
       <td>Sun, 24 Jul 2016 14:00:30</td>
       <td>147890761788</td>
       <td>jpg</td>
@@ -13646,7 +13658,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>34</th>
+      <th>35</th>
       <td>Tue, 19 Jul 2016 04:01:09</td>
       <td>147622173639</td>
       <td>gif</td>
@@ -13654,7 +13666,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[gif, lolcat, lolcats, cat, funny, pokemon, pi...</td>
     </tr>
     <tr>
-      <th>35</th>
+      <th>36</th>
       <td>Mon, 18 Jul 2016 14:01:09</td>
       <td>147590424893</td>
       <td>jpg</td>
@@ -13662,7 +13674,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>36</th>
+      <th>37</th>
       <td>Sun, 17 Jul 2016 06:00:25</td>
       <td>147524647568</td>
       <td>jpg</td>
@@ -13670,7 +13682,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>37</th>
+      <th>38</th>
       <td>Sat, 16 Jul 2016 14:00:45</td>
       <td>147490960707</td>
       <td>jpg</td>
@@ -13678,7 +13690,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>38</th>
+      <th>39</th>
       <td>Sat, 16 Jul 2016 12:00:39</td>
       <td>147488396516</td>
       <td>jpg</td>
@@ -13686,7 +13698,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>39</th>
+      <th>40</th>
       <td>Thu, 14 Jul 2016 20:00:59</td>
       <td>147403434760</td>
       <td>png</td>
@@ -13694,7 +13706,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>40</th>
+      <th>41</th>
       <td>Thu, 14 Jul 2016 12:00:38</td>
       <td>147388195456</td>
       <td>png</td>
@@ -13702,7 +13714,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>41</th>
+      <th>42</th>
       <td>Tue, 12 Jul 2016 06:00:19</td>
       <td>147272040277</td>
       <td>jpg</td>
@@ -13710,7 +13722,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>42</th>
+      <th>43</th>
       <td>Sun, 10 Jul 2016 12:00:40</td>
       <td>147181986135</td>
       <td>jpg</td>
@@ -13718,7 +13730,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>43</th>
+      <th>44</th>
       <td>Fri, 08 Jul 2016 08:00:25</td>
       <td>147081244170</td>
       <td>jpg</td>
@@ -13726,7 +13738,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>44</th>
+      <th>45</th>
       <td>Thu, 07 Jul 2016 22:01:12</td>
       <td>147057304808</td>
       <td>jpg</td>
@@ -13734,7 +13746,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>45</th>
+      <th>46</th>
       <td>Thu, 07 Jul 2016 20:00:38</td>
       <td>147052730234</td>
       <td>jpg</td>
@@ -13742,7 +13754,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>46</th>
+      <th>47</th>
       <td>Sun, 03 Jul 2016 02:00:56</td>
       <td>146821243942</td>
       <td>jpg</td>
@@ -13750,7 +13762,7 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
     <tr>
-      <th>47</th>
+      <th>48</th>
       <td>Sat, 02 Jul 2016 04:00:22</td>
       <td>146779011803</td>
       <td>gif</td>
@@ -13758,19 +13770,11 @@ Content analysis can also be described as studying traces, which are documents f
       <td>[gif, lolcat, lolcats, cat, funny]</td>
     </tr>
     <tr>
-      <th>48</th>
+      <th>49</th>
       <td>Thu, 30 Jun 2016 14:00:55</td>
       <td>146701076534</td>
       <td>jpg</td>
       <td>http://68.media.tumblr.com/864468a24c60c78f179...</td>
-      <td>[cat, cats, lol, lolcat, lolcats]</td>
-    </tr>
-    <tr>
-      <th>49</th>
-      <td>Thu, 30 Jun 2016 12:00:49</td>
-      <td>146698416674</td>
-      <td>jpg</td>
-      <td>http://68.media.tumblr.com/9d0618d138bd3c4c815...</td>
       <td>[cat, cats, lol, lolcat, lolcats]</td>
     </tr>
   </tbody>
@@ -13988,21 +13992,22 @@ A line with a few unusual symbols â¡ â â  â¡ â¢ â£ àµ
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>%PDF-1.5
-%����
-97 0 obj
-&lt;&lt;
-/Length 2982      
-/Filter /FlateDecode
-&gt;&gt;
-stream
-xڝYY��~�_��T,U�����f&lt;{����Rv(
-��������� Ei���_�F�4�n�s�缹����_^����Y������&#34;7����d��s~^}:i]כHE���	�c����e��k��esp�ߋ���yS�Jf�|�?&gt;����׺�+��y7����==w��8������M&lt;�x�
-����`?���Q�*gs����#C8����8
-�G��(�s#�9�t�
-i)s|�͢H������$�����v��Շ���W[���f��{�M��M�(�M=gã�
-�蒟��&gt;���ڊQn1�,�V��י^wU��Z���u����b����`��l!�!�+��)����$����`x+�]XV�p!Y&gt;���J��)���7��Xʰ��%��e��M�ǭ������������s;
-*��\��o^=������d�8��P��P����@p��^(�&amp;N�[L�d)�H�����a����wf��!��톁�$(dIf��h�4���;J,O����4�pI��/n����0�f�����:�!���&#34;�L��t�kC��BT�&#39;0[}�)|-a���4(��f����ï��w��:�V�-#�������	bZ2���|ێ� �(O�e���P�.ς!�
+<pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Object not found! : Stanford University&lt;/title&gt;
+&lt;script type=&#34;text/javascript&#34;&gt;
+&lt;!--
+if ((window.screen.width &lt; 640) || (window.screen.height &lt; 640)){document.write(&#39;&lt;meta name=&#34;viewport&#34; content=&#34;width=device-width, user-scalable=yes, initial-scale=1&#34;&gt;&#39;)}
+//--&gt;
+&lt;/script&gt;
+&lt;meta http-equiv=&#34;Content-Type&#34; content=&#34;text/html; charset=utf-8&#34;&gt;
+&lt;link rel=&#34;shortcut icon&#34; type=&#34;image/x-icon&#34; href=&#34;//www.stanford.edu/favicon.ico&#34;&gt;
+&lt;link rel=&#34;stylesheet&#34; type=&#34;text/css&#34; href=&#34;//www.stanford.edu/su-identity/css/su-identity.css&#34; media=&#34;all&#34;&gt;
+&lt;link rel=&#34;stylesheet&#34; type=&#34;text/css&#34; href=&#34;//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700&#34; media=&#34;all&#34;&gt;
+&lt;link rel=&#34;stylesheet&#34; type=&#34;text/css&#34; href=&#34;//www.stanford.edu/stanfordmodern/v2.5/css/stanfordmodern.css&#34; media=&#34;all&#34;&gt;
+&lt;link rel=&#34;stylesheet&#34; type=&#34;text/css&#34; href=&#34;//www.stanford.edu/stanfordmodern/v2.5/css/mobile.css&#34; media=&#34;only screen and (max-width: 640px)&#34;&gt;
+&lt;link rel=&#34;stylesheet&#34; type=&#34;text/css&#34; hr
 </pre>
 </div>
 </div>
@@ -14029,6 +14034,7 @@ i)s|�͢H������$�����v��Շ���W[���f��
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">readPDF</span><span class="p">(</span><span class="n">pdfFile</span><span class="p">):</span>
+    <span class="c1">#Make utf-8 explicit</span>
     <span class="c1">#Based on code from http://stackoverflow.com/a/20905381/4955164</span>
     <span class="n">rsrcmgr</span> <span class="o">=</span> <span class="n">pdfminer</span><span class="o">.</span><span class="n">pdfinterp</span><span class="o">.</span><span class="n">PDFResourceManager</span><span class="p">()</span>
     <span class="n">retstr</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
@@ -14103,34 +14109,35 @@ i)s|�͢H������$�����v��Շ���W[���f��
 
 
 <div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Speech and Language Processing. Daniel Jurafsky &amp; James H. Martin.
-rights reserved.
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">PDFSyntaxError</span>                            Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-27-221f225c5a5d&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>print<span class="ansi-blue-fg">(</span>readPDF<span class="ansi-blue-fg">(</span>infoExtractionBytes<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">:</span><span class="ansi-cyan-fg">1000</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span>
 
-Draft of June 26, 2015.
+<span class="ansi-green-fg">&lt;ipython-input-25-f09fc10f0ecd&gt;</span> in <span class="ansi-cyan-fg">readPDF</span><span class="ansi-blue-fg">(pdfFile)</span>
+<span class="ansi-green-intense-fg ansi-bold">     12</span>     caching <span class="ansi-blue-fg">=</span> <span class="ansi-green-fg">True</span>
+<span class="ansi-green-intense-fg ansi-bold">     13</span>     pagenos<span class="ansi-blue-fg">=</span>set<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">---&gt; 14</span><span class="ansi-red-fg">     </span><span class="ansi-green-fg">for</span> page <span class="ansi-green-fg">in</span> pdfminer<span class="ansi-blue-fg">.</span>pdfpage<span class="ansi-blue-fg">.</span>PDFPage<span class="ansi-blue-fg">.</span>get_pages<span class="ansi-blue-fg">(</span>pdfFile<span class="ansi-blue-fg">,</span> pagenos<span class="ansi-blue-fg">,</span> maxpages<span class="ansi-blue-fg">=</span>maxpages<span class="ansi-blue-fg">,</span> password<span class="ansi-blue-fg">=</span>password<span class="ansi-blue-fg">,</span>caching<span class="ansi-blue-fg">=</span>caching<span class="ansi-blue-fg">,</span> check_extractable<span class="ansi-blue-fg">=</span><span class="ansi-green-fg">True</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">     15</span>         interpreter<span class="ansi-blue-fg">.</span>process_page<span class="ansi-blue-fg">(</span>page<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     16</span>     device<span class="ansi-blue-fg">.</span>close<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
 
-Copyright c(cid:13) 2015.
+<span class="ansi-green-fg">/usr/local/lib/python3.5/site-packages/pdfminer/pdfpage.py</span> in <span class="ansi-cyan-fg">get_pages</span><span class="ansi-blue-fg">(klass, fp, pagenos, maxpages, password, caching, check_extractable)</span>
+<span class="ansi-green-intense-fg ansi-bold">    121</span>         parser <span class="ansi-blue-fg">=</span> PDFParser<span class="ansi-blue-fg">(</span>fp<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    122</span>         <span class="ansi-red-fg"># Create a PDF document object that stores the document structure.</span>
+<span class="ansi-green-fg">--&gt; 123</span><span class="ansi-red-fg">         </span>doc <span class="ansi-blue-fg">=</span> PDFDocument<span class="ansi-blue-fg">(</span>parser<span class="ansi-blue-fg">,</span> password<span class="ansi-blue-fg">=</span>password<span class="ansi-blue-fg">,</span> caching<span class="ansi-blue-fg">=</span>caching<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    124</span>         <span class="ansi-red-fg"># Check if the document allows text extraction. If not, abort.</span>
+<span class="ansi-green-intense-fg ansi-bold">    125</span>         <span class="ansi-green-fg">if</span> check_extractable <span class="ansi-green-fg">and</span> <span class="ansi-green-fg">not</span> doc<span class="ansi-blue-fg">.</span>is_extractable<span class="ansi-blue-fg">:</span>
 
-All
+<span class="ansi-green-fg">/usr/local/lib/python3.5/site-packages/pdfminer/pdfdocument.py</span> in <span class="ansi-cyan-fg">__init__</span><span class="ansi-blue-fg">(self, parser, password, caching, fallback)</span>
+<span class="ansi-green-intense-fg ansi-bold">    583</span>                 <span class="ansi-green-fg">break</span>
+<span class="ansi-green-intense-fg ansi-bold">    584</span>         <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">--&gt; 585</span><span class="ansi-red-fg">             </span><span class="ansi-green-fg">raise</span> PDFSyntaxError<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#39;No /Root object! - Is this really a PDF?&#39;</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    586</span>         <span class="ansi-green-fg">if</span> self<span class="ansi-blue-fg">.</span>catalog<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#39;Type&#39;</span><span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">is</span> <span class="ansi-green-fg">not</span> LITERAL_CATALOG<span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    587</span>             <span class="ansi-green-fg">if</span> settings<span class="ansi-blue-fg">.</span>STRICT<span class="ansi-blue-fg">:</span>
 
-CHAPTER
-
-20 Information Extraction
-
-I am the very model of a modern Major-General,
-I’ve information vegetable, animal, and mineral,
-I know the kings of England, and I quote the ﬁghts historical
-From Marathon to Waterloo, in order categorical...
-Gilbert and Sullivan, Pirates of Penzance
-
-Imagine that you are an analyst with an investment ﬁrm that tracks airline stocks.
-You’re given the task of determining the relationship (if any) between airline an-
-nouncements of fare increases and the behavior of their stocks the next day. His-
-torical data about stock prices is easy to come by, but what about the airline an-
-nouncements? You will need to know at least the name of the airline, the nature of
-the proposed fare hike, the dates of the announcement, and possibly the response of
-other airlines. Fortunately, these can be all found in news articles lik
-</pre>
+<span class="ansi-red-fg">PDFSyntaxError</span>: No /Root object! - Is this really a PDF?</pre>
 </div>
 </div>
 
@@ -14144,7 +14151,7 @@ other airlines. Fortunately, these can be all found in news articles lik
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>From here we can either look at the full text or fiddle with our PDF reader and get more information about individual blocks of text.</p>
-<h2 id="Word-Docs">Word Docs<a class="anchor-link" href="#Word-Docs">&#182;</a></h2><p><em>NOTE</em> The package is called</p>
+<h2 id="Word-Docs">Word Docs<a class="anchor-link" href="#Word-Docs">&#182;</a></h2><p><em>NOTE</em> The package is called python-docx</p>
 <p>The other type of document you are likely to encounter is the <code>.docx</code>, these are actually a version of <a href="https://en.wikipedia.org/wiki/Office_Open_XML">XML</a>, just like HTML, and like HTML we will use a specialized parser.</p>
 <p>For this class we will use <a href="https://python-docx.readthedocs.io/en/latest/"><code>python-docx</code></a> which provides a nice simple interface for reading <code>.docx</code> files</p>
 
@@ -14156,8 +14163,7 @@ other airlines. Fortunately, these can be all found in news articles lik
 <div class="prompt input_prompt">In&nbsp;[28]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">docx</span>
-<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://github.com/xiaow2/persp-analysis/raw/02772bc5baf4044ba6410170ca740f14cd6155d5/assignments/short%20paper%201.docx&#39;</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://github.com/xiaow2/persp-analysis/raw/02772bc5baf4044ba6410170ca740f14cd6155d5/assignments/short%20paper%201.docx&#39;</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">d</span> <span class="o">=</span> <span class="n">docx</span><span class="o">.</span><span class="n">Document</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">paragraph</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">paragraphs</span><span class="p">[:</span><span class="mi">7</span><span class="p">]:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">paragraph</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>

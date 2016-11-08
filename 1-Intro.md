@@ -4,7 +4,6 @@
     + contents
     + files used
     + packages used
-
 + Scraping
     + Images
         + OCR
@@ -36,22 +35,23 @@ Intro stuff ...
 For this notebook we will be using the following packages
 
 ```python
-import requests #http requests
-import bs4 #called 'BeautifulSoup', a html parser
-import re #for regexs
-import pandas #DataFrames
-import urllib.parse #For joining urls
-import io
-import PyPDF2 #For reading pdfs
-import docx #MS doc files
-import json #For Tumblr api responses
-import oauth2 #For Tumblr authentication
+#All these packages need to be installed from pip
+import requests #for http requests
+import bs4 #called 'BeautifulSoup', an html parser
+import pandas #gives us DataFrames
+import docx #reading MS doc files, install as `python-docx`
 
 #Stuff for pdfs
 import pdfminer.pdfinterp
 import pdfminer.converter
 import pdfminer.layout
 import pdfminer.pdfpage
+
+#These come with Python
+import re #for regexs
+import urllib.parse #For joining urls
+import io #for making http requests look like files
+import json #For Tumblr api responses
 ```
 
 We will also be working on the following files/urls
@@ -230,7 +230,6 @@ A nice example for us to study is [Tumblr](https://www.tumblr.com), they have a 
 We can get the first 20 posts from a blog by making an http GET request to `'http://{blog}.tumblr.com/api/read/json'`, were `{blog}` is the name of the target blog. Lets try and get the posts from [http://lolcats-lol-cat.tumblr.com/](http://lolcats-lol-cat.tumblr.com/) (Note the blog says at the top 'One hour one pic lolcats', but the canonical name that Tumblr uses is in the URL 'lolcats-lol-cat').
 
 ```python
-
 tumblrAPItarget = 'http://{}.tumblr.com/api/read/json'
 
 r = requests.get(tumblrAPItarget.format('lolcats-lol-cat'))
@@ -250,7 +249,6 @@ print(len(d['posts']))
 If we read the [API specification](https://www.tumblr.com/docs/en/api/v1), we will see there are a lot of things we can get if, we add things to our GET request. First we can get posts by their id number, lets get post `146020177084`.
 
 ```python
-
 r = requests.get(tumblrAPItarget.format('lolcats-lol-cat'), params = {'id' : 146020177084})
 d = json.loads(r.text[len('var tumblr_api_read = '):-2])
 d['posts'][0].keys()
@@ -261,12 +259,12 @@ with open('lolcat.gif', 'wb') as f:
     f.write(gifRequest.content)
 ```
 
-![Our downloaded gif](lolcat.gif)
+<img src='lolcat.gif'>
 
 Such beauty, now we could get the text from all the posts as well as some metadata, like the post date, caption or the tags. But, we could instead get the links to all the images.
 
 ```python
-#Putting a max in case the blog has millions of images
+#Putting a max incase the blog has millions of images
 #The given max will be rounded up to the nearest multiple of 50
 def tumblrImageScrape(blogName, maxImages = 200):
     #Restating this here so the function isn't dependent on any external variables
@@ -275,7 +273,11 @@ def tumblrImageScrape(blogName, maxImages = 200):
     #There are a bunch of possible locations for the photo url
     possiblePhotoSuffixes = [1280, 500, 400, 250, 100]
 
-    #We will convert this to a DataFrame at the end
+    #These are the pieces of information we will be gathering,
+    #at the end we will convert this to a DataFrame.
+    #There are a few other ones we could get like the captions
+    #you can read the Tumblr documentation to learn how to get them
+    #https://www.tumblr.com/docs/en/api/v1
     postsData = {
         'id' : [],
         'photo-url' : [],
@@ -294,7 +296,8 @@ def tumblrImageScrape(blogName, maxImages = 200):
         r = requests.get(tumblrAPItarget.format(blogName), params = requestParams)
         requestDict = json.loads(r.text[len('var tumblr_api_read = '):-2])
         for postDict in requestDict['posts']:
-            #We are dealing with uncleaned data, we cannot trust it
+            #We are dealing with uncleaned data, we can't trust it.
+            #Specifically, not all posts are guaranteed to have the fields we want
             try:
                 postsData['id'].append(postDict['id'])
                 postsData['date'].append(postDict['date'])
@@ -429,6 +432,7 @@ Because PDFs are a very complicated file format pdfminer requires a large amount
 
 ```python
 def readPDF(pdfFile):
+    #Make utf-8 explicit
     #Based on code from http://stackoverflow.com/a/20905381/4955164
     rsrcmgr = pdfminer.pdfinterp.PDFResourceManager()
     retstr = io.StringIO()
@@ -464,14 +468,13 @@ From here we can either look at the full text or fiddle with our PDF reader and 
 
 ## Word Docs
 
-*NOTE* The package is called
+*NOTE* The package is called python-docx
 
 The other type of document you are likely to encounter is the `.docx`, these are actually a version of [XML](https://en.wikipedia.org/wiki/Office_Open_XML), just like HTML, and like HTML we will use a specialized parser.
 
 For this class we will use [`python-docx`](https://python-docx.readthedocs.io/en/latest/) which provides a nice simple interface for reading `.docx` files
 
 ```python
-import docx
 r = requests.get('https://github.com/xiaow2/persp-analysis/raw/02772bc5baf4044ba6410170ca740f14cd6155d5/assignments/short%20paper%201.docx', stream=True)
 d = docx.Document(io.BytesIO(r.content))
 for paragraph in d.paragraphs[:7]:
