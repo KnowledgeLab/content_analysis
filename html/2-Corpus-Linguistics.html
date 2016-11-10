@@ -11754,8 +11754,8 @@ div#notebook {
 <h1 id="Layout">Layout<a class="anchor-link" href="#Layout">&#182;</a></h1><ul>
 <li>Searching text for keywords</li>
 <li>Distribution of terms</li>
-<li>Correlation
-+</li>
+<li><p>Correlation</p>
+</li>
 <li><p>From last year:</p>
 <ul>
 <li>Word frequencies</li>
@@ -11800,10 +11800,14 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">nltk</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">nltk</span>
 <span class="kn">import</span> <span class="nn">pandas</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="o">%</span><span class="k">matplotlib</span> inline  
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">urllib.parse</span> <span class="c1">#For joining urls</span>
 </pre></div>
 
 </div>
@@ -11961,7 +11965,7 @@ div#notebook {
     <span class="k">return</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">countsForFrame</span><span class="p">)</span>
 
 <span class="n">countedWords</span> <span class="o">=</span> <span class="n">wordCounter</span><span class="p">(</span><span class="n">nltk</span><span class="o">.</span><span class="n">corpus</span><span class="o">.</span><span class="n">gutenberg</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s1">&#39;shakespeare-macbeth.txt&#39;</span><span class="p">))</span>
-<span class="n">countedWords</span>
+<span class="n">countedWords</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -11987,312 +11991,56 @@ div#notebook {
   <tbody>
     <tr>
       <th>0</th>
-      <td>2</td>
-      <td>kingdomes</td>
+      <td>1</td>
+      <td>absent</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>63</td>
-      <td>on</td>
+      <td>3</td>
+      <td>weyard</td>
     </tr>
     <tr>
       <th>2</th>
       <td>1</td>
-      <td>stone</td>
+      <td>iudicious</td>
     </tr>
     <tr>
       <th>3</th>
       <td>1</td>
-      <td>fact</td>
+      <td>gins</td>
     </tr>
     <tr>
       <th>4</th>
       <td>1</td>
-      <td>consent</td>
+      <td>chamberlaines</td>
     </tr>
     <tr>
       <th>5</th>
       <td>1</td>
-      <td>resolution</td>
+      <td>ioyes</td>
     </tr>
     <tr>
       <th>6</th>
       <td>1</td>
-      <td>lid</td>
+      <td>rubarb</td>
     </tr>
     <tr>
       <th>7</th>
-      <td>1</td>
-      <td>wayting</td>
+      <td>11</td>
+      <td>hell</td>
     </tr>
     <tr>
       <th>8</th>
       <td>1</td>
-      <td>sell</td>
+      <td>ronyon</td>
     </tr>
     <tr>
       <th>9</th>
       <td>1</td>
-      <td>chestnuts</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>2</td>
-      <td>inuite</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>1</td>
-      <td>spoyles</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>2</td>
-      <td>filthie</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>1</td>
-      <td>windes</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>1</td>
-      <td>masking</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>3</td>
-      <td>hoboyes</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>1</td>
-      <td>metaphysicall</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>1</td>
-      <td>try</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>3</td>
-      <td>hearts</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>1</td>
-      <td>remedie</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>1</td>
-      <td>behinde</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>1</td>
-      <td>inuention</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>4</td>
-      <td>watch</td>
-    </tr>
-    <tr>
-      <th>23</th>
-      <td>3</td>
-      <td>throat</td>
-    </tr>
-    <tr>
-      <th>24</th>
-      <td>1</td>
-      <td>purposes</td>
-    </tr>
-    <tr>
-      <th>25</th>
-      <td>1</td>
-      <td>reckon</td>
-    </tr>
-    <tr>
-      <th>26</th>
-      <td>3</td>
-      <td>dismall</td>
-    </tr>
-    <tr>
-      <th>27</th>
-      <td>5</td>
-      <td>women</td>
-    </tr>
-    <tr>
-      <th>28</th>
-      <td>2</td>
-      <td>syllable</td>
-    </tr>
-    <tr>
-      <th>29</th>
-      <td>1</td>
-      <td>ayme</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>3434</th>
-      <td>1</td>
-      <td>vnity</td>
-    </tr>
-    <tr>
-      <th>3435</th>
-      <td>1</td>
-      <td>wherewith</td>
-    </tr>
-    <tr>
-      <th>3436</th>
-      <td>1</td>
-      <td>oracles</td>
-    </tr>
-    <tr>
-      <th>3437</th>
-      <td>9</td>
-      <td>rest</td>
-    </tr>
-    <tr>
-      <th>3438</th>
-      <td>24</td>
-      <td>such</td>
-    </tr>
-    <tr>
-      <th>3439</th>
-      <td>1</td>
-      <td>inuested</td>
-    </tr>
-    <tr>
-      <th>3440</th>
-      <td>1</td>
-      <td>foggy</td>
-    </tr>
-    <tr>
-      <th>3441</th>
-      <td>2</td>
-      <td>prayses</td>
-    </tr>
-    <tr>
-      <th>3442</th>
-      <td>1</td>
-      <td>treade</td>
-    </tr>
-    <tr>
-      <th>3443</th>
-      <td>1</td>
-      <td>ayd</td>
-    </tr>
-    <tr>
-      <th>3444</th>
-      <td>2</td>
-      <td>banquet</td>
-    </tr>
-    <tr>
-      <th>3445</th>
-      <td>18</td>
-      <td>both</td>
-    </tr>
-    <tr>
-      <th>3446</th>
-      <td>5</td>
-      <td>charme</td>
-    </tr>
-    <tr>
-      <th>3447</th>
-      <td>3</td>
-      <td>marke</td>
-    </tr>
-    <tr>
-      <th>3448</th>
-      <td>1</td>
-      <td>cabin</td>
-    </tr>
-    <tr>
-      <th>3449</th>
-      <td>1</td>
-      <td>compunctious</td>
-    </tr>
-    <tr>
-      <th>3450</th>
-      <td>1</td>
-      <td>accents</td>
-    </tr>
-    <tr>
-      <th>3451</th>
-      <td>1</td>
-      <td>requited</td>
-    </tr>
-    <tr>
-      <th>3452</th>
-      <td>1</td>
-      <td>shade</td>
-    </tr>
-    <tr>
-      <th>3453</th>
-      <td>2</td>
-      <td>starres</td>
-    </tr>
-    <tr>
-      <th>3454</th>
-      <td>3</td>
-      <td>castles</td>
-    </tr>
-    <tr>
-      <th>3455</th>
-      <td>2</td>
-      <td>betray</td>
-    </tr>
-    <tr>
-      <th>3456</th>
-      <td>1</td>
-      <td>wisely</td>
-    </tr>
-    <tr>
-      <th>3457</th>
-      <td>2</td>
-      <td>keene</td>
-    </tr>
-    <tr>
-      <th>3458</th>
-      <td>8</td>
-      <td>enough</td>
-    </tr>
-    <tr>
-      <th>3459</th>
-      <td>2</td>
-      <td>afraid</td>
-    </tr>
-    <tr>
-      <th>3460</th>
-      <td>1</td>
-      <td>swimmers</td>
-    </tr>
-    <tr>
-      <th>3461</th>
-      <td>1</td>
-      <td>haunting</td>
-    </tr>
-    <tr>
-      <th>3462</th>
-      <td>1</td>
-      <td>apply</td>
-    </tr>
-    <tr>
-      <th>3463</th>
-      <td>1</td>
-      <td>newer</td>
+      <td>vndon</td>
     </tr>
   </tbody>
 </table>
-<p>3464 rows × 2 columns</p>
 </div>
 </div>
 
@@ -12321,7 +12069,7 @@ div#notebook {
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Doing this in place as we don&#39;t need the unsorted DataFrame</span>
 <span class="n">countedWords</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">countedWords</span>
+<span class="n">countedWords</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
 </pre></div>
 
 </div>
@@ -12346,313 +12094,57 @@ div#notebook {
   </thead>
   <tbody>
     <tr>
-      <th>1364</th>
+      <th>196</th>
       <td>1962</td>
       <td>,</td>
     </tr>
     <tr>
-      <th>3306</th>
+      <th>753</th>
       <td>1235</td>
       <td>.</td>
     </tr>
     <tr>
-      <th>3278</th>
+      <th>131</th>
       <td>650</td>
       <td>the</td>
     </tr>
     <tr>
-      <th>2365</th>
+      <th>420</th>
       <td>637</td>
       <td>'</td>
     </tr>
     <tr>
-      <th>1679</th>
+      <th>113</th>
       <td>546</td>
       <td>and</td>
     </tr>
     <tr>
-      <th>475</th>
+      <th>913</th>
       <td>477</td>
       <td>:</td>
     </tr>
     <tr>
-      <th>1812</th>
+      <th>2701</th>
       <td>384</td>
       <td>to</td>
     </tr>
     <tr>
-      <th>1895</th>
+      <th>1540</th>
       <td>348</td>
       <td>i</td>
     </tr>
     <tr>
-      <th>322</th>
+      <th>927</th>
       <td>338</td>
       <td>of</td>
     </tr>
     <tr>
-      <th>1872</th>
-      <td>241</td>
-      <td>?</td>
-    </tr>
-    <tr>
-      <th>2915</th>
+      <th>70</th>
       <td>241</td>
       <td>a</td>
     </tr>
-    <tr>
-      <th>480</th>
-      <td>238</td>
-      <td>that</td>
-    </tr>
-    <tr>
-      <th>2114</th>
-      <td>224</td>
-      <td>d</td>
-    </tr>
-    <tr>
-      <th>414</th>
-      <td>206</td>
-      <td>you</td>
-    </tr>
-    <tr>
-      <th>1012</th>
-      <td>203</td>
-      <td>my</td>
-    </tr>
-    <tr>
-      <th>2085</th>
-      <td>201</td>
-      <td>in</td>
-    </tr>
-    <tr>
-      <th>31</th>
-      <td>188</td>
-      <td>is</td>
-    </tr>
-    <tr>
-      <th>2957</th>
-      <td>165</td>
-      <td>not</td>
-    </tr>
-    <tr>
-      <th>1761</th>
-      <td>161</td>
-      <td>it</td>
-    </tr>
-    <tr>
-      <th>955</th>
-      <td>153</td>
-      <td>with</td>
-    </tr>
-    <tr>
-      <th>2352</th>
-      <td>146</td>
-      <td>his</td>
-    </tr>
-    <tr>
-      <th>2691</th>
-      <td>137</td>
-      <td>macb</td>
-    </tr>
-    <tr>
-      <th>1896</th>
-      <td>137</td>
-      <td>be</td>
-    </tr>
-    <tr>
-      <th>1891</th>
-      <td>131</td>
-      <td>s</td>
-    </tr>
-    <tr>
-      <th>712</th>
-      <td>126</td>
-      <td>your</td>
-    </tr>
-    <tr>
-      <th>2282</th>
-      <td>123</td>
-      <td>our</td>
-    </tr>
-    <tr>
-      <th>1795</th>
-      <td>122</td>
-      <td>haue</td>
-    </tr>
-    <tr>
-      <th>3213</th>
-      <td>120</td>
-      <td>but</td>
-    </tr>
-    <tr>
-      <th>1671</th>
-      <td>118</td>
-      <td>what</td>
-    </tr>
-    <tr>
-      <th>90</th>
-      <td>113</td>
-      <td>me</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>2015</th>
-      <td>1</td>
-      <td>fairies</td>
-    </tr>
-    <tr>
-      <th>772</th>
-      <td>1</td>
-      <td>howlets</td>
-    </tr>
-    <tr>
-      <th>775</th>
-      <td>1</td>
-      <td>assaileable</td>
-    </tr>
-    <tr>
-      <th>2012</th>
-      <td>1</td>
-      <td>aright</td>
-    </tr>
-    <tr>
-      <th>776</th>
-      <td>1</td>
-      <td>imperfect</td>
-    </tr>
-    <tr>
-      <th>777</th>
-      <td>1</td>
-      <td>net</td>
-    </tr>
-    <tr>
-      <th>2009</th>
-      <td>1</td>
-      <td>vnbattered</td>
-    </tr>
-    <tr>
-      <th>2008</th>
-      <td>1</td>
-      <td>surprize</td>
-    </tr>
-    <tr>
-      <th>2007</th>
-      <td>1</td>
-      <td>tending</td>
-    </tr>
-    <tr>
-      <th>2005</th>
-      <td>1</td>
-      <td>murky</td>
-    </tr>
-    <tr>
-      <th>779</th>
-      <td>1</td>
-      <td>receyue</td>
-    </tr>
-    <tr>
-      <th>780</th>
-      <td>1</td>
-      <td>indure</td>
-    </tr>
-    <tr>
-      <th>2002</th>
-      <td>1</td>
-      <td>vessels</td>
-    </tr>
-    <tr>
-      <th>781</th>
-      <td>1</td>
-      <td>deuoure</td>
-    </tr>
-    <tr>
-      <th>2000</th>
-      <td>1</td>
-      <td>slab</td>
-    </tr>
-    <tr>
-      <th>782</th>
-      <td>1</td>
-      <td>rance</td>
-    </tr>
-    <tr>
-      <th>1998</th>
-      <td>1</td>
-      <td>commanded</td>
-    </tr>
-    <tr>
-      <th>1997</th>
-      <td>1</td>
-      <td>pit</td>
-    </tr>
-    <tr>
-      <th>786</th>
-      <td>1</td>
-      <td>curbing</td>
-    </tr>
-    <tr>
-      <th>787</th>
-      <td>1</td>
-      <td>birthdome</td>
-    </tr>
-    <tr>
-      <th>1994</th>
-      <td>1</td>
-      <td>masterdome</td>
-    </tr>
-    <tr>
-      <th>788</th>
-      <td>1</td>
-      <td>thirty</td>
-    </tr>
-    <tr>
-      <th>789</th>
-      <td>1</td>
-      <td>swoope</td>
-    </tr>
-    <tr>
-      <th>1991</th>
-      <td>1</td>
-      <td>constancie</td>
-    </tr>
-    <tr>
-      <th>1990</th>
-      <td>1</td>
-      <td>marre</td>
-    </tr>
-    <tr>
-      <th>1989</th>
-      <td>1</td>
-      <td>warrant</td>
-    </tr>
-    <tr>
-      <th>1988</th>
-      <td>1</td>
-      <td>greaze</td>
-    </tr>
-    <tr>
-      <th>1987</th>
-      <td>1</td>
-      <td>minions</td>
-    </tr>
-    <tr>
-      <th>791</th>
-      <td>1</td>
-      <td>vnfelt</td>
-    </tr>
-    <tr>
-      <th>3463</th>
-      <td>1</td>
-      <td>newer</td>
-    </tr>
   </tbody>
 </table>
-<p>3464 rows × 2 columns</p>
 </div>
 </div>
 
@@ -12667,7 +12159,8 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">countedWords</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">countedWords</span><span class="p">)),</span> <span class="n">countedWords</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -12678,171 +12171,439 @@ div#notebook {
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[7]:</div>
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>[&lt;matplotlib.lines.Line2D at 0x1130f1208&gt;]</pre>
-</div>
-
-</div>
-
 <div class="output_area"><div class="prompt"></div>
 
 
 <div class="output_png output_subarea ">
 <img src="data:image/png;base64,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
-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
-A86try1ug33yAAAAAElFTkSuQmCC
+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
 "
 >
 </div>
 
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This shows the likelihood of a word occurring is inversely proportional to its rank, this effect is called <a href="https://en.wikipedia.org/wiki/Zipf%27s_law">Zipf's Law</a>.</p>
+<p>What does the distribution of word lengths look like?</p>
+<p>There are many other properties of words we can look at. First lets look at concordance.</p>
+<p>To do this we need to load the text into a <code>ConcordanceIndex</code></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">macbethIndex</span> <span class="o">=</span> <span class="n">nltk</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">ConcordanceIndex</span><span class="p">(</span><span class="n">nltk</span><span class="o">.</span><span class="n">corpus</span><span class="o">.</span><span class="n">gutenberg</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s1">&#39;shakespeare-macbeth.txt&#39;</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Then we can get all the words that cooccur with a word, lets look at <code>'macbeth'</code>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">macbethIndex</span><span class="o">.</span><span class="n">print_concordance</span><span class="p">(</span><span class="s1">&#39;macbeth&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>No matches
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>weird, <code>'macbeth'</code> doesn't occur anywhere in the the text. What happened?</p>
+<p><code>ConcordanceIndex</code> is case sensitive, lets try looking for <code>'Macbeth'</code></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">macbethIndex</span><span class="o">.</span><span class="n">print_concordance</span><span class="p">(</span><span class="s1">&#39;Macbeth&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Displaying 25 of 61 matches:
+                                  Macbeth by William Shakespeare 1603 ] Act
+ the Heath 3 . There to meet with Macbeth 1 . I come , Gray - Malkin All . 
+but all &#39; s too weake : For braue Macbeth ( well hee deserues that Name ) D
+smay &#39; d not this our Captaines , Macbeth and Banquoh ? Cap . Yes , as Spar
+, And with his former Title greet Macbeth Rosse . Ile see it done King . Wh
+ King . What he hath lost , Noble Macbeth hath wonne . Exeunt . Scena Terti
+ithin . 3 . A Drumme , a Drumme : Macbeth doth come All . The weyward Siste
+, the Charme &#39; s wound vp . Enter Macbeth and Banquo . Macb . So foule and 
+an : what are you ? 1 . All haile Macbeth , haile to thee Thane of Glamis 2
+hee Thane of Glamis 2 . All haile Macbeth , haile to thee Thane of Cawdor 3
+hee Thane of Cawdor 3 . All haile Macbeth , that shalt be King hereafter Ba
+. Hayle 3 . Hayle 1 . Lesser than Macbeth , and greater 2 . Not so happy , 
+hough thou be none : So all haile Macbeth , and Banquo 1 . Banquo , and Mac
+eth , and Banquo 1 . Banquo , and Macbeth , all haile Macb . Stay you imper
+he King hath happily receiu &#39; d , Macbeth , The newes of thy successe : and
+gh the roughest Day Banq . Worthy Macbeth , wee stay vpon your leysure Macb
+I built An absolute Trust . Enter Macbeth , Banquo , Rosse , and Angus . O 
+ke , To cry , hold , hold . Enter Macbeth . Great Glamys , worthy Cawdor , 
+ruice ouer the Stage . Then enter Macbeth Macb . If it were done , when &#39; t
+re giues way to in repose . Enter Macbeth , and a Seruant with a Torch . Gi
+hether they liue , or dye . Enter Macbeth . Macb . Who &#39; s there ? what hoa
+ard a voyce cry , Sleep no more : Macbeth does murther Sleepe , the innocen
+ore Cawdor Shall sleepe no more : Macbeth shall sleepe no more Lady . Who w
+ made a Shift to cast him . Enter Macbeth . Macd . Is thy Master stirring ?
+selues : awake , awake , Exeunt . Macbeth and Lenox . Ring the Alarum Bell 
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>That's a lot better</p>
+<p>what about something a lot less frequent</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">countedWords</span><span class="p">[</span><span class="n">countedWords</span><span class="p">[</span><span class="s1">&#39;word&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Donalbaine&#39;</span><span class="p">])</span>
+<span class="n">macbethIndex</span><span class="o">.</span><span class="n">print_concordance</span><span class="p">(</span><span class="s1">&#39;Donalbaine&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Empty DataFrame
+Columns: [count, word]
+Index: []
+Displaying 7 of 7 matches:
+m within . Enter King Malcome , Donalbaine , Lenox , with attendants , mee
+Enter King , Lenox , Malcolme , Donalbaine , and Attendants . King . Is ex
+rches . Enter King , Malcolme , Donalbaine , Banquo , Lenox , Macduff , Ro
+ &#39; th &#39; second Chamber ? Lady . Donalbaine Mac . This is a sorry sight Lad
+er , and Treason , Banquo , and Donalbaine : Malcolme awake , Shake off th
+to brag of . Enter Malcolme and Donalbaine . Donal . What is amisse ? Macb
+were subborned , Malcolme , and Donalbaine the Kings two Sonnes Are stolne
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Getting-press-releases">Getting press releases<a class="anchor-link" href="#Getting-press-releases">&#182;</a></h1><p>First we need to understand the GitHub API</p>
+<p>requests are made to <code>'https://api.github.com/'</code> and responses are in JSON, similar to Tumblr's API.</p>
+<p>We will get the information on <a href="https://github.com/lintool/GrimmerSenatePressReleases">github.com/lintool/GrimmerSenatePressReleases</a> as it contains a nice set documents.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.github.com/repos/lintool/GrimmerSenatePressReleases&#39;</span><span class="p">)</span>
+<span class="n">senateReleasesData</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">senateReleasesData</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">senateReleasesData</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">])</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>dict_keys([&#39;git_tags_url&#39;, &#39;id&#39;, &#39;contents_url&#39;, &#39;teams_url&#39;, &#39;name&#39;, &#39;open_issues_count&#39;, &#39;releases_url&#39;, &#39;fork&#39;, &#39;homepage&#39;, &#39;subscribers_url&#39;, &#39;watchers_count&#39;, &#39;size&#39;, &#39;created_at&#39;, &#39;hooks_url&#39;, &#39;comments_url&#39;, &#39;language&#39;, &#39;stargazers_url&#39;, &#39;forks_url&#39;, &#39;compare_url&#39;, &#39;url&#39;, &#39;clone_url&#39;, &#39;deployments_url&#39;, &#39;has_pages&#39;, &#39;issue_events_url&#39;, &#39;default_branch&#39;, &#39;watchers&#39;, &#39;git_commits_url&#39;, &#39;keys_url&#39;, &#39;branches_url&#39;, &#39;network_count&#39;, &#39;subscription_url&#39;, &#39;issues_url&#39;, &#39;subscribers_count&#39;, &#39;milestones_url&#39;, &#39;html_url&#39;, &#39;has_wiki&#39;, &#39;events_url&#39;, &#39;languages_url&#39;, &#39;tags_url&#39;, &#39;issue_comment_url&#39;, &#39;open_issues&#39;, &#39;collaborators_url&#39;, &#39;downloads_url&#39;, &#39;notifications_url&#39;, &#39;updated_at&#39;, &#39;forks_count&#39;, &#39;archive_url&#39;, &#39;git_url&#39;, &#39;labels_url&#39;, &#39;assignees_url&#39;, &#39;has_downloads&#39;, &#39;blobs_url&#39;, &#39;stargazers_count&#39;, &#39;private&#39;, &#39;owner&#39;, &#39;pushed_at&#39;, &#39;full_name&#39;, &#39;trees_url&#39;, &#39;has_issues&#39;, &#39;contributors_url&#39;, &#39;description&#39;, &#39;ssh_url&#39;, &#39;merges_url&#39;, &#39;statuses_url&#39;, &#39;git_refs_url&#39;, &#39;commits_url&#39;, &#39;pulls_url&#39;, &#39;mirror_url&#39;, &#39;svn_url&#39;, &#39;forks&#39;])
+Grimmer&#39;s Senate Press Releases
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>What we are interested in is the <code>'contents_url'</code></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">senateReleasesData</span><span class="p">[</span><span class="s1">&#39;contents_url&#39;</span><span class="p">])</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/{+path}
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can use this to get any, or all of the files from the repo</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">r</span><span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/WhiteHouse&#39;</span><span class="p">)</span>
+<span class="n">whitehouseLinks</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+<span class="n">whitehouseLinks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-14-1096d9d4822c&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> r<span class="ansi-blue-fg">=</span> requests<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#39;https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/WhiteHouse&#39;</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> whitehouseLinks <span class="ansi-blue-fg">=</span> json<span class="ansi-blue-fg">.</span>loads<span class="ansi-blue-fg">(</span>r<span class="ansi-blue-fg">.</span>text<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">----&gt; 3</span><span class="ansi-red-fg"> </span>whitehouseLinks<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span>
+
+<span class="ansi-red-fg">KeyError</span>: 0</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we have a list of information about Whitehouse press releases. Lets look at one of them.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">whitehouseLinks</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;download_url&#39;</span><span class="p">])</span>
+<span class="n">whitehouseRelease</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">text</span>
+<span class="n">whitehouseRelease</span><span class="p">[:</span><span class="mi">1000</span><span class="p">]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-15-0f7ec45799f7&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>r <span class="ansi-blue-fg">=</span> requests<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>whitehouseLinks<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">&#39;download_url&#39;</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">      2</span> whitehouseRelease <span class="ansi-blue-fg">=</span> r<span class="ansi-blue-fg">.</span>text
+<span class="ansi-green-intense-fg ansi-bold">      3</span> whitehouseRelease<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">:</span><span class="ansi-cyan-fg">1000</span><span class="ansi-blue-fg">]</span>
+
+<span class="ansi-red-fg">KeyError</span>: 0</pre>
+</div>
 </div>
 
 </div>
