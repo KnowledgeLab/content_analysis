@@ -9,14 +9,14 @@
     + Conditional frequencies
     + Statistically significant collocations
     + Distinguishing or Important words and phrases (Wordls!)
-        + tfidf
+        + tf-idf
     + POS-tagged words and phrases
     + Lemmatized words and phrases
         + stemmers
     + Dictionary-based annotations.
 
 + divergences
-    + kale
+    + kl
 
 + Sources
     + US senate press releases
@@ -33,6 +33,7 @@ For this notebook we will be using the following packages
 ```python
 import requests
 import nltk
+import sklearn
 import pandas
 import matplotlib.pyplot as plt
 %matplotlib inline  
@@ -44,7 +45,7 @@ import urllib.parse #For joining urls
 
 To get started we will need some targets, lets start by downloading one of the corpuses from `nltk`. Lets take a look at how that works.
 
-first we can get a list of corpuses avaible from the Gutenburg corpus
+first we can get a list of corpuses available from the Gutenburg corpus
 
 ```python
 print(nltk.corpus.gutenberg.fileids())
@@ -183,26 +184,153 @@ whTokens = nltk.word_tokenize(whitehouseRelease)
 whTokens[:10]
 ```
 
-`whTokens` is a list of 'words' but it is not perfect. It is better than `.split(' ')` and there are ways to improve it further, but for now it is good enough.
+`whTokens` is a list of 'words', it's better than `.split(' ')`,  but it is not perfect. There are many different ways to tokenize a string and the one we used here is called the [Penn Treebank tokenizer](http://www.nltk.org/api/nltk.tokenize.html#module-nltk.tokenize.treebank). This tokenizer isn't aware of sentences and is a basically a complicated regex that's run over the string.
 
-To use this in `nltk` we can convert it into a `Text`.
+If we want to find sentences we can use something like `nltk.sent_tokenize()` which implements the [Punkt Sentence tokenizer](http://www.nltk.org/api/nltk.tokenize.html#nltk.tokenize.punkt.PunktSentenceTokenizer), a machine learning based algorithm that works well for many European languages.
+
+We could also use the [Stanford tokenizer](http://www.nltk.org/api/nltk.tokenize.html#module-nltk.tokenize.stanford) or use our own regex with [`RegexpTokenizer()`](http://www.nltk.org/api/nltk.tokenize.html#module-nltk.tokenize.regexp). Picking the correct tokenizer is important as the tokens form the base of our analysis.
+
+For now though the Penn Treebank tokenizer is fine.
+
+To use the list of tokens in `nltk` we can convert it into a `Text`.
 
 ```python
 whText = nltk.Text(whTokens)
 ```
 
-Then we can do further analysis.
+*Note*, The `Text` class is for doing exploratory and fast analysis. It provides an easy interface to many of the operations we want to do, but it does not allow us much control. When you are doing a full analysis you should be using the module for that task instead of the method `Text` provides, e.g. use  [`collocations` Module](http://www.nltk.org/api/nltk.html#module-nltk.collocations) instead of `.collocations()`.
 
-Lets look at few things
+Now that we got this loaded lets, look at few things
+
+We can find words that tend to occur together
 
 ```python
-print(whText.collocations())
-print(whText.common_contexts('stem'))
-print(whText.count('stem'))
+whText.collocations()
 ```
+
+Or we can pick a word (or words) and find what words tend to occur around it
+
+```python
+whText.common_contexts(['stem'])
+```
+
+We can also just count the number of times the word occurs
+
+```python
+whText.count('stem')
+```
+
+Or plot each time it occurs
 
 ```python
 whText.dispersion_plot(['stem', 'cell', 'federal' ,'Lila', 'Barber', 'Whitehouse'])
 ```
 
-As we have a large number of these records we can instead load them into a `TextCollection`, but first we will need to download them.
+If we want to do an analysis of all the Whitehouse press releases we will first need to obtain them. By looking at the API we can see the the URL we want is [https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/Whitehouse](https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/Whitehouse), so we can create a function to scrape the individual files
+
+
+```python
+def getGithubFiles(target, maxFiles = 100):
+    #We are setting a max so our examples don't take too long to run
+    #For converting to a DataFrame
+    releasesDict = {
+        'name' : [], #The name of the file
+        'text' : [], #The text of the file, watch out for binary files
+        'path' : [], #The path in the git repo to the file
+        'html_url' : [], #The url to see the file on Github
+        'download_url' : [], #The url to download the file
+    }
+
+    #Get the directory information from Github
+    r = requests.get(target)
+    filesLst = json.loads(r.text)
+
+    for fileDict in filesLst[:maxFiles]:
+        #These are provided by the directory
+        releasesDict['name'].append(fileDict['name'])
+        releasesDict['path'].append(fileDict['path'])
+        releasesDict['html_url'].append(fileDict['html_url'])
+        releasesDict['download_url'].append(fileDict['download_url'])
+
+        #We need to download the text though
+        text = requests.get(fileDict['download_url']).text
+        releasesDict['text'].append(text)
+
+    return pandas.DataFrame(releasesDict)
+
+whReleases = getGithubFiles('https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/Whitehouse', maxFiles = 10)
+whReleases[:5]
+```
+
+Now we have all the texts in a DataFrame we can look at a few things.
+
+First lets tokenize the texts with the same tokenizer as we used before, we will just save the tokens as a list for now, no need to convert to `Text`s.
+
+```python
+whReleases['tokenized_text'] = whReleases['text'].apply(lambda x: nltk.word_tokenize(x))
+```
+
+Now lets see how long each of the press releases is
+
+```python
+whReleases['word_counts'] = whReleases['tokenized_text'].apply(lambda x: len(x))
+whReleases['word_counts']
+```
+
+As we want to start comparing the different releases we need to do a bit of normalizing. We first will make all the words lower case, drop the non-word tokens, then we can stem them and finally remove some stop words.
+
+To do this we will define a function to work over the tokenized lists, then use another apply to add the normalized tokens to a new column.
+
+```python
+stopwords = ["the","it","she","he"]
+
+def normlizeTokens(tokenLst, stopwordLst = stopwords):
+    #We can use a generator here as we just need to iterate over it
+
+    #Lowering the case and removing non-words
+    workingIter = (w.lower() for w in tokenLst if w.isalpha())
+
+    #The stemmer needs to be initialized before bing run
+    porter = nltk.stem.porter.PorterStemmer()
+
+    #Now we can use it
+    workingIter = (porter.stem(w) for w in workingIter)
+
+    #We will return a list with the stopwords removed
+    return [w for w in workingIter if w not in stopwordLst]
+
+whReleases['normalized_tokens'] = whReleases['tokenized_text'].apply(lambda x: normlizeTokens(x))
+
+whReleases['normalized_tokens_count'] = whReleases['normalized_tokens'].apply(lambda x: len(x))
+
+whReleases
+```
+
+The stemmer we use here is called the [Porter Stemmer](http://www.nltk.org/api/nltk.stem.html#module-nltk.stem.porter), there are many others, including another good one by the same person (Martin Porter) called the [Snowball Stemmer](http://www.nltk.org/api/nltk.stem.html#module-nltk.stem.snowball).
+
+Now that it is cleaned we start analyzing the dataset. We can start by finding frequency disruptions for the dataset. Lets start looking at all the press releases together. The[`ConditionalFreqDist`](http://www.nltk.org/api/nltk.html#nltk.probability.ConditionalProbDist) class reads in a iterable of tuples, the first element is the condition and the second the word, for now we will use word lengths as the conditions, but tags or clusters would provide more useful results.
+
+```python
+whcfdist = nltk.ConditionalFreqDist(((len(w), w) for w in whReleases['normalized_tokens'].sum()))
+
+#print the number of conditions
+print(whcfdist.N())
+```
+
+From this we can lookup the distributions of different word lengths
+
+```python
+whcfdist[3].plot()
+```
+
+We can also create a [`ConditionalProbDist`](http://www.nltk.org/api/nltk.html#nltk.probability.ConditionalProbDist) from the `ConditionalFreqDist`, to do this though we need a model for the probability distribution. A simple model is [`ELEProbDist`](http://www.nltk.org/api/nltk.html#nltk.probability.ELEProbDist) which gives the expected likelihood estimate.
+
+```python
+whcpdist = nltk.ConditionalProbDist(whcfdist, nltk.ELEProbDist)
+
+#print the most common 2 letter word
+print(whcpdist[2].max())
+
+#And its probability
+print(whcpdist[2].prob(whcpdist[2].max()))
+```

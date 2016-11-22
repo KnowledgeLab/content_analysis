@@ -11762,7 +11762,7 @@ div#notebook {
 <li>Conditional frequencies</li>
 <li>Statistically significant collocations</li>
 <li>Distinguishing or Important words and phrases (Wordls!)<ul>
-<li>tfidf</li>
+<li>tf-idf</li>
 </ul>
 </li>
 <li>POS-tagged words and phrases</li>
@@ -11775,7 +11775,7 @@ div#notebook {
 </li>
 <li><p>divergences</p>
 <ul>
-<li>kale</li>
+<li>kl</li>
 </ul>
 </li>
 <li><p>Sources</p>
@@ -11802,6 +11802,7 @@ div#notebook {
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">nltk</span>
+<span class="kn">import</span> <span class="nn">sklearn</span>
 <span class="kn">import</span> <span class="nn">pandas</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="o">%</span><span class="k">matplotlib</span> inline  
@@ -11821,7 +11822,7 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Getting-our-corpuses">Getting our corpuses<a class="anchor-link" href="#Getting-our-corpuses">&#182;</a></h1><p>To get started we will need some targets, lets start by downloading one of the corpuses from <code>nltk</code>. Lets take a look at how that works.</p>
-<p>first we can get a list of corpuses avaible from the Gutenburg corpus</p>
+<p>first we can get a list of corpuses available from the Gutenburg corpus</p>
 
 </div>
 </div>
@@ -11992,52 +11993,52 @@ div#notebook {
     <tr>
       <th>0</th>
       <td>1</td>
-      <td>absent</td>
+      <td>belt</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>3</td>
-      <td>weyard</td>
+      <td>1</td>
+      <td>ginne</td>
     </tr>
     <tr>
       <th>2</th>
       <td>1</td>
-      <td>iudicious</td>
+      <td>pittied</td>
     </tr>
     <tr>
       <th>3</th>
       <td>1</td>
-      <td>gins</td>
+      <td>ioyes</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>1</td>
-      <td>chamberlaines</td>
+      <td>6</td>
+      <td>fate</td>
     </tr>
     <tr>
       <th>5</th>
       <td>1</td>
-      <td>ioyes</td>
+      <td>feeling</td>
     </tr>
     <tr>
       <th>6</th>
-      <td>1</td>
-      <td>rubarb</td>
+      <td>73</td>
+      <td>are</td>
     </tr>
     <tr>
       <th>7</th>
-      <td>11</td>
-      <td>hell</td>
+      <td>1</td>
+      <td>enterprize</td>
     </tr>
     <tr>
       <th>8</th>
-      <td>1</td>
-      <td>ronyon</td>
+      <td>12</td>
+      <td>eye</td>
     </tr>
     <tr>
       <th>9</th>
-      <td>1</td>
-      <td>vndon</td>
+      <td>2</td>
+      <td>betweene</td>
     </tr>
   </tbody>
 </table>
@@ -12094,52 +12095,52 @@ div#notebook {
   </thead>
   <tbody>
     <tr>
-      <th>196</th>
+      <th>2035</th>
       <td>1962</td>
       <td>,</td>
     </tr>
     <tr>
-      <th>753</th>
+      <th>739</th>
       <td>1235</td>
       <td>.</td>
     </tr>
     <tr>
-      <th>131</th>
+      <th>1834</th>
       <td>650</td>
       <td>the</td>
     </tr>
     <tr>
-      <th>420</th>
+      <th>119</th>
       <td>637</td>
       <td>'</td>
     </tr>
     <tr>
-      <th>113</th>
+      <th>3320</th>
       <td>546</td>
       <td>and</td>
     </tr>
     <tr>
-      <th>913</th>
+      <th>1882</th>
       <td>477</td>
       <td>:</td>
     </tr>
     <tr>
-      <th>2701</th>
+      <th>1848</th>
       <td>384</td>
       <td>to</td>
     </tr>
     <tr>
-      <th>1540</th>
+      <th>2806</th>
       <td>348</td>
       <td>i</td>
     </tr>
     <tr>
-      <th>927</th>
+      <th>1249</th>
       <td>338</td>
       <td>of</td>
     </tr>
     <tr>
-      <th>70</th>
+      <th>875</th>
       <td>241</td>
       <td>a</td>
     </tr>
@@ -12176,83 +12177,95 @@ div#notebook {
 
 <div class="output_png output_subarea ">
 <img src="data:image/png;base64,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
-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
+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
+RK5CYII=
 "
 >
 </div>
@@ -12471,7 +12484,7 @@ were subborned , Malcolme , and Donalbaine the Kings two Sonnes Are stolne
 
 <div class="output_area"><div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>dict_keys([&#39;git_tags_url&#39;, &#39;id&#39;, &#39;contents_url&#39;, &#39;teams_url&#39;, &#39;name&#39;, &#39;open_issues_count&#39;, &#39;releases_url&#39;, &#39;fork&#39;, &#39;homepage&#39;, &#39;subscribers_url&#39;, &#39;watchers_count&#39;, &#39;size&#39;, &#39;created_at&#39;, &#39;hooks_url&#39;, &#39;comments_url&#39;, &#39;language&#39;, &#39;stargazers_url&#39;, &#39;forks_url&#39;, &#39;compare_url&#39;, &#39;url&#39;, &#39;clone_url&#39;, &#39;deployments_url&#39;, &#39;has_pages&#39;, &#39;issue_events_url&#39;, &#39;default_branch&#39;, &#39;watchers&#39;, &#39;git_commits_url&#39;, &#39;keys_url&#39;, &#39;branches_url&#39;, &#39;network_count&#39;, &#39;subscription_url&#39;, &#39;issues_url&#39;, &#39;subscribers_count&#39;, &#39;milestones_url&#39;, &#39;html_url&#39;, &#39;has_wiki&#39;, &#39;events_url&#39;, &#39;languages_url&#39;, &#39;tags_url&#39;, &#39;issue_comment_url&#39;, &#39;open_issues&#39;, &#39;collaborators_url&#39;, &#39;downloads_url&#39;, &#39;notifications_url&#39;, &#39;updated_at&#39;, &#39;forks_count&#39;, &#39;archive_url&#39;, &#39;git_url&#39;, &#39;labels_url&#39;, &#39;assignees_url&#39;, &#39;has_downloads&#39;, &#39;blobs_url&#39;, &#39;stargazers_count&#39;, &#39;private&#39;, &#39;owner&#39;, &#39;pushed_at&#39;, &#39;full_name&#39;, &#39;trees_url&#39;, &#39;has_issues&#39;, &#39;contributors_url&#39;, &#39;description&#39;, &#39;ssh_url&#39;, &#39;merges_url&#39;, &#39;statuses_url&#39;, &#39;git_refs_url&#39;, &#39;commits_url&#39;, &#39;pulls_url&#39;, &#39;mirror_url&#39;, &#39;svn_url&#39;, &#39;forks&#39;])
+<pre>dict_keys([&#39;teams_url&#39;, &#39;ssh_url&#39;, &#39;private&#39;, &#39;assignees_url&#39;, &#39;forks_count&#39;, &#39;mirror_url&#39;, &#39;network_count&#39;, &#39;compare_url&#39;, &#39;releases_url&#39;, &#39;comments_url&#39;, &#39;git_refs_url&#39;, &#39;labels_url&#39;, &#39;languages_url&#39;, &#39;pulls_url&#39;, &#39;created_at&#39;, &#39;full_name&#39;, &#39;statuses_url&#39;, &#39;description&#39;, &#39;updated_at&#39;, &#39;pushed_at&#39;, &#39;language&#39;, &#39;branches_url&#39;, &#39;name&#39;, &#39;hooks_url&#39;, &#39;clone_url&#39;, &#39;has_wiki&#39;, &#39;blobs_url&#39;, &#39;default_branch&#39;, &#39;forks&#39;, &#39;tags_url&#39;, &#39;has_issues&#39;, &#39;id&#39;, &#39;issues_url&#39;, &#39;git_url&#39;, &#39;issue_comment_url&#39;, &#39;html_url&#39;, &#39;subscribers_url&#39;, &#39;keys_url&#39;, &#39;stargazers_count&#39;, &#39;open_issues&#39;, &#39;url&#39;, &#39;forks_url&#39;, &#39;open_issues_count&#39;, &#39;collaborators_url&#39;, &#39;contributors_url&#39;, &#39;owner&#39;, &#39;git_tags_url&#39;, &#39;watchers&#39;, &#39;homepage&#39;, &#39;size&#39;, &#39;issue_events_url&#39;, &#39;git_commits_url&#39;, &#39;svn_url&#39;, &#39;has_pages&#39;, &#39;merges_url&#39;, &#39;watchers_count&#39;, &#39;archive_url&#39;, &#39;notifications_url&#39;, &#39;fork&#39;, &#39;commits_url&#39;, &#39;trees_url&#39;, &#39;stargazers_url&#39;, &#39;deployments_url&#39;, &#39;has_downloads&#39;, &#39;events_url&#39;, &#39;contents_url&#39;, &#39;subscribers_count&#39;, &#39;milestones_url&#39;, &#39;downloads_url&#39;, &#39;subscription_url&#39;])
 Grimmer&#39;s Senate Press Releases
 </pre>
 </div>
@@ -12533,7 +12546,7 @@ Grimmer&#39;s Senate Press Releases
 <div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">r</span><span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/WhiteHouse&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">r</span><span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/Whitehouse&#39;</span><span class="p">)</span>
 <span class="n">whitehouseLinks</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 <span class="n">whitehouseLinks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </pre></div>
@@ -12546,18 +12559,24 @@ Grimmer&#39;s Senate Press Releases
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
-<span class="ansi-green-fg">&lt;ipython-input-14-1096d9d4822c&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> r<span class="ansi-blue-fg">=</span> requests<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#39;https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/WhiteHouse&#39;</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">      2</span> whitehouseLinks <span class="ansi-blue-fg">=</span> json<span class="ansi-blue-fg">.</span>loads<span class="ansi-blue-fg">(</span>r<span class="ansi-blue-fg">.</span>text<span class="ansi-blue-fg">)</span>
-<span class="ansi-green-fg">----&gt; 3</span><span class="ansi-red-fg"> </span>whitehouseLinks<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span>
+<div class="output_area"><div class="prompt output_prompt">Out[14]:</div>
 
-<span class="ansi-red-fg">KeyError</span>: 0</pre>
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{&#39;_links&#39;: {&#39;git&#39;: &#39;https://api.github.com/repos/lintool/GrimmerSenatePressReleases/git/blobs/f524289ee563dca58690c8d36c23dce5dbd9962a&#39;,
+  &#39;html&#39;: &#39;https://github.com/lintool/GrimmerSenatePressReleases/blob/master/raw/Whitehouse/10Apr2007Whitehouse123.txt&#39;,
+  &#39;self&#39;: &#39;https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/Whitehouse/10Apr2007Whitehouse123.txt?ref=master&#39;},
+ &#39;download_url&#39;: &#39;https://raw.githubusercontent.com/lintool/GrimmerSenatePressReleases/master/raw/Whitehouse/10Apr2007Whitehouse123.txt&#39;,
+ &#39;git_url&#39;: &#39;https://api.github.com/repos/lintool/GrimmerSenatePressReleases/git/blobs/f524289ee563dca58690c8d36c23dce5dbd9962a&#39;,
+ &#39;html_url&#39;: &#39;https://github.com/lintool/GrimmerSenatePressReleases/blob/master/raw/Whitehouse/10Apr2007Whitehouse123.txt&#39;,
+ &#39;name&#39;: &#39;10Apr2007Whitehouse123.txt&#39;,
+ &#39;path&#39;: &#39;raw/Whitehouse/10Apr2007Whitehouse123.txt&#39;,
+ &#39;sha&#39;: &#39;f524289ee563dca58690c8d36c23dce5dbd9962a&#39;,
+ &#39;size&#39;: 2206,
+ &#39;type&#39;: &#39;file&#39;,
+ &#39;url&#39;: &#39;https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/Whitehouse/10Apr2007Whitehouse123.txt?ref=master&#39;}</pre>
 </div>
+
 </div>
 
 </div>
@@ -12581,7 +12600,8 @@ Grimmer&#39;s Senate Press Releases
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">whitehouseLinks</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;download_url&#39;</span><span class="p">])</span>
 <span class="n">whitehouseRelease</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">text</span>
-<span class="n">whitehouseRelease</span><span class="p">[:</span><span class="mi">1000</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">whitehouseRelease</span><span class="p">[:</span><span class="mi">1000</span><span class="p">])</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">whitehouseRelease</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12593,16 +12613,1176 @@ Grimmer&#39;s Senate Press Releases
 
 
 <div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_text output_error">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">KeyError</span>                                  Traceback (most recent call last)
-<span class="ansi-green-fg">&lt;ipython-input-15-0f7ec45799f7&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
-<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span>r <span class="ansi-blue-fg">=</span> requests<span class="ansi-blue-fg">.</span>get<span class="ansi-blue-fg">(</span>whitehouseLinks<span class="ansi-blue-fg">[</span><span class="ansi-cyan-fg">0</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">&#39;download_url&#39;</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">      2</span> whitehouseRelease <span class="ansi-blue-fg">=</span> r<span class="ansi-blue-fg">.</span>text
-<span class="ansi-green-intense-fg ansi-bold">      3</span> whitehouseRelease<span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">:</span><span class="ansi-cyan-fg">1000</span><span class="ansi-blue-fg">]</span>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>SEN. WHITEHOUSE SHARES WESTERLY GIRL&#39;S STORY IN PUSH FOR STEM CELL RESEARCH
+  Sharing the story of Lila Barber, a 12 year old girl from Westerly, Sen. Sheldon Whitehouse (D-R.I.) on Tuesday, April 10, 2007, illustrated the hope stem cell research can offer in a speech on the Senate floor in favor of legislation to expand federal funding for stem cell research.  
+   Whitehouse met Lila two weeks ago. She was diagnosed two years ago with osteosarcoma, a cancerous bone condition, and last year underwent cadaver bone transplant surgery. The procedure saved her leg and is helping her remain cancer-free, but the transplanted tissue will not grow with her and likely will break down over time. Stem cell research, Whitehouse explained, could vastly improve the care of patients like Lila by allowing surgeons to enhance transplants with a patient&#39;s own stem cells, which could replace the lost bone and cartilage, or grow entirely new replacement bones and joints. 
+   &#34;Stem cell research gives hope
+</pre>
+</div>
+</div>
 
-<span class="ansi-red-fg">KeyError</span>: 0</pre>
+<div class="output_area"><div class="prompt output_prompt">Out[15]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>2206</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we have a blob of text we first need to tokenize it.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">whTokens</span> <span class="o">=</span> <span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">whitehouseRelease</span><span class="p">)</span>
+<span class="n">whTokens</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[16]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&#39;SEN.&#39;,
+ &#39;WHITEHOUSE&#39;,
+ &#39;SHARES&#39;,
+ &#39;WESTERLY&#39;,
+ &#39;GIRL&#39;,
+ &#34;&#39;S&#34;,
+ &#39;STORY&#39;,
+ &#39;IN&#39;,
+ &#39;PUSH&#39;,
+ &#39;FOR&#39;]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>whTokens</code> is a list of 'words', it's better than <code>.split(' ')</code>,  but it is not perfect. There are many different ways to tokenize a string and the one we used here is called the <a href="http://www.nltk.org/api/nltk.tokenize.html#module-nltk.tokenize.treebank">Penn Treebank tokenizer</a>. This tokenizer isn't aware of sentences and is a basically a complicated regex that's run over the string.</p>
+<p>If we want to find sentences we can use something like <code>nltk.sent_tokenize()</code> which implements the <a href="http://www.nltk.org/api/nltk.tokenize.html#nltk.tokenize.punkt.PunktSentenceTokenizer">Punkt Sentence tokenizer</a>, a machine learning based algorithm that works well for many European languages.</p>
+<p>We could also use the <a href="http://www.nltk.org/api/nltk.tokenize.html#module-nltk.tokenize.stanford">Stanford tokenizer</a> or use our own regex with <a href="http://www.nltk.org/api/nltk.tokenize.html#module-nltk.tokenize.regexp"><code>RegexpTokenizer()</code></a>. Picking the correct tokenizer is important as the tokens form the base of our analysis.</p>
+<p>For now though the Penn Treebank tokenizer is fine.</p>
+<p>To use the list of tokens in <code>nltk</code> we can convert it into a <code>Text</code>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">whText</span> <span class="o">=</span> <span class="n">nltk</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span><span class="n">whTokens</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><em>Note</em>, The <code>Text</code> class is for doing exploratory and fast analysis. It provides an easy interface to many of the operations we want to do, but it does not allow us much control. When you are doing a full analysis you should be using the module for that task instead of the method <code>Text</code> provides, e.g. use  <a href="http://www.nltk.org/api/nltk.html#module-nltk.collocations"><code>collocations</code> Module</a> instead of <code>.collocations()</code>.</p>
+<p>Now that we got this loaded lets, look at few things</p>
+<p>We can find words that tend to occur together</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">whText</span><span class="o">.</span><span class="n">collocations</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Rhode Island; stem cells; cell research; Cell Enhancement; Enhancement
+Act; President Bush; Stem Cell; stem cell; Stem cell
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Or we can pick a word (or words) and find what words tend to occur around it</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">whText</span><span class="o">.</span><span class="n">common_contexts</span><span class="p">([</span><span class="s1">&#39;stem&#39;</span><span class="p">])</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>own_cells ``_cell for_cell on_cells hope_cell of_cell ._cell
+embryonic_cells the_cell
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can also just count the number of times the word occurs</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">whText</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;stem&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[20]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>7</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Or plot each time it occurs</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">whText</span><span class="o">.</span><span class="n">dispersion_plot</span><span class="p">([</span><span class="s1">&#39;stem&#39;</span><span class="p">,</span> <span class="s1">&#39;cell&#39;</span><span class="p">,</span> <span class="s1">&#39;federal&#39;</span> <span class="p">,</span><span class="s1">&#39;Lila&#39;</span><span class="p">,</span> <span class="s1">&#39;Barber&#39;</span><span class="p">,</span> <span class="s1">&#39;Whitehouse&#39;</span><span class="p">])</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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
+JEndMJQkSd0wlCRJ3TCUJEndMJQkSd0wlCRJ3TCUJEndMJQkSd0wlCRJ3TCUJEndMJQkSd0wlCRJ
+3TCUJEndMJQkSd2Y6FBKeEHCduOuQ5K0OCY6lIA/B3YYdxHjNj09GceU/bo5bYm+Heffr5fnzuau
+Y2JCKWGHhP9MWJWwOuEVwF7AFxNOaNs8POGUhLMSPpAMgZXwzYS/b/uekXBgwmcSLk547jgf12Iw
+lCaH/br5GEpbhqF0o0cA36/iwCruC/wj8H1gqorDEnYHXgocVsVBwNnAUSP7f6uKA4GTgGOAxwMP
+AF65JR+EJGl+W4+7gA1wPvDahFcDn6ripIQAaesPBvYDTm7t2wCnjOz/yZHj7FjF1cDVCb9M2LmK
+n82+wxUrVqxZnpqaYmpqapEfkiRNtunpaaYXcfg0MaFUxcUJvwE8EnhVwheAGtkkwPFVHD7PIa5p
+v28YWaYdY85+GA0lSdK6Zr9hX7ly5SYdb2Km7xJ+DfhlFe8DXgcsA64Cdm6bnAYcmrBv2377hLuN
+pVhJ0kaZmJEScB+G6bsbgGuB5zGcE/p0wg/aeaVnAu9PuCXDCOhlwMWsPaKa7abWTYTNMavoTOXm
+Yb9uPluib8f59+vlubO560jVxL8mbxZJyr6RpA2ThKrK+rec28RM30mSlj5DSZLUDUNJktQNQ0mS
+1A1DSZLUDUNJktQNQ0mS1A1DSZLUDUNJktQNQ0mS1A1DSZLUDUNJktQNQ0mS1A1DSZLUDUNJktQN
+Q0mS1A1DSZLUDUNJktQNQ0mS1A1DSZLUDUNJktQNQ0mS1A1DSZLUjZtlKCU8PeFNbXl5wlHjrkmS
+dDMNpaVoenoyjtmzSX68k1z7YrIfJt+SCqWEIxLOS1iV8O6EPRI+nHB6+3nAuGvcXAylTTfJj3eS
+a19M9sPk23rcBSyWhP2AFwOHVHFFwq7Am4E3VHFKwh2AzwL7jbNOSdL8lkwoAQ8FPlzFFQAtmB4G
+3CshbZudEnZc6AFXrFixZnlqaoqpqanFq1aSloDp6WmmF3GIupRCKUDN0XZwFdeu1RgWZDSUJEnr
+mv2GfeXKlZt0vKV0TukE4EkJuwG06bvjgSNnNkj49THVJklagCUzUqriwoS/A76U8CtgFUMgvSXh
+PGAr4ETg+WMsc7PZHDOLN7fZykl+vJNc+2KyHyZfqmbPeAkgSdk3krRhklBVCzxJsq6lNH0nSZpw
+hpIkqRuGkiSpG4aSJKkbhpIkqRuGkiSpG4aSJKkbhpIkqRuGkiSpG4aSJKkbhpIkqRuGkiSpG4aS
+JKkbhpIkqRuGkiSpG4aSJKkbhpIkqRuGkiSpG4aSJKkbhpIkqRuGkiSpG4aSJKkbhpIkqRtjD6WE
+IxMuTDh2gdt/MWHZIt338oSjFuNYkqRNN/ZQAp4HPKyKp22OgyddPMaJMD097gok3dyN9QU74a3A
+XYBPJ7wk4R0JpyecnfCYts12Ce9P+ErCR4HtRvb/7YRTEs5K+EDCDq39mwmvSTgLeELCHyeckbAq
+4UPJjcfQjQwlSeM21lCq4nnA94GHADsCJ1Rxf+ChwGsTtmcYSf2iiv2B5cBBAAm7Ay8DDqviIOBs
+WGsq7sdVHFTFB4GPVHG/Kg4Evgo8a8s8QknShth63AWMeDjwuwkvbLe3Be4IPAh4I0AV5yec19Yf
+DOwHnJwQYBvglJHjfWBk+T4JfwvcmiH8PruQglasWLFmeWpqiqmpqQ17RJK0xE1PTzO9iNMsPYVS
+gN+v4uK1GgNAzdpu5vfxVRw+z/F+MbL8LuAxVVyQ8HTgwQspaDSUJEnrmv2GfeXKlZt0vB4+BDAT
+Mp8FjlzTGA5oiycCT21t9wbu29pPAw5N2Let2z7hbvPcx07ADxO2gXlDTJI0Zj2E0swo6FXANgmr
+E1YDr2ztbwV2SvgKsAI4C6CKHwPPAN7fpvROBe4x65gzXg6cAXwZuGjzPIzJ5+ykpHFL1ezXbwEk
+KftGkjZMEqoq699ybj2MlCRJAgwlSVJHDCVJUjcMJUlSNwwlSVI3DCVJUjcMJUlSNwwlSVI3DCVJ
+UjcMJUlSNwwlSVI3DCVJUjcMJUlSNwwlSVI3DCVJUjcMJUlSNwwlSVI3DCVJUjcMJUlSNwwlSVI3
+DCVJUjcMJUlSNwwlSVI3lkwoJVw1R9tzE57alo9JePyWr0yStFBLJpSAWqeh+Ncq3juOYgCmp8d1
+z5vHUns8i6HXPum1Lml9llIorSNhecJRc7S/POH0hNUJ/7K57n+pvTAstcezGHrtk17rktZnSYfS
+TfinKu5fxX2BHRIeNe6CJEmw9bgLGJPDEl4I7ADsClwAfGr2RitWrFizPDU1xdTU1BYqT5Imw/T0
+NNOLODS/2YVSwi2BfwaWVfGDhOXAdnNtOxpKkqR1zX7DvnLlyk063lKavssCt9uO4UMRP0nYCXjC
+5itJkrQhltJIafuE7zCEUwFvYO1P5BVAFVcmvB34CnAJcMbmKmipzfYttcezGHrtk17rktYnVet8
+klpAkrJvJGnDJKGqFjpztY6lNH0nSZpwhpIkqRuGkiSpG4aSJKkbhpIkqRuGkiSpG4aSJKkbhpIk
+qRuGkiSpG4aSJKkbhpIkqRuGkiSpG4aSJKkbhpIkqRuGkiSpG4aSJKkbhpIkqRuGkiSpG4aSJKkb
+hpIkqRuGkiSpG4aSJKkbhpIkqRvdhFLC9QnnJJybcFbCwRtxjKs2R22SpC2jm1ACflHFsioOAF4C
+vGZDdk4IUBt75wlbbey+N2V6enMcVZKWpp5CKSPLuwCXAyTsmPD5Nno6L+ExrX2fhK8mvDvhfOAO
+QBLekHBBwucSdm/b3iXh0wlnJnwp4e6t/ZiEtyacBhy9OR6UoSRJC7f1uAsYsX3COcD2wO2Ah7b2
+XwKPq+LnLWROAz7R1t0VeFoVZ8IQYMAZVRyV8HJgOXAk8DbguVV8PeF+wFuBw9oxbl+14VOFkqTF
+11MoXV3FMoB2PulY4N4Mo7lXJzwIuAHYK+E2bZ9vzwRScz3wwbb8XuAjLagOAT7UpvgAthnZ50Pz
+FbRixYo1y1NTU0xNTW3cI5OkJWp6eprpRZwS6imU1qjitIQ9EvYAHgXsARxYxQ0J3wS2a5v+Yn2H
+Ygi1K2YCbw7zHmM0lCRJ65r9hn3lypWbdLwuzykl3JOhtp8wnF+6rAXSQ4B95tqn2Qp4Qls+HDip
+iquAbyZr2km472aoX5K0iXoaKW3XzinNBM0RVVTCvwOfTDgPOAu4aGSf2Z+2+zlwv3Y+6VLgya39
+cOBfEl7G8JiPA1bPsf+ic8ZPkhYuVZv9dXkiJSn7RpI2TBKqavYs1oL1NH0nSbqZM5QkSd0wlCRJ
+3TCUJEndMJQkSd0wlCRJ3TCUJEndMJQkSd0wlCRJ3TCUJEndMJQkSd0wlCRJ3TCUJEndMJQkSd0w
+lCRJ3TCUJEndMJQkSd0wlCRJ3TCUJEndMJQkSd0wlCRJ3TCUJEndMJQkSd1YbyglvCHhyJHbn0l4
+28jt1yX8RcIn59n/bQn3bMsvXkhRCVctZDtJ0tKykJHSKcAhAAkB9gD2H1l/CLA1UHPtXMVzqvhq
+u/mSBdY157GWuunpcVcwt17r2pxujo95SxvtY/tbMxYSSicDh7bl/YELgKsSdknYFrgXsAq4VcKH
+Ei5KOHZm54QvJixLeDWwfcI5M+sTDk84vbW9tYXesCr8bcK5Cack7Nm2v2PC51v75xL2bu3HJDx+
+5D6var9vl/CldvzVyfA4En67HfeshA8k7LDxXbh4ev2H2Wtdm9PN8TFvaYaS5rLeUKriEuC6FgCH
+MIycTgceABwEnAdcBxwAHAnsB+ybDKOrkeO8GLi6imVVPK1N6T0ZOKSKZcANwOFt8x2BU6o4APgy
+8OzW/mbgXa39fcA/zVd2+/0U4DPt+L8OnJuwO/Ay4LAqDgLOBv5yff0gSdr8tl7gdjOjpUOA1wN7
+t9tXMoQUwBktwEg4F7jTyLoZGVk+DFgGnNlGSNsBP2zrrq3iv9ry2cDD2vIDgN9ry8cCR6+n7jOB
+dyRsA3y8ivMSphiC8+R2v9sAp86184oVK9YsT01NMTU1tZ67k6Sbl+npaaYXcai70FA6lSGQ7s0w
+ffc9htHFlcA72zbXjGx//QKOHeDdVbx0jnXXznOs2eeaZm7/irVHfdsCVPHlhAcBjwKOSXgD8FPg
++Ko1o7J5jYaSJGlds9+wr1y5cpOOt9CPhJ8MPBq4vIqq4grg1gwjlzlHGfO4NmGrtnwC8ISR80W7
+Jtyhrcucew8jrz9sy08FTmrL32KYSiThcQyjHxLuCPyoincA72AYmZ0GHJqwb9tm+4S7bcBjkCRt
+JgsNpfOB3Vk7gM4HflrF5XNsX/Msvw04P+HYKi4CXg4cn3AecDzwa3PsM+oFwDPb9ODh7TbAvwEP
+TlgFHAz8vLVPMZxHOgd4EvDGKn4MPAN4f7vfU4F73MRj32J6nR3sta7N6eb4mLe00T62vzUjVTfL
+T1+vV5KybyRpwyShquab7Vovv9FBktQNQ0mS1A1DSZLUDUNJktQNQ0mS1A1DSZLUDUNJktQNQ0mS
+1A1DSZLUDUNJktQNQ0mS1A1DSZLUDUNJktQNQ0mS1A1DSZLUDUNJktQNQ0mS1A1DSZLUDUNJktQN
+Q0mS1A1DSZLUDUNJktQNQ0mS1A1DaYmanp4edwmbxPrHy/rHZ5JrXwyG0hI16U9s6x8v6x+fSa59
+MRhKkqRuGEqSpG6kqsZdQ5eS2DGStBGqKhu7r6EkSeqG03eSpG4YSpKkbhhKc0jyiCRfTfK1JH8z
+7noWIsm3kpyXZFWSM1rbrkmOT/LfST6bZJdx1zkjyTuSXJpk9UjbvPUmeVOSi5Ocm+SA8VR9o3nq
+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
+RU5ErkJggg==
+"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If we want to do an analysis of all the Whitehouse press releases we will first need to obtain them. By looking at the API we can see the the URL we want is <a href="https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/Whitehouse">https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/Whitehouse</a>, so we can create a function to scrape the individual files</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">getGithubFiles</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">maxFiles</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
+    <span class="c1">#We are setting a max so our examples don&#39;t take too long to run</span>
+    <span class="c1">#For converting to a DataFrame</span>
+    <span class="n">releasesDict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="c1">#The name of the file</span>
+        <span class="s1">&#39;text&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="c1">#The text of the file, watch out for binary files</span>
+        <span class="s1">&#39;path&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="c1">#The path in the git repo to the file</span>
+        <span class="s1">&#39;html_url&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="c1">#The url to see the file on Github</span>
+        <span class="s1">&#39;download_url&#39;</span> <span class="p">:</span> <span class="p">[],</span> <span class="c1">#The url to download the file</span>
+    <span class="p">}</span>
+
+    <span class="c1">#Get the directory information from Github</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+    <span class="n">filesLst</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">fileDict</span> <span class="ow">in</span> <span class="n">filesLst</span><span class="p">[:</span><span class="n">maxFiles</span><span class="p">]:</span>
+        <span class="c1">#These are provided by the directory</span>
+        <span class="n">releasesDict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fileDict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+        <span class="n">releasesDict</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fileDict</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">])</span>
+        <span class="n">releasesDict</span><span class="p">[</span><span class="s1">&#39;html_url&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fileDict</span><span class="p">[</span><span class="s1">&#39;html_url&#39;</span><span class="p">])</span>
+        <span class="n">releasesDict</span><span class="p">[</span><span class="s1">&#39;download_url&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fileDict</span><span class="p">[</span><span class="s1">&#39;download_url&#39;</span><span class="p">])</span>
+
+        <span class="c1">#We need to download the text though</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fileDict</span><span class="p">[</span><span class="s1">&#39;download_url&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">releasesDict</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">releasesDict</span><span class="p">)</span>
+
+<span class="n">whReleases</span> <span class="o">=</span> <span class="n">getGithubFiles</span><span class="p">(</span><span class="s1">&#39;https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/Whitehouse&#39;</span><span class="p">,</span> <span class="n">maxFiles</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">whReleases</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[22]:</div>
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>download_url</th>
+      <th>html_url</th>
+      <th>name</th>
+      <th>path</th>
+      <th>text</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>https://raw.githubusercontent.com/lintool/Grim...</td>
+      <td>https://github.com/lintool/GrimmerSenatePressR...</td>
+      <td>10Apr2007Whitehouse123.txt</td>
+      <td>raw/Whitehouse/10Apr2007Whitehouse123.txt</td>
+      <td>SEN. WHITEHOUSE SHARES WESTERLY GIRL'S STORY I...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>https://raw.githubusercontent.com/lintool/Grim...</td>
+      <td>https://github.com/lintool/GrimmerSenatePressR...</td>
+      <td>10Apr2008Whitehouse2.txt</td>
+      <td>raw/Whitehouse/10Apr2008Whitehouse2.txt</td>
+      <td>SEN. WHITEHOUSE SAYS PRESIDENT BUSH MUST BEGIN...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>https://raw.githubusercontent.com/lintool/Grim...</td>
+      <td>https://github.com/lintool/GrimmerSenatePressR...</td>
+      <td>10Apr2008Whitehouse3.txt</td>
+      <td>raw/Whitehouse/10Apr2008Whitehouse3.txt</td>
+      <td>EPA MUST REVIEW LEGAL PROCESS TO ROOT OUT POLI...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>https://raw.githubusercontent.com/lintool/Grim...</td>
+      <td>https://github.com/lintool/GrimmerSenatePressR...</td>
+      <td>10Aug2007Whitehouse78.txt</td>
+      <td>raw/Whitehouse/10Aug2007Whitehouse78.txt</td>
+      <td>R.I. SENATORS PRAISE SEN. DENIAL OF LNG FACILI...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>https://raw.githubusercontent.com/lintool/Grim...</td>
+      <td>https://github.com/lintool/GrimmerSenatePressR...</td>
+      <td>10Jan2008Whitehouse35.txt</td>
+      <td>raw/Whitehouse/10Jan2008Whitehouse35.txt</td>
+      <td>SEN. WHITEHOUSE COMMENTS ON ONE-YEAR ANNIVERSA...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we have all the texts in a DataFrame we can look at a few things.</p>
+<p>First lets tokenize the texts with the same tokenizer as we used before, we will just save the tokens as a list for now, no need to convert to <code>Text</code>s.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">whReleases</span><span class="p">[</span><span class="s1">&#39;tokenized_text&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">whReleases</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now lets see how long each of the press releases is</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">whReleases</span><span class="p">[</span><span class="s1">&#39;word_counts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">whReleases</span><span class="p">[</span><span class="s1">&#39;tokenized_text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">whReleases</span><span class="p">[</span><span class="s1">&#39;word_counts&#39;</span><span class="p">]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[24]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>0    397
+1    344
+2    553
+3    216
+4    257
+5    380
+6    270
+7    521
+8    484
+9    482
+Name: word_counts, dtype: int64</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As we want to start comparing the different releases we need to do a bit of normalizing. We first will make all the words lower case, drop the non-word tokens, then we can stem them and finally remove some stop words.</p>
+<p>To do this we will define a function to work over the tokenized lists, then use another apply to add the normalized tokens to a new column.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">stopwords</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;the&quot;</span><span class="p">,</span><span class="s2">&quot;it&quot;</span><span class="p">,</span><span class="s2">&quot;she&quot;</span><span class="p">,</span><span class="s2">&quot;he&quot;</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">normlizeTokens</span><span class="p">(</span><span class="n">tokenLst</span><span class="p">,</span> <span class="n">stopwordLst</span> <span class="o">=</span> <span class="n">stopwords</span><span class="p">):</span>
+    <span class="c1">#We can use a generator here as we just need to iterate over it</span>
+
+    <span class="c1">#Lowering the case and removing non-words</span>
+    <span class="n">workingIter</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">tokenLst</span> <span class="k">if</span> <span class="n">w</span><span class="o">.</span><span class="n">isalpha</span><span class="p">())</span>
+
+    <span class="c1">#The stemmer needs to be initialized before bing run</span>
+    <span class="n">porter</span> <span class="o">=</span> <span class="n">nltk</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">porter</span><span class="o">.</span><span class="n">PorterStemmer</span><span class="p">()</span>
+
+    <span class="c1">#Now we can use it</span>
+    <span class="n">workingIter</span> <span class="o">=</span> <span class="p">(</span><span class="n">porter</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">workingIter</span><span class="p">)</span>
+
+    <span class="c1">#We will return a list with the stopwords removed</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">workingIter</span> <span class="k">if</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stopwordLst</span><span class="p">]</span>
+
+<span class="n">whReleases</span><span class="p">[</span><span class="s1">&#39;normalized_tokens&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">whReleases</span><span class="p">[</span><span class="s1">&#39;tokenized_text&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">normlizeTokens</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="n">whReleases</span><span class="p">[</span><span class="s1">&#39;normalized_tokens_count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">whReleases</span><span class="p">[</span><span class="s1">&#39;normalized_tokens&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+<span class="n">whReleases</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[25]:</div>
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>download_url</th>
+      <th>html_url</th>
+      <th>name</th>
+      <th>path</th>
+      <th>text</th>
+      <th>tokenized_text</th>
+      <th>word_counts</th>
+      <th>normalized_tokens</th>
+      <th>normalized_tokens_count</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>https://raw.githubusercontent.com/lintool/Grim...</td>
+      <td>https://github.com/lintool/GrimmerSenatePressR...</td>
+      <td>10Apr2007Whitehouse123.txt</td>
+      <td>raw/Whitehouse/10Apr2007Whitehouse123.txt</td>
+      <td>SEN. WHITEHOUSE SHARES WESTERLY GIRL'S STORY I...</td>
+      <td>[SEN., WHITEHOUSE, SHARES, WESTERLY, GIRL, 'S,...</td>
+      <td>397</td>
+      <td>[whitehous, share, westerli, girl, stori, in, ...</td>
+      <td>310</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>https://raw.githubusercontent.com/lintool/Grim...</td>
+      <td>https://github.com/lintool/GrimmerSenatePressR...</td>
+      <td>10Apr2008Whitehouse2.txt</td>
+      <td>raw/Whitehouse/10Apr2008Whitehouse2.txt</td>
+      <td>SEN. WHITEHOUSE SAYS PRESIDENT BUSH MUST BEGIN...</td>
+      <td>[SEN., WHITEHOUSE, SAYS, PRESIDENT, BUSH, MUST...</td>
+      <td>344</td>
+      <td>[whitehous, say, presid, bush, must, begin, br...</td>
+      <td>276</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>https://raw.githubusercontent.com/lintool/Grim...</td>
+      <td>https://github.com/lintool/GrimmerSenatePressR...</td>
+      <td>10Apr2008Whitehouse3.txt</td>
+      <td>raw/Whitehouse/10Apr2008Whitehouse3.txt</td>
+      <td>EPA MUST REVIEW LEGAL PROCESS TO ROOT OUT POLI...</td>
+      <td>[EPA, MUST, REVIEW, LEGAL, PROCESS, TO, ROOT, ...</td>
+      <td>553</td>
+      <td>[epa, must, review, legal, process, to, root, ...</td>
+      <td>433</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>https://raw.githubusercontent.com/lintool/Grim...</td>
+      <td>https://github.com/lintool/GrimmerSenatePressR...</td>
+      <td>10Aug2007Whitehouse78.txt</td>
+      <td>raw/Whitehouse/10Aug2007Whitehouse78.txt</td>
+      <td>R.I. SENATORS PRAISE SEN. DENIAL OF LNG FACILI...</td>
+      <td>[R.I, ., SENATORS, PRAISE, SEN, ., DENIAL, OF,...</td>
+      <td>216</td>
+      <td>[senat, prais, sen, denial, of, lng, facil, pe...</td>
+      <td>162</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>https://raw.githubusercontent.com/lintool/Grim...</td>
+      <td>https://github.com/lintool/GrimmerSenatePressR...</td>
+      <td>10Jan2008Whitehouse35.txt</td>
+      <td>raw/Whitehouse/10Jan2008Whitehouse35.txt</td>
+      <td>SEN. WHITEHOUSE COMMENTS ON ONE-YEAR ANNIVERSA...</td>
+      <td>[SEN., WHITEHOUSE, COMMENTS, ON, ONE-YEAR, ANN...</td>
+      <td>257</td>
+      <td>[whitehous, comment, on, anniversari, of, pres...</td>
+      <td>207</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>https://raw.githubusercontent.com/lintool/Grim...</td>
+      <td>https://github.com/lintool/GrimmerSenatePressR...</td>
+      <td>10Mar2008Whitehouse8.txt</td>
+      <td>raw/Whitehouse/10Mar2008Whitehouse8.txt</td>
+      <td>SENS. REED, WHITEHOUSE WELCOME RHODE ISLAND ST...</td>
+      <td>[SENS, ., REED, ,, WHITEHOUSE, WELCOME, RHODE,...</td>
+      <td>380</td>
+      <td>[sen, reed, whitehous, welcom, rhode, island, ...</td>
+      <td>286</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>https://raw.githubusercontent.com/lintool/Grim...</td>
+      <td>https://github.com/lintool/GrimmerSenatePressR...</td>
+      <td>10Sep2007Whitehouse72.txt</td>
+      <td>raw/Whitehouse/10Sep2007Whitehouse72.txt</td>
+      <td>REP. WHITEHOUSE ISSUES STATEMENT ON GEN. PETRA...</td>
+      <td>[REP., WHITEHOUSE, ISSUES, STATEMENT, ON, GEN....</td>
+      <td>270</td>
+      <td>[whitehous, issu, statement, on, petraeu, iraq...</td>
+      <td>210</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>https://raw.githubusercontent.com/lintool/Grim...</td>
+      <td>https://github.com/lintool/GrimmerSenatePressR...</td>
+      <td>11Apr2007Whitehouse122.txt</td>
+      <td>raw/Whitehouse/11Apr2007Whitehouse122.txt</td>
+      <td>SEN. WHITEHOUSE URGES BUSH FOR NEW DIRECTION I...</td>
+      <td>[SEN., WHITEHOUSE, URGES, BUSH, FOR, NEW, DIRE...</td>
+      <td>521</td>
+      <td>[whitehous, urg, bush, for, new, direct, in, i...</td>
+      <td>422</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>https://raw.githubusercontent.com/lintool/Grim...</td>
+      <td>https://github.com/lintool/GrimmerSenatePressR...</td>
+      <td>11Jan2007Whitehouse161.txt</td>
+      <td>raw/Whitehouse/11Jan2007Whitehouse161.txt</td>
+      <td>SENS. REED, WHITEHOUSE URGE PORTUGAL TO RECONS...</td>
+      <td>[SENS, ., REED, ,, WHITEHOUSE, URGE, PORTUGAL,...</td>
+      <td>484</td>
+      <td>[sen, reed, whitehous, urg, portug, to, recons...</td>
+      <td>396</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>https://raw.githubusercontent.com/lintool/Grim...</td>
+      <td>https://github.com/lintool/GrimmerSenatePressR...</td>
+      <td>11Mar2008Whitehouse7.txt</td>
+      <td>raw/Whitehouse/11Mar2008Whitehouse7.txt</td>
+      <td>WHITEHOUSE UNVEILS 'BUSH DEBT': $7.7 TRILLION ...</td>
+      <td>[WHITEHOUSE, UNVEILS, 'BUSH, DEBT, ', :, $, 7....</td>
+      <td>482</td>
+      <td>[whitehous, unveil, debt, trillion, in, forego...</td>
+      <td>368</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The stemmer we use here is called the <a href="http://www.nltk.org/api/nltk.stem.html#module-nltk.stem.porter">Porter Stemmer</a>, there are many others, including another good one by the same person (Martin Porter) called the <a href="http://www.nltk.org/api/nltk.stem.html#module-nltk.stem.snowball">Snowball Stemmer</a>.</p>
+<p>Now that it is cleaned we start analyzing the dataset. We can start by finding frequency disruptions for the dataset. Lets start looking at all the press releases together. The<a href="http://www.nltk.org/api/nltk.html#nltk.probability.ConditionalProbDist"><code>ConditionalFreqDist</code></a> class reads in a iterable of tuples, the first element is the condition and the second the word, for now we will use word lengths as the conditions, but tags or clusters would provide more useful results.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">whcfdist</span> <span class="o">=</span> <span class="n">nltk</span><span class="o">.</span><span class="n">ConditionalFreqDist</span><span class="p">(((</span><span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="p">),</span> <span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">whReleases</span><span class="p">[</span><span class="s1">&#39;normalized_tokens&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+
+<span class="c1">#print the number of conditions</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">whcfdist</span><span class="o">.</span><span class="n">N</span><span class="p">())</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>3070
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>From this we can lookup the distributions of different word lengths</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">whcfdist</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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
+"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can also create a <a href="http://www.nltk.org/api/nltk.html#nltk.probability.ConditionalProbDist"><code>ConditionalProbDist</code></a> from the <code>ConditionalFreqDist</code>, to do this though we need a model for the probability distribution. A simple model is <a href="http://www.nltk.org/api/nltk.html#nltk.probability.ELEProbDist"><code>ELEProbDist</code></a> which gives the expected likelihood estimate.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[28]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">whcpdist</span> <span class="o">=</span> <span class="n">nltk</span><span class="o">.</span><span class="n">ConditionalProbDist</span><span class="p">(</span><span class="n">whcfdist</span><span class="p">,</span> <span class="n">nltk</span><span class="o">.</span><span class="n">ELEProbDist</span><span class="p">)</span>
+
+<span class="c1">#print the most common 2 letter word</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">whcpdist</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+
+<span class="c1">#And its probability</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">whcpdist</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">prob</span><span class="p">(</span><span class="n">whcpdist</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>to
+0.22639691714836224
+</pre>
 </div>
 </div>
 
