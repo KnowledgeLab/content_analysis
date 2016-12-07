@@ -45,11 +45,42 @@
     + divergences
         + kl
 3. Clustering / Topic Models
-    + gensim
+    + packages
+        + scikit-learn
+        + gensim
+    + Introduce ML
+    + Training
+        + Use sklearn dataset examples
+    + Extraction
+        + Probabilistic models
+        + Deterministic models
+        + stop lists
+        + cleaning
+        + Performance
+        + [sklearn](http://scikit-learn.org/stable/modules/classes.html#module-sklearn.cluster)
+            + [Tfidf](http://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html)
+            + [KMeans](http://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html)
+            + Hierarchical
+        + [gensim](http://radimrehurek.com/gensim/apiref.html)
+            + [LDA](https://radimrehurek.com/gensim/models/ldamodel.html)
+                + Expansions on LDA
+            + [word2vec](https://radimrehurek.com/gensim/models/word2vec.html)
+            + Doc2Vec
+        + Implement our own models
+            + regressions
 4. Embedding / Spaces
+    + Grouped with the above
 6. Accuracy
 7. Classification
+    + Stanford classifiers
 8. Semantic Networks
+    + packages
+        + networkx
+        + nltk
+        + BeautifulSoup
+    + Tree structure
+        + walk through a graph
+    + Different parsers
 9. Beyond Text
     + Image processing
     + Sounds
