@@ -3,7 +3,6 @@
 1. Discussion
 2. Notebook
 
-
 # Weeks
 
 1. Scraping
@@ -30,6 +29,7 @@
     + data structures
         + pandas
 2. Corpus linguistics
+    + Reid
     + Searching text for keywords
     + Distribution of terms
     + Correlation
@@ -45,6 +45,7 @@
     + divergences
         + kl
 3. Clustering / Topic Models
+    + Reid
     + packages
         + scikit-learn
         + gensim
@@ -71,8 +72,12 @@
 4. Embedding / Spaces
     + Grouped with the above
 6. Accuracy
+    + Shilin
+    + Translation
 7. Classification
+    + Shilin
     + Stanford classifiers
+    + [nltk](http://www.nltk.org/book/ch07.html)
 8. Semantic Networks
     + packages
         + networkx
@@ -83,4 +88,7 @@
     + Different parsers
 9. Beyond Text
     + Image processing
+        + Difficult in Python
+        + OCR
+        + Computer vision
     + Sounds
