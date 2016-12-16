@@ -3,17 +3,15 @@
 + Searching text for keywords
 + Distribution of terms
 + Correlation
-
-+ From last year:
-    + Word frequencies
-    + Conditional frequencies
-    + Statistically significant collocations
-    + Distinguishing or Important words and phrases (Wordls!)
-        + tf-idf
-    + POS-tagged words and phrases
-    + Lemmatized words and phrases
-        + stemmers
-    + Dictionary-based annotations.
++ Word frequencies
++ Conditional frequencies
++ Statistically significant collocations
++ Distinguishing or Important words and phrases (Wordls!)
+    + tf-idf
++ POS-tagged words and phrases
++ Lemmatized words and phrases
+    + stemmers
++ Dictionary-based annotations.
 
 + divergences
     + kl

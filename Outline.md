@@ -3,6 +3,11 @@
 1. Discussion
 2. Notebook
 
+# Notes
+
++ Try to use pandas as intermediate data structure
++
+
 # Weeks
 
 1. Scraping
@@ -71,22 +76,28 @@
             + regressions
 4. Embedding / Spaces
     + Grouped with the above
-6. Accuracy
+5. Accuracy
     + Shilin
     + Translation
-7. Classification
+6. Classification
     + Shilin
     + Stanford classifiers
     + [nltk](http://www.nltk.org/book/ch07.html)
-8. Semantic Networks
+    + neural nets
+        + auto encoding
+7. NLP
+    + dependency parsing
+    + stanford core
+    + nltk stanford
+7. Semantic Networks
     + packages
-        + networkx
+        + networkx/igraph
         + nltk
         + BeautifulSoup
     + Tree structure
         + walk through a graph
     + Different parsers
-9. Beyond Text
+8. Beyond Text
     + Image processing
         + Difficult in Python
         + OCR
