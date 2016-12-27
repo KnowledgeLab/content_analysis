@@ -309,6 +309,7 @@ The stemmer we use here is called the [Porter Stemmer](http://www.nltk.org/api/n
 Now that it is cleaned we start analyzing the dataset. We can start by finding frequency disruptions for the dataset. Lets start looking at all the press releases together. The[`ConditionalFreqDist`](http://www.nltk.org/api/nltk.html#nltk.probability.ConditionalProbDist) class reads in a iterable of tuples, the first element is the condition and the second the word, for now we will use word lengths as the conditions, but tags or clusters would provide more useful results.
 
 ```python
+#.sum() adds together the lists from each row into a single list
 whcfdist = nltk.ConditionalFreqDist(((len(w), w) for w in whReleases['normalized_tokens'].sum()))
 
 #print the number of conditions
@@ -331,4 +332,46 @@ print(whcpdist[2].max())
 
 #And its probability
 print(whcpdist[2].prob(whcpdist[2].max()))
+```
+
+Word lengths are a good start but there are many more Important features we care about. To start with we will be classifying words with their part of speech (POS), using the [`nltk.pos_tag()`](http://www.nltk.org/api/nltk.tag.html#nltk.tag.pos_tag).
+
+```python
+whReleases['normalized_tokens_POS'] = [nltk.pos_tag(t) for t in whReleases['normalized_tokens']]
+```
+
+This gives us a new column with the part of speech as a short initialism and the word in a tuple, exactly how the `nltk.ConditionalFreqDist()` function wants them. We can now make another conditional frequency distribution.
+
+```python
+whcfdist_WordtoPOS = nltk.ConditionalFreqDist(whReleases['normalized_tokens_POS'].sum())
+list(whcfdist_WordtoPOS.items())[:10]
+```
+
+This gives the frequency of each word being each part of speech, which is usually quite boring.
+
+```python
+whcfdist_WordtoPOS['administr'].plot()
+```
+
+What we want is the the other direction, the frequency of each part of speech for each word.
+
+```python
+whcfdist_POStoWord = nltk.ConditionalFreqDist((p, w) for w, p in whReleases['normalized_tokens_POS'].sum())
+whcfdist_POStoWord['JJS']
+```
+
+```python
+whcfdist_POStoWord['VB'].plot()
+```
+
+We can then do a similar analysis of the probabilities
+
+```python
+whcpdist_POStoWord = nltk.ConditionalProbDist(whcfdist_POStoWord, nltk.ELEProbDist)
+
+#print the most common noun
+print(whcpdist_POStoWord['NN'].max())
+
+#And its probability
+print(whcpdist_POStoWord['NN'].prob(whcpdist_POStoWord['NN'].max()))
 ```
