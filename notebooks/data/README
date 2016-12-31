@@ -1,0 +1,25 @@
+pyAnno example data
+-------------------
+
+This directory contains a set of examples data files that can be used with
+the pyAnno library:
+
+- tetsdata_words.txt : These annotations are generated according to the
+  loop design decribed in Rzhetsky et al., 2009. Each item is annotated by
+  3 out of 8 annotators, for a total of 800 items. The possible labels
+  are 'HIGH', 'MEDIUM', 'LOW', missing values are indicated by 'NA'
+
+- testdata_numerical. txt : These annotations are generated according to the
+  loop design decribed in Rzhetsky et al., 2009. Each item is annotated by
+  3 out of 8 annotators, for a total of 800 items. The possible labels
+  are 1, 2, 3, 4, missing values are indicated by -1
+
+- testdata_irregular.txt : Set of 500 annotations from 6 annotators.
+  Labels are 0, 1, 2, 3, 4. About 10% of the data is missing (randomly
+  interspersed), and missing values are set to -1
+
+- testdata_large.txt : Large set of annotations, with 5000 items annotated
+  by 32 annotators. There are 8 possible labels, 0--7; missing data
+  is placed at random and indicated by -1
+
+- e-2.txt : One of the data sets from Rzhetsky et al., 2009 .

@@ -8,4 +8,7 @@
 + gensim
 + scikit-learn
 
+#Incompatible
++ pyanno
+
 #Unverified
