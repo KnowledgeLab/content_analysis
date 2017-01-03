@@ -16,7 +16,7 @@ all: notebooks html
 	rm notebooks/wikipedia_content_analysis.html
 	rm notebooks/sometextfile.txt
 	rm notebooks/lolcat.gif
-	rm notebooks/temp.docx
+	rm notebooks/data/temp.docx
 
 1-intro.html: 1-intro.ipynb
 	jupyter nbconvert --to html --output=../html/$@ notebooks/$<

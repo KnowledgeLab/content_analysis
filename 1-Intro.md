@@ -55,6 +55,7 @@ import urllib.parse #For joining urls
 import io #for making http requests look like files
 import json #For Tumblr API responses
 import os.path #For checking if files exist
+import os #For making directories
 ```
 
 We will also be working on the following files/urls
@@ -491,6 +492,9 @@ This procedure uses the `io.BytesIO` class again, since `docx.Document` expects 
 ```python
 def downloadIfNeeded(targetURL, outputFile, **openkwargs):
     if not os.path.isfile(outputFile):
+        outputDir = os.path.dirname(outputFile)
+        #This function is a more general os.mkdir()
+        os.makedirs(outputDir, exist_ok = True)
         r = requests.get(targetURL, stream=True)
         #Using a closure like this is generally better than having to
         #remember to close the file. There are ways to make this function
@@ -503,17 +507,15 @@ def downloadIfNeeded(targetURL, outputFile, **openkwargs):
 This function will download, save and open `outputFile` as `outputFile` or just open it if `outputFile` exists. But by default `open()` will open the file as read only text with the local encoding. Which can cause issues.
 
 ```python
-d = docx.Document(downloadIfNeeded(docxURL, 'temp.docx'))
+d = docx.Document(downloadIfNeeded(docxURL, 'data/temp.docx'))
 ```
 
 We need to tell `open()` to read in binary mode (`'rb'`), this is why we added `**openkwargs`, this allows us to pass any keyword arguments (kwargs) from `downloadIfNeeded` to `open()`.
 
-
 ```python
-d = docx.Document(downloadIfNeeded(docxURL, 'temp.docx', mode = 'rb'))
+d = docx.Document(downloadIfNeeded(docxURL, 'data/temp.docx', mode = 'rb'))
 for paragraph in d.paragraphs[:7]:
     print(paragraph.text)
 ```
-
 
 Now we can read the file with `docx.Document` and not have to wait for it to be downloaded every time.

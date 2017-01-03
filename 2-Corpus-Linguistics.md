@@ -1,13 +1,16 @@
 # Layout
-
+# update !!!!
 + Searching text for keywords
 + Distribution of terms
 + Correlation
 + Word frequencies
 + Conditional frequencies
 + Statistically significant collocations
+    + NEEDS to be added
+    + maybe trigrams
 + Distinguishing or Important words and phrases (Wordls!)
     + tf-idf
+        + next week
 + POS-tagged words and phrases
 + Lemmatized words and phrases
     + stemmers
@@ -15,12 +18,21 @@
 
 + divergences
     + kl
+    + Needs to be added
 
 + Sources
     + US senate press releases
         + e.g. [http://www.reid.senate.gov/press_releases](http://www.reid.senate.gov/press_releases)
     + Tumblr
     + Literature
+
++ More headers
++ More topic based less narrative
+
+%%javascript
+$.getScript('https://kmahelona.github.io/ipython_notebook_goodies/ipython_notebook_toc.js')
+
+
 
 # Week 2 - Corpus Linguistics
 
@@ -32,10 +44,11 @@ For this notebook we will be using the following packages
 #All these packages need to be installed from pip
 import requests #for http requests
 import nltk #the Natural Language Toolkit
-import sklearn #scikit-learn
 import pandas #gives us DataFrames
 import matplotlib.pyplot as plt #For graphics
 import wordcloud #Makes word clouds
+import numpy as np #For KL divergence
+import scipy #For KL divergence
 
 #This 'magic' command makes the plots work better
 #in the notebook, don't use it outside of a notebook
@@ -102,6 +115,8 @@ First we need to sort the words by count.
 countedWords.sort_values('count', ascending=False, inplace=True)
 countedWords[:10]
 ```
+
+The punctuation and very common words (like 'a' and 'the') makes up all the top most common values, this isn't very interesting and can actually get in the way of analysis. We will be removing these later on.
 
 ```python
 plt.plot(range(len(countedWords)), countedWords['count'])
@@ -229,7 +244,9 @@ Or plot each time it occurs
 whText.dispersion_plot(['stem', 'cell', 'federal' ,'Lila', 'Barber', 'Whitehouse'])
 ```
 
-If we want to do an analysis of all the Whitehouse press releases we will first need to obtain them. By looking at the API we can see the the URL we want is [https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/Whitehouse](https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/Whitehouse), so we can create a function to scrape the individual files
+If we want to do an analysis of all the Whitehouse press releases we will first need to obtain them. By looking at the API we can see the the URL we want is [https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/Whitehouse](https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/Whitehouse), so we can create a function to scrape the individual files.
+
+If you want to know more about downloading from APIs look at the 1st notebook
 
 
 ```python
@@ -285,7 +302,7 @@ As we want to start comparing the different releases we need to do a bit of norm
 To do this we will define a function to work over the tokenized lists, then use another apply to add the normalized tokens to a new column.
 
 ```python
-stopwords = ["the","it","she","he"]
+stopwords = ["the","it","she","he", "a"]
 
 def normlizeTokens(tokenLst, stopwordLst = stopwords):
     #We can use a generator here as we just need to iterate over it
@@ -403,6 +420,15 @@ We also might want to find significant bigrams and trigrams. To do this we will 
 
 ```python
 whBigrams = nltk.collocations.BigramCollocationFinder.from_words(whReleases['normalized_tokens'].sum())
+print("There are {} bigrams in the finder".format(whBigrams.N))
+```
+
+There are a lot of bigrams, but most of them only occur once, we should first filter our set to remove some of the least common.
+
+```
+#This modifies the finder inplace
+whBigrams.apply_freq_filter(2)
+print("There are {} bigrams in the finder".format(whBigrams.N))
 ```
 
 To compare the bigrams we need to tell nltk what our score function is, for now we will just look at the raw counts.
@@ -425,4 +451,64 @@ def bigramPrinting(count, wordsTuple, total):
 print(whBigrams.nbest(bigramPrinting, 10))
 ```
 
-The words are each given numeric IDs and a dictionary
+The words are each given numeric IDs and there is a dictionary that maps the IDs to the words they represent, this is a common performance optimization.
+
+
+# KL Divergence
+
+If we want to compare across the different corpus one of the places to start is Kullback-Leibler divergence, which computes the relative entropy between two distributions. Scipy provides [scipy.special.kl_div()](https://docs.scipy.org/doc/scipy/reference/generated/scipy.special.kl_div.html#scipy-special-kl-div) which takes in two arrays of probabilities and computes the KL divergence.
+
+To do this we will need to create the arrays, lets compare the Whitehouse releases with the Kennedy releases. First we have to download them and load them into a DataFrame.
+
+```python
+kenReleases = getGithubFiles('https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/Kennedy', maxFiles = 10)
+kenReleases[:5]
+```
+
+Then we can tokenize, stem and remove stop words, like we did for the Whitehouse releases
+
+```python
+kenReleases['tokenized_text'] = kenReleases['text'].apply(lambda x: nltk.word_tokenize(x))
+kenReleases['normalized_tokens'] = kenReleases['tokenized_text'].apply(lambda x: normlizeTokens(x))
+```
+
+Now we need to compare the two collection of words and remove those not found in both and assign the remaining ones indices.
+
+```python
+whWords = set(whReleases['normalized_tokens'].sum())
+kenWords = set(kenReleases['normalized_tokens'].sum())
+
+#Change & to | if you want to keep all words
+overlapWords = whWords & kenWords
+
+overlapWordsDict = {word: index for index, word in enumerate(overlapWords)}
+overlapWordsDict['student']
+```
+
+Now can count the occurrences of each these words in the corpora and create our arrays. Note, we don't have to use numpy arrays, we could just use a list, but the arrays are faster so we should get in the habit of using them.
+
+```python
+def makeProbsArray(dfColumn, overlapDict):
+    words = dfColumn.sum()
+    countList = [0] * len(overlapDict)
+    for word in words:
+        try:
+            countList[overlapDict[word]] += 1
+        except KeyError:
+            #The word is not common so we skip it
+            pass
+    countArray = np.array(countList)
+    return countArray / countArray.sum()
+
+whProbArray = makeProbsArray(whReleases['normalized_tokens'], overlapWordsDict)
+kenProbArray = makeProbsArray(kenReleases['normalized_tokens'], overlapWordsDict)
+kenProbArray.sum()
+#There is a little bit of a floating point math error
+#but it's too small to see with print and too small matter here
+```
+
+We can now compute the KL divergence
+
+```python
+wh_kenDivergence = scipy.special.kl_div(whProbArray, kenProbArray)
+```
