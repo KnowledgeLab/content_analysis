@@ -29,21 +29,26 @@ Intro stuff
 For this notebook we will be using the following packages
 
 ```python
-import requests
-import nltk
-import sklearn
-import pandas
-import matplotlib.pyplot as plt
-%matplotlib inline  
+#All these packages need to be installed from pip
+import requests #for http requests
+import nltk #the Natural Language Toolkit
+import sklearn #scikit-learn
+import pandas #gives us DataFrames
+import matplotlib.pyplot as plt #For graphics
+import wordcloud #Makes wordclouds
 
-import json
+#This 'magic' command makes the plots work better
+#in the notebook, don't use it outside of a notebook
+%matplotlib inline
+
+import json #For API responses
 import urllib.parse #For joining urls
 ```
 # Getting our corpuses
 
 To get started we will need some targets, lets start by downloading one of the corpuses from `nltk`. Lets take a look at how that works.
 
-first we can get a list of corpuses available from the Gutenburg corpus
+First we can get a list of works available from the Gutenburg corpus, with the [corpus module](http://www.nltk.org/api/nltk.corpus.html).
 
 ```python
 print(nltk.corpus.gutenberg.fileids())
@@ -374,4 +379,27 @@ print(whcpdist_POStoWord['NN'].max())
 
 #And its probability
 print(whcpdist_POStoWord['NN'].prob(whcpdist_POStoWord['NN'].max()))
+```
+
+```python
+wc = wordcloud.WordCloud(background_color="white", max_words=500, width= 1000, height = 1000, mode ='RGBA', scale=.5).generate(' '.join(whReleases['normalized_tokens'].sum()))
+plt.imshow(wc)
+plt.axis("off")
+plt.savefig("whitehouse_word_cloud.pdf", format = 'pdf')
+```
+
+We also might want to find significant bigrams and trigrams. To do this we will use the [`nltk.collocations.BigramCollocationFinder`](http://www.nltk.org/api/nltk.html?highlight=bigramcollocationfinder#nltk.collocations.BigramCollocationFinder) class, which can be given raw lists of strings with the `from_words()` method. By default it only looks at continuous bigrams but there is an option (`window_size`) to allow skip-gram.
+
+```python
+whBigrams = nltk.collocations.BigramCollocationFinder.from_words(whReleases['normalized_tokens'].sum())
+```
+
+To compare the bigrams we need to tell nltk what our score function is, for now we will just look at the raw counts.
+
+
+```python
+def bigramScoringfunction(count, wordsTuple, total):
+    return count
+
+print(whBigrams.nbest(bigramScoringfunction, 10))
 ```

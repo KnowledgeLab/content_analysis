@@ -10,7 +10,9 @@
     + raw text
     + html
     + PDFs
+        + Need stable url
     + word doc etc.
+        + Need example word doc
 + spidering
     + wikipedia
     + APIs
@@ -51,7 +53,8 @@ import pdfminer.pdfpage
 import re #for regexs
 import urllib.parse #For joining urls
 import io #for making http requests look like files
-import json #For Tumblr api responses
+import json #For Tumblr API responses
+import os.path #For checking if files exist
 ```
 
 We will also be working on the following files/urls
@@ -61,7 +64,7 @@ wikipedia_base_url = 'https://en.wikipedia.org'
 wikipedia_content_analysis = 'https://en.wikipedia.org/wiki/Content_analysis'
 content_analysis_save = 'wikipedia_content_analysis.html'
 example_text_file = 'sometextfile.txt'
-information_extraction_pdf = 'https://web.stanford.edu/~jurafsky/slp3/20.pdf'
+information_extraction_pdf = 'https://web.stanford.edu/~jurafsky/slp3/21.pdf'
 ```
 
 # Scraping
@@ -350,7 +353,6 @@ r = requests.get(target, params = {'id' : '152256405098'})
 d = json.loads(r.text[len('var tumblr_api_read = '):-2])
 ```
 
-
 ```python
 '''
 REQUEST_TOKEN_URL = 'http://www.tumblr.com/oauth/request_token'
@@ -393,7 +395,7 @@ We can create a text file with the `open()` function
 #stringToWrite = 'A line\nAnother line\nA line with a few unusual symbols \u2421 \u241B \u20A0 \u20A1 \u20A2 \u20A3 \u0D60\n'
 stringToWrite = 'A line\nAnother line\nA line with a few unusual symbols ␡ ␛ ₠ ₡ ₢ ₣ ൠ\n'
 
-with open(example_text_file, 'w', encoding='utf-8') as f:
+with open(example_text_file, mode = 'w', encoding='utf-8') as f:
     f.write(stringToWrite)
 ```
 
@@ -415,10 +417,10 @@ Notice that with _latin-1_ the unicode characters are mixed up and there are too
 ## PDF
 
 Another common way text will be stored is in a PDF file. First we will download a pdf in Python. To do that lets grab a chapter from
-_Speech and Language Processing_, chapter 20 is on Information Extraction which seems apt. It is stored as a pdf at [https://web.stanford.edu/~jurafsky/slp3/20.pdf](https://web.stanford.edu/~jurafsky/slp3/20.pdf).
+_Speech and Language Processing_, chapter 21 is on Information Extraction which seems apt. It is stored as a pdf at [https://web.stanford.edu/~jurafsky/slp3/21.pdf](https://web.stanford.edu/~jurafsky/slp3/21.pdf).
 
 ```python
-#information_extraction_pdf = 'https://web.stanford.edu/~jurafsky/slp3/20.pdf'
+#information_extraction_pdf = 'https://web.stanford.edu/~jurafsky/slp3/21.pdf'
 
 infoExtractionRequest = requests.get(information_extraction_pdf, stream=True)
 print(infoExtractionRequest.text[:1000])
@@ -432,12 +434,13 @@ Because PDFs are a very complicated file format pdfminer requires a large amount
 
 ```python
 def readPDF(pdfFile):
-    #Make utf-8 explicit
     #Based on code from http://stackoverflow.com/a/20905381/4955164
+    #Using utf-8, if there are a bunch of random symbols try changing this
+    codec = 'utf-8'
     rsrcmgr = pdfminer.pdfinterp.PDFResourceManager()
     retstr = io.StringIO()
     layoutParams = pdfminer.layout.LAParams()
-    device = pdfminer.converter.TextConverter(rsrcmgr, retstr, laparams = layoutParams)
+    device = pdfminer.converter.TextConverter(rsrcmgr, retstr, laparams = layoutParams, codec = codec)
     #We need a device and an interpreter
     interpreter = pdfminer.pdfinterp.PDFPageInterpreter(rsrcmgr, device)
     password = ''
@@ -475,8 +478,42 @@ The other type of document you are likely to encounter is the `.docx`, these are
 For this class we will use [`python-docx`](https://python-docx.readthedocs.io/en/latest/) which provides a nice simple interface for reading `.docx` files
 
 ```python
-r = requests.get('https://github.com/xiaow2/persp-analysis/raw/02772bc5baf4044ba6410170ca740f14cd6155d5/assignments/short%20paper%201.docx', stream=True)
+docxURL = 'https://github.com/xiaow2/persp-analysis/raw/02772bc5baf4044ba6410170ca740f14cd6155d5/assignments/short%20paper%201.docx'
+
+r = requests.get(docxURL, stream=True)
 d = docx.Document(io.BytesIO(r.content))
 for paragraph in d.paragraphs[:7]:
     print(paragraph.text)
 ```
+
+This procedure uses the `io.BytesIO` class again, since `docx.Document` expects a file. Another way to do it is to save document to a file then read it like any other file. If we do this we can either delete the file afterwords, or save it and skip downloading it next time.
+
+```python
+def downloadIfNeeded(targetURL, outputFile, **openkwargs):
+    if not os.path.isfile(outputFile):
+        r = requests.get(targetURL, stream=True)
+        #Using a closure like this is generally better than having to
+        #remember to close the file. There are ways to make this function
+        #work as a closure too
+        with open(outputFile, 'wb') as f:
+            f.write(r.content)
+    return open(outputFile, **openkwargs)
+```
+
+This function will download, save and open `outputFile` as `outputFile` or just open it if `outputFile` exists. But by default `open()` will open the file as read only text with the local encoding. Which can cause issues.
+
+```python
+d = docx.Document(downloadIfNeeded(docxURL, 'temp.docx'))
+```
+
+We need to tell `open()` to read in binary mode (`'rb'`), this is why we added `**openkwargs`, this allows us to pass any keyword arguments (kwargs) from `downloadIfNeeded` to `open()`.
+
+
+```python
+d = docx.Document(downloadIfNeeded(docxURL, 'temp.docx', mode = 'rb'))
+for paragraph in d.paragraphs[:7]:
+    print(paragraph.text)
+```
+
+
+Now we can read the file with `docx.Document` and not have to wait for it to be downloaded every time.
