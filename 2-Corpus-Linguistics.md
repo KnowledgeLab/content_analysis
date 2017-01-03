@@ -35,7 +35,7 @@ import nltk #the Natural Language Toolkit
 import sklearn #scikit-learn
 import pandas #gives us DataFrames
 import matplotlib.pyplot as plt #For graphics
-import wordcloud #Makes wordclouds
+import wordcloud #Makes word clouds
 
 #This 'magic' command makes the plots work better
 #in the notebook, don't use it outside of a notebook
@@ -362,8 +362,19 @@ What we want is the the other direction, the frequency of each part of speech fo
 
 ```python
 whcfdist_POStoWord = nltk.ConditionalFreqDist((p, w) for w, p in whReleases['normalized_tokens_POS'].sum())
+```
+We can now get all of the superlative adjectives
+```python
 whcfdist_POStoWord['JJS']
 ```
+
+Or look at the most common nouns
+
+```python
+whcfdist_POStoWord['NN'].most_common(5)
+```
+
+Or plot the base form verbs against their number of occurrences
 
 ```python
 whcfdist_POStoWord['VB'].plot()
@@ -374,7 +385,7 @@ We can then do a similar analysis of the probabilities
 ```python
 whcpdist_POStoWord = nltk.ConditionalProbDist(whcfdist_POStoWord, nltk.ELEProbDist)
 
-#print the most common noun
+#print the most common nouns
 print(whcpdist_POStoWord['NN'].max())
 
 #And its probability
@@ -398,8 +409,20 @@ To compare the bigrams we need to tell nltk what our score function is, for now 
 
 
 ```python
-def bigramScoringfunction(count, wordsTuple, total):
+def bigramScoring(count, wordsTuple, total):
     return count
 
-print(whBigrams.nbest(bigramScoringfunction, 10))
+print(whBigrams.nbest(bigramScoring, 10))
 ```
+
+One note about how `BigramCollocationFinder` works, it doesn't use the strings internally.
+
+```python
+def bigramPrinting(count, wordsTuple, total):
+    print("The first word is:  {}\nThe second word is: {}".format(*wordsTuple))
+    #Returns None so all the tuples are considered to have the same rank
+
+print(whBigrams.nbest(bigramPrinting, 10))
+```
+
+The words are each given numeric IDs and a dictionary
