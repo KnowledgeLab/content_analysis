@@ -1,6 +1,6 @@
-notebooks: 1-intro.ipynb 2-Corpus-Linguistics.ipynb 3-Clustering.ipynb
+notebooks: 1-intro.ipynb 2-Corpus-Linguistics.ipynb 3-Clustering-and-Topic-Modeling.ipynb
 
-html: 1-intro.html 2-Corpus-Linguistics.html 3-Clustering.html
+html: 1-intro.html 2-Corpus-Linguistics.html 3-Clustering-and-Topic-Modeling.html
 
 all: notebooks html
 
@@ -8,7 +8,7 @@ all: notebooks html
 
 2: 2-Corpus-Linguistics.html
 
-3: 3-Clustering.html
+3: 3-Clustering-and-Topic-Modeling.html
 
 1-intro.ipynb: 1-intro.md
 	notedown -o notebooks/$@ $<
@@ -28,9 +28,9 @@ all: notebooks html
 2-Corpus-Linguistics.html: 2-Corpus-Linguistics.ipynb
 	jupyter nbconvert --to html --output=../html/$@ notebooks/$<
 
-3-Clustering.ipynb: 3-Clustering.md
+3-Clustering-and-Topic-Modeling.ipynb: 3-Clustering-and-Topic-Modeling.md
 	notedown -o notebooks/$@ $<
 	jupyter nbconvert --to notebook --execute --allow-errors --output=$@ notebooks/$@
 
-3-Clustering.html: 3-Clustering.ipynb
+3-Clustering-and-Topic-Modeling.html: 3-Clustering-and-Topic-Modeling.ipynb
 	jupyter nbconvert --to html --output=../html/$@ notebooks/$<
