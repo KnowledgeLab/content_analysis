@@ -159,11 +159,11 @@ This gives us the tf-idf for each word in each text
 list(zip(ngCountVectorizer.vocabulary_.keys(), newsgroupsTF.data))[:20]
 ```
 
-Lots of garbage from unique words and stopwords, but it is a start. We should normally filter out stop words, stem and lem our data before vectorizering, or we can instead tf-idf to filter our data, for exact explanation of all the options look [here](http://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html), generally, we've limited it to at most 5000 words, as well as limited it to words with at least 3 occurrences, and that aren't in more than half the documents.
+Lots of garbage from unique words and stopwords, but it is a start. We should normally filter out stop words, stem and lem our data before vectorizering, or we can instead tf-idf to filter our data, for exact explanation of all the options look [here](http://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html), generally, we've limited it to at most 1000 words, as well as limited it to words with at least 3 occurrences, and that aren't in more than half the documents.
 
 ```python
 #initialize
-ngTFVectorizer = sklearn.feature_extraction.text.TfidfVectorizer(max_df=0.5, max_features=5000, min_df=3, stop_words='english', norm='l2')
+ngTFVectorizer = sklearn.feature_extraction.text.TfidfVectorizer(max_df=0.5, max_features=1000, min_df=3, stop_words='english', norm='l2')
 #train
 newsgroupsTFVects = ngTFVectorizer.fit_transform(newsgroupsDF['text'])
 ```
@@ -241,7 +241,20 @@ Let 's do a visualization of the clusters. First, let's first reduce the
 dimensionality of the data using a principal component analysis(PCA).
 
 ```python
-reduced_data= sklearn.decomposition.PCA(n_components=2).fit_transform(newsgroupsTFVects.toarray())
+PCA = sklearn.decomposition.PCA
+pca = PCA(n_components = 2).fit(newsgroupsTFVects.toarray())
+```
+
+```python
+reduced_data = pca.transform(newsgroupsTFVects.toarray())
+components = pca.components_
+```
+
+```python
+keyword_ids = list(set(order_centroids[:,:10].flatten()))
+words = [terms[i] for i in keyword_ids]
+x = components[:,keyword_ids][0,:]
+y = components[:,keyword_ids][1,:]
 ```
 
 Then, let's build a color map for the true labels.
@@ -260,8 +273,26 @@ print("The categories' colors are:\n{}".format(colordict.items()))
 Let's plot the data using the true labels as the colors of the data points.
 
 ```python
-plt.figure(1)
-plt.scatter(reduced_data[:, 0], reduced_data[:, 1], color = colors)
+fig = plt.figure(1)
+ax = fig.add_subplot(111)
+ax.set_frame_on(False)
+ax.scatter(reduced_data[:, 0], reduced_data[:, 1], color = colors, alpha = 0.5, label = colors)
+plt.xticks(())
+plt.yticks(())
+plt.title('True Classes')
+plt.show()
+```
+
+One nice thing about PCA is that we can also do a biplot and map our feature
+vectors to the same space.
+
+```python
+fig = plt.figure(figsize = (16,9))
+ax = fig.add_subplot(111)
+ax.set_frame_on(False)
+ax.scatter(reduced_data[:, 0], reduced_data[:, 1], color = colors, alpha = 0.3, label = colors)
+for i, word in enumerate(words):
+    ax.annotate(word, (x[i],y[i]))
 plt.xticks(())
 plt.yticks(())
 plt.title('True Classes')
@@ -275,30 +306,43 @@ colors_p = [colordict[newsgroupsCategories[l]] for l in km.labels_]
 ```
 
 ```python
-plt.figure(1)
-plt.scatter(reduced_data[:, 0], reduced_data[:, 1], color = colors_p)
+fig = plt.figure(1)
+ax = fig.add_subplot(111)
+ax.set_frame_on(False)
+plt.scatter(reduced_data[:, 0], reduced_data[:, 1], color = colors_p, alpha = 0.5)
 plt.xticks(())
 plt.yticks(())
-plt.title('Predicted Clusters')
+plt.title('Predicted Clusters\n k = 4')
 plt.show()
 ```
 
 Let's try with 3 clusters.
 
 ```python
-km3 = sklearn.cluster.KMeans(n_clusters=numClusters, init='k-means++')
+km3 = sklearn.cluster.KMeans(n_clusters= 3, init='k-means++')
 km3.fit(newsgroupsTFVects.toarray())
 ```
 
 ```python
-colors_p = [colordict[newsgroupsCategories[l]] for l in km.labels_]
+colors_p = [colordict[newsgroupsCategories[l]] for l in km3.labels_]
+fig = plt.figure(1)
+ax = fig.add_subplot(111)
+ax.set_frame_on(False)
+plt.scatter(reduced_data[:, 0], reduced_data[:, 1], color = colors_p, alpha = 0.5)
+plt.xticks(())
+plt.yticks(())
+plt.title('Predicted Clusters\n k = 3')
+plt.show()
 ```
 
 # Hierarchical Clustering
 
-Instead of looking at the matrix of documents to words, we can instead look at how the documents relate to each other.
+Instead of looking at the matrix of documents to words, we can instead look at
+how the documents relate to each other.
 
-To do this we will take our matrix of word counts per document `newsgroupsTFVects` and create a word occurrence matrix measuring how similar the documents are to each other based on their number of shared words.
+To do this we will take our matrix of word counts per document
+`newsgroupsTFVects` and create a word occurrence matrix measuring how similar
+the documents are to each other based on their number of shared words.
 
 ```python
 
@@ -468,3 +512,5 @@ ob11Bow = dictionary.doc2bow(obReleases['normalized_tokens'][11])
 ob11lda = oblda[ob1Bow]
 ob11lda
 ```
+
+We can now see which topic our model predicts the press releases belongs to
