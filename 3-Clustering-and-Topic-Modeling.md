@@ -435,26 +435,22 @@ def getGithubFiles(target, maxFiles = 100):
 
     return pandas.DataFrame(releasesDict)
 
-targetSenators = ['Voinovich', 'Obama', 'Whitehouse', 'Snowe', 'Rockefeller', 'Murkowski', 'McCain', 'Kyl', 'Kennedy', 'Frist']
+targetSenators = ['Voinovich', 'Obama', 'Whitehouse', 'Snowe', 'Rockefeller', 'Murkowski', 'McCain', 'Kyl', 'Baucus', 'Frist']
 
 """
 senReleasesTraining = pandas.DataFrame()
-senReleasesTesting = pandas.DataFrame()
 
 for senator in targetSenators:
     print("Fetching {}'s data".format(senator))
-    targetDF = getGithubFiles('https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/{}'.format(senator), maxFiles = 20)
+    targetDF = getGithubFiles('https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/{}'.format(senator), maxFiles = 100)
     targetDF['senator'] = senator
-    senReleasesTraining = senReleasesTraining.append(targetDF[:10], ignore_index = True)
-    senReleasesTesting = senReleasesTesting.append(targetDF[10:], ignore_index = True)
+    senReleasesTraining = senReleasesTraining.append(targetDF, ignore_index = True)
 
 senReleasesTraining.to_csv("data/senReleasesTraining.csv")
-senReleasesTesting.to_csv("data/senReleasesTesting.csv")
 """
 senReleasesTraining = pandas.DataFrame.from_csv("data/senReleasesTraining.csv")
-senReleasesTesting = pandas.DataFrame.from_csv("data/senReleasesTesting.csv")
 
-senReleasesTraining[::10]
+senReleasesTraining[::100]
 ```
 
 Now we have the files we can tokenize and normalize
@@ -489,9 +485,7 @@ snowball = nltk.stem.snowball.SnowballStemmer('english')
 senReleasesTraining['tokenized_text'] = senReleasesTraining['text'].apply(lambda x: nltk.word_tokenize(x))
 senReleasesTraining['normalized_tokens'] = senReleasesTraining['tokenized_text'].apply(lambda x: normlizeTokens(x, stopwordLst = stop_words_nltk, stemmer = snowball))
 
-senReleasesTesting['tokenized_text'] = senReleasesTesting['text'].apply(lambda x: nltk.word_tokenize(x))
-senReleasesTesting['normalized_tokens'] = senReleasesTesting['tokenized_text'].apply(lambda x: normlizeTokens(x, stopwordLst = stop_words_nltk, stemmer = snowball))
-
+senReleasesTraining[::100]
 ```
 
 To use the texts with gensim we need to create a `corpua` object, this takes a few steps. First we create a `Dictioanry` that maps tokens to ids.
@@ -528,15 +522,6 @@ print("The topics of the text: {}".format(senReleasesTraining['name'][0]))
 print("are: {}".format(sen1lda))
 ```
 
-and one from the testing set
-
-```python
-senTesting1Bow = dictionary.doc2bow(senReleasesTesting['normalized_tokens'][1])
-sentesting1lda = senlda[senTesting1Bow]
-print("The topics of the text: {}".format(senReleasesTesting['name'][0]))
-print("are: {}".format(sentesting1lda))
-```
-
 We can now see which topic our model predicts the press releases belongs to and make this into a dataFrame.
 
 ```python
@@ -549,5 +534,37 @@ ldaDF = pandas.DataFrame({
 This is a bit unwieldy so lets make each topic its own column
 
 ```python
+#Dict to temporally hold the probabilities
+topicsProbDict = {i : [0] * len(ldaDF) for i in range(senlda.num_topics)}
 
+#Load them into the dict
+for index, topicTuples in enumerate(ldaDF['topics']):
+    for topicNum, prob in topicTuples:
+        topicsProbDict[topicNum][index] = prob
+
+#Update the DataFrame
+for topicNum in range(senlda.num_topics):
+    ldaDF['topic_{}'.format(topicNum)] = topicsProbDict[topicNum]
+
+ldaDF[1::100]
 ```
+
+We can also look at the top words from each topic to get a sense of what each is. So to look at the top terms in topic `1` we can
+
+```python
+senlda.show_topic(1)
+```
+
+And if we want to make a dataFrame
+
+```python
+topicsDict = {}
+for topicNum in range(senlda.num_topics):
+    topicWords = [w for w, p in senlda.show_topic(topicNum)]
+    topicsDict['Topic_{}'.format(topicNum)] = topicWords
+
+wordRanksDF = pandas.DataFrame(topicsDict)
+wordRanksDF
+```
+
+We can see that most of the topics have the same top words, there are definitely differences. We can try and make the topics more distinct by changing parameters of the model
