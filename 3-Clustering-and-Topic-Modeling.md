@@ -44,18 +44,22 @@ For this notebook we will be using the following packages
 
 ```python
 #All these packages need to be installed from pip
-#These are all for the ML/cluster detection
+#These are all for the cluster detection
 import sklearn
 import sklearn.feature_extraction.text
 import sklearn.pipeline
 import sklearn.preprocessing
 import sklearn.datasets
 import sklearn.cluster
+import sklearn.decomposition
 
+
+import scipy #For hierarchical clustering and some visuals
+#import scipy.cluster.hierarchy
 import gensim#For topic modeling
 import nltk #the Natural Language Toolkit
 import requests #For downloading our datasets
-import numpy as np
+import numpy as np #for arrays
 import pandas #gives us DataFrames
 import matplotlib.pyplot as plt #For graphics
 import seaborn as sns #Makes the graphics look nicer
@@ -65,41 +69,48 @@ import seaborn as sns #Makes the graphics look nicer
 #Also you can ignore the warning, it
 %matplotlib inline
 
-import metaknowledge as mk
-
-import time
 import json
 ```
 
+# Intro
+
+intro stuff ...
+
 # Getting our corpuses
 
-We can get a dataset to work on from sklearn
+To start with we can get a dataset to work on from sklearn
 
 ```python
-#data_home argument will let you change the download location
-
 newsgroups = sklearn.datasets.fetch_20newsgroups(subset='train')
 print(dir(newsgroups))
 ```
 
 We can get the categories with `target_names` or the actual files with `filenames`
+
 ```python
 print(newsgroups.target_names)
 print(len(newsgroups.data))
 ```
+We will start by converting the provided data into pandas DataFrames
 
-lets reduce our dataset for this analysis and drop some of the extraneous information
-
-```python
-categories = ['comp.sys.mac.hardware', 'comp.windows.x', 'misc.forsale', 'rec.autos']
-newsgroups = sklearn.datasets.fetch_20newsgroups(subset='train', categories = categories, remove=['headers', 'footers', 'quotes'])
-```
-
-The contents of the files are stored in `data`
+lets reduce our dataset for this analysis, drop some of the extraneous information and convert it into a DataFrame
 
 ```python
-print(len(newsgroups.data))
-print("\n".join(newsgroups.data[2].split("\n")[:15]))
+newsgroupsCategories = ['comp.sys.mac.hardware', 'comp.windows.x', 'misc.forsale', 'rec.autos']
+
+newsgroupsDF = pandas.DataFrame(columns = ['text', 'category', 'source_file'])
+
+for category in newsgroupsCategories:
+    print("Fetching data for: {}".format(category))
+    ng = sklearn.datasets.fetch_20newsgroups(subset='train', categories = [category], remove=['headers', 'footers', 'quotes'])
+    newsgroupsDF = newsgroupsDF.append(pandas.DataFrame({'text' : ng.data, 'category' : [category] * len(ng.data), 'source_file' : ng.filenames}), ignore_index=True)
+
+#Creating an explicit index column for later
+
+#newsgroupsDF['index'] = range(len(newsgroupsDF))
+#newsgroupsDF.set_index('index', inplace = True)
+print(len(newsgroupsDF))
+newsgroupsDF[:10]
 ```
 
 We can start by converting the documents into count vectors
@@ -108,7 +119,7 @@ We can start by converting the documents into count vectors
 #First it needs to be initialized
 ngCountVectorizer = sklearn.feature_extraction.text.CountVectorizer()
 #Then trained
-newsgroupsVects = ngCountVectorizer.fit_transform(newsgroups.data)
+newsgroupsVects = ngCountVectorizer.fit_transform(newsgroupsDF['text'])
 print(newsgroupsVects.shape)
 ```
 
@@ -154,7 +165,7 @@ Lots of garbage from unique words and stopwords, but it is a start. We should no
 #initialize
 ngTFVectorizer = sklearn.feature_extraction.text.TfidfVectorizer(max_df=0.5, max_features=5000, min_df=3, stop_words='english', norm='l2')
 #train
-newsgroupsTFVects = ngTFVectorizer.fit_transform(newsgroups.data)
+newsgroupsTFVects = ngTFVectorizer.fit_transform(newsgroupsDF['text'])
 ```
 
 Lets look at the matrix
@@ -177,14 +188,14 @@ except KeyError:
 
 This is a good matrix to start finding clusters with though
 
-#K-means
+# K-means
 
 Lets start with k-means
 
-To do this we will need to know how many clusters we're looking for
+To do this we will need to know how many clusters we're looking for. Here the true number of clusters is 4. But, in most cases, you wouldn't know the number a priori.
 
 ```python
-numClusters = len(set(newsgroups.target_names))
+numClusters = len(set(newsgroupsDF['category']))
 numClusters
 ```
 
@@ -207,29 +218,140 @@ Once we have the clusters there are a variety of metrics that sklearn provides, 
 ```python
 print("The available metrics are: {}".format([s for s in dir(sklearn.metrics) if s[0] != '_']))
 print("for our clusters:")
-print("Homogeneity: {:0.3f}".format(sklearn.metrics.homogeneity_score(newsgroups.target, km.labels_)))
-print("Completeness: {:0.3f}".format(sklearn.metrics.completeness_score(newsgroups.target, km.labels_)))
-print("V-measure: {:0.3f}".format(sklearn.metrics.v_measure_score(newsgroups.target, km.labels_)))
+print("Homogeneity: {:0.3f}".format(sklearn.metrics.homogeneity_score(newsgroupsDF['category'], km.labels_)))
+print("Completeness: {:0.3f}".format(sklearn.metrics.completeness_score(newsgroupsDF['category'], km.labels_)))
+print("V-measure: {:0.3f}".format(sklearn.metrics.v_measure_score(newsgroupsDF['category'], km.labels_)))
 ```
 
 We can also look at the contents of the clusters
 
 ```python
-terms = vectorizer.get_feature_names()
+terms = ngTFVectorizer.get_feature_names()
 print("Top terms per cluster:")
 order_centroids = km.cluster_centers_.argsort()[:, ::-1]
-for i in range(true_k):
+for i in range(numClusters):
     print("Cluster %d:" % i)
     for ind in order_centroids[i, :10]:
         print(' %s' % terms[ind])
     print('\n')
 ```
 
-#Hierarchical Clustering
 
-Instead of looking at the matrix of documents to words, we can look at how the words relate the documents to each other.
+Let 's do a visualization of the clusters. First, let's first reduce the
+dimensionality of the data using a principal component analysis(PCA).
 
-To do this we will take our matrix of word counts per document `newsgroupsTFVects` and
+```python
+reduced_data= sklearn.decomposition.PCA(n_components=2).fit_transform(newsgroupsTFVects.toarray())
+```
+
+Then, let's build a color map for the true labels.
+
+```python
+colordict = {
+'comp.sys.mac.hardware': 'red',
+'comp.windows.x': 'orange',
+'misc.forsale': 'green',
+'rec.autos': 'blue',
+    }
+colors = [colordict[c] for c in newsgroupsDF['category']]
+print("The categories' colors are:\n{}".format(colordict.items()))
+```
+
+Let's plot the data using the true labels as the colors of the data points.
+
+```python
+plt.figure(1)
+plt.scatter(reduced_data[:, 0], reduced_data[:, 1], color = colors)
+plt.xticks(())
+plt.yticks(())
+plt.title('True Classes')
+plt.show()
+```
+
+Let's do it again with predicted clusters.
+
+```python
+colors_p = [colordict[newsgroupsCategories[l]] for l in km.labels_]
+```
+
+```python
+plt.figure(1)
+plt.scatter(reduced_data[:, 0], reduced_data[:, 1], color = colors_p)
+plt.xticks(())
+plt.yticks(())
+plt.title('Predicted Clusters')
+plt.show()
+```
+
+Let's try with 3 clusters.
+
+```python
+km3 = sklearn.cluster.KMeans(n_clusters=numClusters, init='k-means++')
+km3.fit(newsgroupsTFVects.toarray())
+```
+
+```python
+colors_p = [colordict[newsgroupsCategories[l]] for l in km.labels_]
+```
+
+# Hierarchical Clustering
+
+Instead of looking at the matrix of documents to words, we can instead look at how the documents relate to each other.
+
+To do this we will take our matrix of word counts per document `newsgroupsTFVects` and create a word occurrence matrix measuring how similar the documents are to each other based on their number of shared words.
+
+```python
+
+newsgroupsCoocMat = newsgroupsTFVects * newsgroupsTFVects.T
+#set the diagonal to 0 since we don't care how similar texts are to themselves
+newsgroupsCoocMat.setdiag(0)
+#Another way of relating the texts is with their cosine similarity
+#newsgroupsCosinMat1 = 1 - sklearn.metrics.pairwise.cosine_similarity(newsgroupsTFVects)
+#But generally word occurrence is more accurate
+
+```
+
+Now we can comute the linkage between the different texts, creating a tree. Although due to time considerations we will only look at the first 100 texts.
+
+
+```python
+linkage_matrix = scipy.cluster.hierarchy.ward(newsgroupsCoocMat[:100, :100].toarray())
+linkage_matrix[:10]
+```
+
+Now we can visualize the tree
+
+```python
+ax = scipy.cluster.hierarchy.dendrogram(linkage_matrix)
+```
+
+This plot is somewhat unwieldy, to make it easier to read we can cut the tree after a number of branches and then just show a central leaf.
+
+```python
+ax = scipy.cluster.hierarchy.dendrogram(linkage_matrix, p=4, truncate_mode='level')
+```
+
+By default the tree is colored to show the clusters based on their ['distance'](https://docs.scipy.org/doc/scipy-0.18.1/reference/generated/scipy.cluster.hierarchy.dendrogram.html#scipy.cluster.hierarchy.dendrogram) from one another, but their are other ways of forming clusters.
+
+
+One of the most common is to cut the tree into `n` branches. We can do this with [`fcluster()`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.hierarchy.fcluster.html#scipy.cluster.hierarchy.fcluster). Lets break the tree into 4 clusters
+
+```
+hierarchicalClusters = scipy.cluster.hierarchy.fcluster(linkage_matrix, 4, 'maxclust')
+hierarchicalClusters
+```
+
+This gives us an array giving each element of `linkage_matrix`'s cluster. We can save this, plot it or look for the representative examples from the clusters.
+
+```python
+clusterLeaders = scipy.cluster.hierarchy.leaders(linkage_matrix, hierarchicalClusters)
+clusterLeaders
+```
+We can then look these up in our original data
+
+```python
+newsgroupsDF.iloc[clusterLeaders[0]]
+```
 
 
 # Gensim
