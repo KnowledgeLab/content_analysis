@@ -81,7 +81,7 @@ intro stuff ...
 To start with we can get a dataset to work on from sklearn
 
 ```python
-newsgroups = sklearn.datasets.fetch_20newsgroups(subset='train')
+newsgroups = sklearn.datasets.fetch_20newsgroups(subset='train') #, data_home = '~/shared/sklearnData'
 print(dir(newsgroups))
 ```
 
@@ -102,7 +102,7 @@ newsgroupsDF = pandas.DataFrame(columns = ['text', 'category', 'source_file'])
 
 for category in newsgroupsCategories:
     print("Fetching data for: {}".format(category))
-    ng = sklearn.datasets.fetch_20newsgroups(subset='train', categories = [category], remove=['headers', 'footers', 'quotes'])
+    ng = sklearn.datasets.fetch_20newsgroups(subset='train', categories = [category], remove=['headers', 'footers', 'quotes'])#, data_home = '~/shared/sklearnData'
     newsgroupsDF = newsgroupsDF.append(pandas.DataFrame({'text' : ng.data, 'category' : [category] * len(ng.data), 'source_file' : ng.filenames}), ignore_index=True)
 
 #Creating an explicit index column for later
@@ -400,7 +400,7 @@ newsgroupsDF.iloc[clusterLeaders[0]]
 
 # Gensim
 
-To do topic modeling we will again be using data from the [grimmer press releases corpus](ttps://github.com/lintool/GrimmerSenatePressReleases). Lets start by defining the same function as last lesson and loading a few press releases from Obama into a DataFrame.
+To do topic modeling we will again be using data from the [grimmer press releases corpus](ttps://github.com/lintool/GrimmerSenatePressReleases). Lets start by defining the same function as last lesson and loading a few press releases from 10 different senators into a DataFrame. The code to do this is below, but commented out as we've already downloaded the data to the data directory.
 
 ```python
 def getGithubFiles(target, maxFiles = 100):
@@ -435,8 +435,26 @@ def getGithubFiles(target, maxFiles = 100):
 
     return pandas.DataFrame(releasesDict)
 
-obReleases = getGithubFiles('https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/Obama', maxFiles = 20)
-obReleases[:5]
+targetSenators = ['Voinovich', 'Obama', 'Whitehouse', 'Snowe', 'Rockefeller', 'Murkowski', 'McCain', 'Kyl', 'Kennedy', 'Frist']
+
+"""
+senReleasesTraining = pandas.DataFrame()
+senReleasesTesting = pandas.DataFrame()
+
+for senator in targetSenators:
+    print("Fetching {}'s data".format(senator))
+    targetDF = getGithubFiles('https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/{}'.format(senator), maxFiles = 20)
+    targetDF['senator'] = senator
+    senReleasesTraining = senReleasesTraining.append(targetDF[:10], ignore_index = True)
+    senReleasesTesting = senReleasesTesting.append(targetDF[10:], ignore_index = True)
+
+senReleasesTraining.to_csv("data/senReleasesTraining.csv")
+senReleasesTesting.to_csv("data/senReleasesTesting.csv")
+"""
+senReleasesTraining = pandas.DataFrame.from_csv("data/senReleasesTraining.csv")
+senReleasesTesting = pandas.DataFrame.from_csv("data/senReleasesTesting.csv")
+
+senReleasesTraining[::10]
 ```
 
 Now we have the files we can tokenize and normalize
@@ -468,49 +486,68 @@ stop_words_nltk = nltk.corpus.stopwords.words('english')
 snowball = nltk.stem.snowball.SnowballStemmer('english')
 
 #Apply our functions
-obReleases['tokenized_text'] = obReleases['text'].apply(lambda x: nltk.word_tokenize(x))
-obReleases['normalized_tokens'] = obReleases['tokenized_text'].apply(lambda x: normlizeTokens(x, stopwordLst = stop_words_nltk, stemmer = snowball))
+senReleasesTraining['tokenized_text'] = senReleasesTraining['text'].apply(lambda x: nltk.word_tokenize(x))
+senReleasesTraining['normalized_tokens'] = senReleasesTraining['tokenized_text'].apply(lambda x: normlizeTokens(x, stopwordLst = stop_words_nltk, stemmer = snowball))
+
+senReleasesTesting['tokenized_text'] = senReleasesTesting['text'].apply(lambda x: nltk.word_tokenize(x))
+senReleasesTesting['normalized_tokens'] = senReleasesTesting['tokenized_text'].apply(lambda x: normlizeTokens(x, stopwordLst = stop_words_nltk, stemmer = snowball))
+
 ```
 
 To use the texts with gensim we need to create a `corpua` object, this takes a few steps. First we create a `Dictioanry` that maps tokens to ids.
 
 ```python
-dictionary = gensim.corpora.Dictionary(obReleases['normalized_tokens'])
+dictionary = gensim.corpora.Dictionary(senReleasesTraining['normalized_tokens'])
 ```
 
 Then for each of the texts we create a list of tuples containing: each token and its count. We will only use the first half of our dataset for now, and will leave the second half to test with.
 
 ```python
-corpus = [dictionary.doc2bow(text) for text in obReleases['normalized_tokens'][:10]]
+corpus = [dictionary.doc2bow(text) for text in senReleasesTraining['normalized_tokens']]
 ```
 
 Then we serialize the corpus as a file and load it. This is an important step when the corpus is large.
 
 ```python
-gensim.corpora.MmCorpus.serialize('obama.mm', corpus)
-obmm = gensim.corpora.MmCorpus('obama.mm')
+gensim.corpora.MmCorpus.serialize('data/senate.mm', corpus)
+senmm = gensim.corpora.MmCorpus('data/senate.mm')
 ```
 
 Now we have a correctly formatted corpura that we can use for some topic models
 
 ```
-oblda = gensim.models.ldamodel.LdaModel(corpus=obmm, id2word=dictionary, num_topics=10)
+senlda = gensim.models.ldamodel.LdaModel(corpus=senmm, id2word=dictionary, num_topics=10)
 ```
 
 We can check how well different texts belong to different topics, heres one of the texts from the training set
 
 ```python
-ob1Bow = dictionary.doc2bow(obReleases['normalized_tokens'][0])
-ob1lda = oblda[ob1Bow]
-ob1lda
+sen1Bow = dictionary.doc2bow(senReleasesTraining['normalized_tokens'][0])
+sen1lda = senlda[sen1Bow]
+print("The topics of the text: {}".format(senReleasesTraining['name'][0]))
+print("are: {}".format(sen1lda))
 ```
 
-and one from the withheld set
+and one from the testing set
 
 ```python
-ob11Bow = dictionary.doc2bow(obReleases['normalized_tokens'][11])
-ob11lda = oblda[ob1Bow]
-ob11lda
+senTesting1Bow = dictionary.doc2bow(senReleasesTesting['normalized_tokens'][1])
+sentesting1lda = senlda[senTesting1Bow]
+print("The topics of the text: {}".format(senReleasesTesting['name'][0]))
+print("are: {}".format(sentesting1lda))
 ```
 
-We can now see which topic our model predicts the press releases belongs to
+We can now see which topic our model predicts the press releases belongs to and make this into a dataFrame.
+
+```python
+ldaDF = pandas.DataFrame({
+        'name' : senReleasesTraining['name'],
+        'topics' : [senlda[dictionary.doc2bow(l)] for l in senReleasesTraining['normalized_tokens']]
+    })
+```
+
+This is a bit unwieldy so lets make each topic its own column
+
+```python
+
+```
