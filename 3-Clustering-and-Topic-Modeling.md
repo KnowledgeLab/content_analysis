@@ -435,26 +435,27 @@ def getGithubFiles(target, maxFiles = 100):
 
     return pandas.DataFrame(releasesDict)
 
-targetSenators = ['Voinovich', 'Obama', 'Whitehouse', 'Snowe', 'Rockefeller', 'Murkowski', 'McCain', 'Kyl', 'Baucus', 'Frist']
-
+targetSenator = 'Kennedy'# = ['Voinovich', 'Obama', 'Whitehouse', 'Snowe', 'Rockefeller', 'Murkowski', 'McCain', 'Kyl', 'Baucus', 'Frist']
 """
+#Uncomment this to download your own data
 senReleasesTraining = pandas.DataFrame()
 
-for senator in targetSenators:
-    print("Fetching {}'s data".format(senator))
-    targetDF = getGithubFiles('https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/{}'.format(senator), maxFiles = 100)
-    targetDF['senator'] = senator
-    senReleasesTraining = senReleasesTraining.append(targetDF, ignore_index = True)
+print("Fetching {}'s data".format(targetSenator))
+targetDF = getGithubFiles('https://api.github.com/repos/lintool/GrimmerSenatePressReleases/contents/raw/{}'.format(targetSenator), maxFiles = 2000)
+targetDF['targetSenator'] = targetSenator
+senReleasesTraining = senReleasesTraining.append(targetDF, ignore_index = True)
 
+#Watch out for weird lines when converting to csv
+#one of them had to be removed from the Kennedy data so it could be re-read
 senReleasesTraining.to_csv("data/senReleasesTraining.csv")
 """
-senReleasesTraining = pandas.DataFrame.from_csv("data/senReleasesTraining.csv")
 
-senReleasesTraining[::100]
+senReleasesTraining = pandas.read_csv("data/senReleasesTraining.csv")
+
+senReleasesTraining[:5]
 ```
 
-Now we have the files we can tokenize and normalize
-
+Now we have the files we can tokenize and normalize.
 ```python
 #Define the same function as last week
 def normlizeTokens(tokenLst, stopwordLst = None, stemmer = None, lemmer = None):
@@ -488,16 +489,34 @@ senReleasesTraining['normalized_tokens'] = senReleasesTraining['tokenized_text']
 senReleasesTraining[::100]
 ```
 
-To use the texts with gensim we need to create a `corpua` object, this takes a few steps. First we create a `Dictioanry` that maps tokens to ids.
+The normalized text is good, but we know that the texts will have a large amount of overlap so we can use tf-idf to remove some of the most frequent words.
 
 ```python
-dictionary = gensim.corpora.Dictionary(senReleasesTraining['normalized_tokens'])
+#Similar parameters to before, but stricter max df and no max num occurrences
+senTFVectorizer = sklearn.feature_extraction.text.TfidfVectorizer(max_df=100, min_df=2, stop_words='english', norm='l2')
+senTFVects = senTFVectorizer.fit_transform(senReleasesTraining['normalized_tokens'].sum())
+senTFVectorizer.vocabulary_.get('senat', 'Missing "Senate"')
+```
+
+This gives us a vocabulary and we can drop now drop all the words not in it
+
+```python
+def dropMissing(wordLst, vocab):
+    return [w for w in wordLst if w in vocab]
+
+senReleasesTraining['reduced_tokens'] = senReleasesTraining['normalized_tokens'].apply(lambda x: dropMissing(x, senTFVectorizer.vocabulary_.keys()))
+```
+
+To use the texts with gensim we need to create a `corpua` object, this takes a few steps. First we create a `Dictionary` that maps tokens to ids.
+
+```python
+dictionary = gensim.corpora.Dictionary(senReleasesTraining['reduced_tokens'])
 ```
 
 Then for each of the texts we create a list of tuples containing: each token and its count. We will only use the first half of our dataset for now, and will leave the second half to test with.
 
 ```python
-corpus = [dictionary.doc2bow(text) for text in senReleasesTraining['normalized_tokens']]
+corpus = [dictionary.doc2bow(text) for text in senReleasesTraining['reduced_tokens']]
 ```
 
 Then we serialize the corpus as a file and load it. This is an important step when the corpus is large.
@@ -516,7 +535,7 @@ senlda = gensim.models.ldamodel.LdaModel(corpus=senmm, id2word=dictionary, num_t
 We can check how well different texts belong to different topics, heres one of the texts from the training set
 
 ```python
-sen1Bow = dictionary.doc2bow(senReleasesTraining['normalized_tokens'][0])
+sen1Bow = dictionary.doc2bow(senReleasesTraining['reduced_tokens'][0])
 sen1lda = senlda[sen1Bow]
 print("The topics of the text: {}".format(senReleasesTraining['name'][0]))
 print("are: {}".format(sen1lda))
@@ -527,7 +546,7 @@ We can now see which topic our model predicts the press releases belongs to and 
 ```python
 ldaDF = pandas.DataFrame({
         'name' : senReleasesTraining['name'],
-        'topics' : [senlda[dictionary.doc2bow(l)] for l in senReleasesTraining['normalized_tokens']]
+        'topics' : [senlda[dictionary.doc2bow(l)] for l in senReleasesTraining['reduced_tokens']]
     })
 ```
 
@@ -568,3 +587,67 @@ wordRanksDF
 ```
 
 We can see that most of the topics have the same top words, there are definitely differences. We can try and make the topics more distinct by changing parameters of the model
+
+# Clustering with our new data
+
+One nice thing about using DataFrames for everything is that we can quickly convert code from one input to another. Below we are redoing the cluster detection with our senate data. If you setup your DataFrame the same way it should be able to run on this code, without much work.
+
+First we will define what we will be working with
+
+```python
+targetDF = senReleasesTraining
+textColumn = 'reduced_tokens'
+numCategories = 10
+```
+
+Tf-IDf vectorizing
+
+```python
+exampleTFVectorizer = sklearn.feature_extraction.text.TfidfVectorizer(max_df=0.5, max_features=1000, min_df=3, stop_words='english', norm='l2')
+#train
+exampleTFVects = ngTFVectorizer.fit_transform(targetDF[textColumn].sum())
+```
+
+Running k means
+
+```python
+exampleKM = sklearn.cluster.KMeans(n_clusters = numCategories, init='k-means++')
+exampleKM.fit(exampleTFVects)
+```
+
+And visualize, this is more up to you, but we will do one
+
+```python
+examplePCA = sklearn.decomposition.PCA(n_components = 2).fit(exampleTFVects.toarray())
+reducedPCA_data = pca.transform(exampleTFVects.toarray())
+
+colors = list(plt.cm.rainbow(np.linspace(0,1, numCategories)))
+colors_p = [colors[l] for l in km.labels_]
+```
+
+```python
+fig = plt.figure(1)
+ax = fig.add_subplot(111)
+ax.set_frame_on(False)
+plt.scatter(reducedPCA_data[:, 0], reducedPCA_data[:, 1], color = colors_p, alpha = 0.5)
+plt.xticks(())
+plt.yticks(())
+plt.title('Predicted Clusters\n k = {}'.format(numCategories))
+plt.show()
+```
+
+And we can also do hierarchical clustering. Lets create the linkage matrix
+
+```python
+exampleCoocMat = exampleTFVects * exampleTFVects.T
+exampleCoocMat.setdiag(0)
+examplelinkage_matrix = scipy.cluster.hierarchy.ward(exampleCoocMat[:100, :100].toarray())
+```
+
+And visualize the tree
+
+```python
+ax = scipy.cluster.hierarchy.dendrogram(examplelinkage_matrix, p=5, truncate_mode='level')
+```
+
+sometimes, it's not very interesting
