@@ -1,6 +1,6 @@
-notebooks: 1-intro.ipynb 2-Corpus-Linguistics.ipynb 3-Clustering-and-Topic-Modeling.ipynb 4-Embedding.ipynb
+notebooks: 1-intro.ipynb 2-Corpus-Linguistics.ipynb 3-Clustering-and-Topic-Modeling.ipynb 4-Word-Embedding.ipynb
 
-html: 1-intro.html 2-Corpus-Linguistics.html 3-Clustering-and-Topic-Modeling.html 4-Embedding.html
+html: 1-intro.html 2-Corpus-Linguistics.html 3-Clustering-and-Topic-Modeling.html 4-Word-Embedding.html
 
 all: notebooks html
 
@@ -10,7 +10,7 @@ all: notebooks html
 
 3: 3-Clustering-and-Topic-Modeling.html
 
-4: 4-Embedding.html
+4: 4-Word-Embedding.html
 
 1-intro.ipynb: 1-intro.md
 	notedown -o notebooks/$@ $<
@@ -37,9 +37,9 @@ all: notebooks html
 3-Clustering-and-Topic-Modeling.html: 3-Clustering-and-Topic-Modeling.ipynb
 	jupyter nbconvert --to html --output=../html/$@ notebooks/$<
 
-4-Embedding.ipynb: 4-Embedding.md
+4-Word-Embedding.ipynb: 4-Word-Embedding.md
 	notedown -o notebooks/$@ $<
 	jupyter nbconvert --to notebook --execute --allow-errors --output=$@ notebooks/$@
 
-4-Embedding.html: 4-Embedding.ipynb
+4-Word-Embedding.html: 4-Word-Embedding.ipynb
 	jupyter nbconvert --to html --output=../html/$@ notebooks/$<
