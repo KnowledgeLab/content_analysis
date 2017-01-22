@@ -125,3 +125,47 @@ Now we can look at a few things
 ```
 senReleasesW2V.most_similar('president')
 ```
+
+Or find relationships
+
+
+```python
+#Man is to senator as woman is to ...
+senReleasesW2V.most_similar(positive = ['woman', 'senator'], negative = ['man'], topn = 5)
+#Chinatown is a noble profession
+```
+
+Get the vector
+
+```python
+senReleasesW2V['president']
+```
+
+Get all the vectors
+
+```python
+senReleasesW2V.syn0
+```
+
+Find what doesn't fit
+
+```python
+senReleasesW2V.doesnt_match(['she', 'he', 'her', 'him', 'washington'])
+```
+
+
+Or save for use later
+
+```python
+senReleasesW2V.save("data/senpressreleasesWORD2Vec")
+```
+
+# APS abstracts
+
+```python
+apsDF = pandas.read_csv('data/APSabstracts1950s.csv', index_col = 0)
+apsDF['tokenized_sents'] = apsDF['abstract'].apply(lambda x: [nltk.word_tokenize(s) for s in nltk.sent_tokenize(x)])
+apsDF['normalized_sents'] = apsDF['tokenized_sents'].apply(lambda x: [normlizeTokens(s, stopwordLst = stop_words_nltk, stemmer = None) for s in x])
+
+apsW2V = gensim.models.word2vec.Word2Vec(apsDF['tokenized_sents'].sum())
+```

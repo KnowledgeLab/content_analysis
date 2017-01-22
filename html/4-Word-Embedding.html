@@ -12145,6 +12145,310 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we can look at a few things</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">senReleasesW2V</span><span class="o">.</span><span class="n">most_similar</span><span class="p">(</span><span class="s1">&#39;president&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[6]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[(&#39;administration&#39;, 0.7568289041519165),
+ (&#39;President&#39;, 0.7529541850090027),
+ (&#39;Administration&#39;, 0.6696342825889587),
+ (&#39;nominee&#39;, 0.6440970301628113),
+ (&#39;himself&#39;, 0.6405242681503296),
+ (&#39;memo&#39;, 0.6264574527740479),
+ (&#39;he&#39;, 0.6256895065307617),
+ (&#39;Cheney&#39;, 0.6094998717308044),
+ (&#39;Presidents&#39;, 0.608191192150116),
+ (&#39;Pentagon&#39;, 0.599648118019104)]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Or find relationships</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Man is to senator as woman is to ...</span>
+<span class="n">senReleasesW2V</span><span class="o">.</span><span class="n">most_similar</span><span class="p">(</span><span class="n">positive</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;woman&#39;</span><span class="p">,</span> <span class="s1">&#39;senator&#39;</span><span class="p">],</span> <span class="n">negative</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;man&#39;</span><span class="p">],</span> <span class="n">topn</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span>
+<span class="c1">#Chinatown is a noble profession</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[7]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[(&#39;Chinatown&#39;, 0.665317177772522),
+ (&#39;Iron&#39;, 0.6631838083267212),
+ (&#39;charity&#39;, 0.6588665246963501),
+ (&#39;Pittsfield&#39;, 0.6566770076751709),
+ (&#39;Moorhead&#39;, 0.6544506549835205)]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Get the vector</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">senReleasesW2V</span><span class="p">[</span><span class="s1">&#39;president&#39;</span><span class="p">]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[8]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>array([  7.30614588e-02,  -3.45240355e-01,   1.50905538e+00,
+         6.34938359e-01,   2.52880603e-01,   5.29100418e-01,
+         1.81260169e+00,  -2.13264036e+00,   8.48588765e-01,
+         1.53643072e+00,  -9.25825119e-01,  -4.96639758e-01,
+         1.75919652e+00,  -1.58743358e+00,   1.33599949e+00,
+        -3.45647216e-01,   1.92963406e-01,  -6.62870556e-02,
+        -1.02382481e+00,  -1.01510417e+00,  -6.69602990e-01,
+         6.28593981e-01,  -6.25705183e-01,  -1.03368707e-01,
+        -3.48943770e-01,   5.96535742e-01,   2.05678850e-01,
+        -6.94201767e-01,  -5.83823800e-01,  -3.71038020e-01,
+        -7.93978572e-01,   7.31354952e-01,   3.13704401e-01,
+        -3.42074871e-01,   5.03109992e-01,  -8.74512315e-01,
+        -1.61182189e+00,   5.13637960e-01,  -5.60376532e-02,
+        -9.43049490e-01,   1.02671467e-01,  -1.82064816e-01,
+         5.87572813e-01,   1.20939672e+00,  -1.27947581e+00,
+         1.26226830e+00,   2.78864413e-01,   4.58728164e-01,
+        -1.16603374e+00,   2.18257642e+00,  -1.15078442e-01,
+         5.49429297e-01,  -9.70458865e-01,  -1.52834475e-01,
+         1.66983771e+00,  -7.08578050e-01,   2.91849643e-01,
+         7.59562969e-01,  -5.78666449e-01,   1.47706318e+00,
+         1.01813734e+00,   7.79087365e-01,   6.59399688e-01,
+         1.06281467e-01,  -1.28847432e+00,  -1.37789012e-03,
+         8.39293242e-01,  -1.04009345e-01,   2.11478591e-01,
+         6.28977194e-02,  -3.33147384e-02,   4.04457510e-01,
+        -2.46969104e-01,  -7.07081079e-01,   1.68523967e-01,
+        -4.07267481e-01,   1.05475271e+00,  -1.44849837e+00,
+         1.15822589e+00,   9.16355848e-01,  -1.82463467e+00,
+         3.51513326e-01,  -1.32636800e-01,   6.24626838e-02,
+         3.37971777e-01,   6.47940636e-01,   2.53730536e-01,
+         4.01330888e-01,   3.46987158e-01,  -8.20247233e-01,
+         4.28839773e-01,   1.30434126e-01,   1.70480400e-01,
+         1.55048406e+00,  -6.56247318e-01,  -6.59519807e-02,
+        -9.96263921e-01,  -1.33852005e+00,  -4.34293598e-01,
+        -3.59358281e-01], dtype=float32)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Get all the vectors</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">senReleasesW2V</span><span class="o">.</span><span class="n">syn0</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[9]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>array([[ 0.85325009, -0.37248051, -0.45195943, ..., -1.50720394,
+        -0.36614648, -0.7876817 ],
+       [ 2.36519051, -1.41433895,  1.03849816, ..., -0.97026128,
+         0.23737457, -2.49554253],
+       [ 0.90348792,  0.21175879, -0.4225637 , ...,  0.48453137,
+         0.25113538, -0.73218578],
+       ..., 
+       [-0.08018535, -0.0157751 ,  0.03091644, ...,  0.04544521,
+         0.00317775,  0.08965429],
+       [-0.09362413,  0.06673632, -0.04862032, ...,  0.12646115,
+         0.04953843, -0.01611871],
+       [ 0.02434441, -0.07023816, -0.03426784, ..., -0.01972212,
+         0.02808639,  0.0497155 ]], dtype=float32)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Find what doesn't fit</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">senReleasesW2V</span><span class="o">.</span><span class="n">doesnt_match</span><span class="p">([</span><span class="s1">&#39;she&#39;</span><span class="p">,</span> <span class="s1">&#39;he&#39;</span><span class="p">,</span> <span class="s1">&#39;her&#39;</span><span class="p">,</span> <span class="s1">&#39;him&#39;</span><span class="p">,</span> <span class="s1">&#39;washington&#39;</span><span class="p">])</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[10]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#39;her&#39;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Or save for use later</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">senReleasesW2V</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;data/senpressreleasesWORD2Vec&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="APS-abstracts">APS abstracts<a class="anchor-link" href="#APS-abstracts">&#182;</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">apsDF</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;data/APSabstracts1950s.csv&#39;</span><span class="p">,</span> <span class="n">index_col</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">apsDF</span><span class="p">[</span><span class="s1">&#39;tokenized_sents&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">apsDF</span><span class="p">[</span><span class="s1">&#39;abstract&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">[</span><span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">nltk</span><span class="o">.</span><span class="n">sent_tokenize</span><span class="p">(</span><span class="n">x</span><span class="p">)])</span>
+<span class="n">apsDF</span><span class="p">[</span><span class="s1">&#39;normalized_sents&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">apsDF</span><span class="p">[</span><span class="s1">&#39;tokenized_sents&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">[</span><span class="n">normlizeTokens</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">stopwordLst</span> <span class="o">=</span> <span class="n">stop_words_nltk</span><span class="p">,</span> <span class="n">stemmer</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span>
+
+<span class="n">apsW2V</span> <span class="o">=</span> <span class="n">gensim</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">word2vec</span><span class="o">.</span><span class="n">Word2Vec</span><span class="p">(</span><span class="n">apsDF</span><span class="p">[</span><span class="s1">&#39;tokenized_sents&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
     </div>
   </div>
 </body>
