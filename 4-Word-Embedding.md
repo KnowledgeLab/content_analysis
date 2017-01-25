@@ -12,6 +12,8 @@
 ```python
 #All these packages need to be installed from pip
 import gensim#For word2vec, etc
+import sklearn
+import sklearn.manifold
 import requests #For downloading our datasets
 import nltk #For stop words and stemmers
 import numpy as np #For arrays
@@ -110,7 +112,7 @@ senReleasesDF[:100:10]
 ```
 
 
-#Word2Vec
+# Word2Vec
 
 We will be using the gensim implementation of [Word2Vec](https://radimrehurek.com/gensim/models/word2vec.html#gensim.models.word2vec.Word2Vec).
 
@@ -153,11 +155,42 @@ Find what doesn't fit
 senReleasesW2V.doesnt_match(['she', 'he', 'her', 'him', 'washington'])
 ```
 
+Visualize
+
+```python
+import sklearn.manifold
+import sklearn.decomposition
+
+pca = sklearn.decomposition.PCA(n_components = 50).fit(senReleasesW2V.syn0)
+reducedPCA_data = pca.transform(senReleasesW2V.syn0)
+
+#tsne = sklearn.manifold.TSNE(n_components = 2).fit_transform(reducedPCA_data)
+
+fig = plt.figure(1)
+ax = fig.add_subplot(111)
+ax.set_frame_on(False)
+plt.scatter(reducedPCA_data[:, 0], reducedPCA_data[:, 1])
+plt.xticks(())
+plt.yticks(())
+#plt.title('Predicted Clusters\n k = {}'.format(numCategories))
+plt.show()
+```
+
 
 Or save for use later
 
 ```python
 senReleasesW2V.save("data/senpressreleasesWORD2Vec")
+```
+
+
+
+We can also read in the documents with doc2vec
+
+
+
+```python
+sklearn.manifold.TSNE
 ```
 
 # APS abstracts
