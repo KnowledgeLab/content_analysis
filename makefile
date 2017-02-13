@@ -12,6 +12,8 @@ all: notebooks html
 
 4: 4-Word-Embedding.html
 
+7: 7-NLP.ipynb
+
 1-intro.ipynb: 1-intro.md
 	notedown -o notebooks/$@ $<
 	jupyter nbconvert --to notebook --execute --allow-errors --output=$@ notebooks/$@
@@ -43,3 +45,7 @@ all: notebooks html
 
 4-Word-Embedding.html: 4-Word-Embedding.ipynb
 	jupyter nbconvert --to html --output=../html/$@ notebooks/$<
+
+7-NLP.ipynb: 7-NLP.md
+	notedown -o notebooks/$@ $<
+	jupyter nbconvert --to notebook --execute --allow-errors --output=$@ notebooks/$@
