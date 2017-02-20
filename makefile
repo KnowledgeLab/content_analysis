@@ -14,6 +14,8 @@ all: notebooks html
 
 7: 7-NLP.ipynb
 
+8: 8-Semantic-Networks.ipynb
+
 1-intro.ipynb: 1-intro.md
 	notedown -o notebooks/$@ $<
 	jupyter nbconvert --to notebook --execute --allow-errors --output=$@ notebooks/$@
@@ -47,5 +49,9 @@ all: notebooks html
 	jupyter nbconvert --to html --output=../html/$@ notebooks/$<
 
 7-NLP.ipynb: 7-NLP.md
+	notedown -o notebooks/$@ $<
+	jupyter nbconvert --to notebook --execute --allow-errors --output=$@ notebooks/$@
+
+8-Semantic-Networks.ipynb: 8-Semantic-Networks.md
 	notedown -o notebooks/$@ $<
 	jupyter nbconvert --to notebook --execute --allow-errors --output=$@ notebooks/$@
