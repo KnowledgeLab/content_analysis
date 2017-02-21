@@ -16,6 +16,7 @@ import nltk
 import sklearn
 import pandas
 import numpy as np
+import scipy as sp
 import matplotlib.pyplot as plt
 import seaborn
 import igraph as ig
@@ -94,7 +95,7 @@ There are a large number of things to do with the graph once we have created it,
 First lets load our data, the Grimmer corpus
 
 ``` python
-senReleasesDF = pandas.read_csv('data/senReleasesTraining.csv', index_col = 0)
+senReleasesDF = pandas.read_csv('data/senReleasesTraining.csv', index_col = 0)[:5]
 senReleasesDF[:5]
 ```
 
@@ -131,9 +132,51 @@ snowball = nltk.stem.snowball.SnowballStemmer('english')
 wordnet = nltk.stem.WordNetLemmatizer()
 ```
 
+For now we will not be dropping any stop words
+
 ``` python
 senReleasesDF['tokenized_sents'] = senReleasesDF['text'].apply(lambda x: [nltk.word_tokenize(s) for s in nltk.sent_tokenize(x)])
-senReleasesDF['normalized_sents'] = senReleasesDF['tokenized_sents'].apply(lambda x: [normlizeTokens(s, stopwordLst = stop_words_nltk, stemmer = None) for s in x])
+senReleasesDF['normalized_sents'] = senReleasesDF['tokenized_sents'].apply(lambda x: [normlizeTokens(s, stopwordLst = None, stemmer = snowball) for s in x])
 
 senReleasesDF[:5]
+```
+
+Lets start by lookking at words co-occurring in same sentences
+
+``` python
+def wordCooccurrence(sentences, makeMatrix = False):
+    words = set()
+    for sent in sentences:
+        words |= set(sent)
+    wordLst = list(words)
+    wordIndices = {w: i for i, w in enumerate(wordLst)}
+    wordCoCounts = {}
+    #consider a sparse matrix if memory becomes an issue
+    coOcMat = np.zeros((len(wordIndices), len(wordIndices)))
+    for sent in sentences
+        for i, word1 in enumerate(sent):
+            word1Index = wordIndices[word1]
+            for word2 in sent[i + 1:]:
+                coOcMat[word1Index][wordIndices[word2]] += 1
+    if makeMatrix:
+        return coOcMat, wordLst
+    else:
+        coOcMat = coOcMat.T + coOcMat
+        edges = list(zip(*np.where(coOcMat)))
+        weights = coOcMat[np.where(coOcMat)]
+        g = ig.Graph( n = len(wordLst),
+            edges = edges,
+            vertex_attrs = {'name' : wordLst, 'label' : wordLst},
+            edge_attrs = {'weight' : weights}
+            )
+
+        return g
+```
+
+``` python
+g = wordCooccurrence(senReleasesDF['normalized_sents'][:2].sum())
+```
+
+``` python
+ig.plot(g)
 ```
