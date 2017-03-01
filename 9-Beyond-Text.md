@@ -15,6 +15,7 @@ import pandas #gives us DataFrames
 import matplotlib.pyplot as plt #For graphics
 import seaborn as sns #Makes the graphics look nicer
 
+
 import IPython
 import pydub #Requires ffmpeg to be installed
 import speech_recognition
@@ -175,3 +176,124 @@ plt.xlabel('Frequency ($Hz$)')
 ```
 
 Notice how there isn't a dominant frequency for the sniff
+
+What are the dominant frequencies for the entire record?
+
+``` python
+#This takes a while
+fullFFT = scipy.fftpack.ifft(soundArr)
+N = len(soundArr)
+#We want the magnitude not the exact values, and the distribution is symmetric so only half
+yf = abs(soundArr[:(N//2-1)])
+k = np.linspace(0, N //2 - 1, N //2 - 1)
+T = N / soundSampleRate
+plt.plot(k / T, yf)
+plt.xlabel('Frequency ($Hz$)')
+```
+
+``` python
+def freqs(sub):
+    vals = []
+    for i, row in transcriptDF[transcriptDF['speaker'] == sub].iterrows():
+        sample = soundArr[row['index_start']: row['index_end']]
+
+        sampleFFT = abs(scipy.fftpack.ifft(sample))
+
+
+        vals.append(sampleFFT.argmax())
+    return vals
+
+```
+
+``` python
+plt.plot(freqs('ALAN:'))
+```
+
+``` python
+plt.plot(freqs('JON:'))
+```
+
+``` python
+IPython.display.Image('data/class.jpg')
+```
+
+``` python
+from skimage import data
+from skimage.feature import blob_dog, blob_log, blob_doh
+from math import sqrt
+from skimage.color import rgb2gray
+
+import matplotlib.pyplot as plt
+
+import numpy as np
+import PIL
+import PIL.Image
+
+image = PIL.Image.open('data/class.jpg').convert('L')
+image_gray = np.asarray(image)
+
+#image = data.hubble_deep_field()[0:500, 0:500]
+#image_gray = rgb2gray(image)
+
+blobs_log = blob_log(image_gray, max_sigma=30, num_sigma=10, threshold=.1)
+
+# Compute radii in the 3rd column.
+blobs_log[:, 2] = blobs_log[:, 2] * sqrt(2)
+
+blobs_dog = blob_dog(image_gray, max_sigma=30, threshold=.1)
+blobs_dog[:, 2] = blobs_dog[:, 2] * sqrt(2)
+
+blobs_doh = blob_doh(image_gray, max_sigma=30, threshold=.01)
+
+blobs_list = [blobs_log, blobs_dog, blobs_doh]
+colors = ['yellow', 'lime', 'red']
+titles = ['Laplacian of Gaussian', 'Difference of Gaussian',
+          'Determinant of Hessian']
+sequence = zip(blobs_list, colors, titles)
+
+fig, axes = plt.subplots(1, 3, figsize=(14, 4), sharex=True, sharey=True,
+                         subplot_kw={'adjustable': 'box-forced'})
+plt.tight_layout()
+
+axes = axes.ravel()
+for blobs, color, title in sequence:
+    ax = axes[0]
+    axes = axes[1:]
+    ax.set_title(title)
+    ax.imshow(image, interpolation='nearest')
+    ax.set_axis_off()
+    for blob in blobs:
+        y, x, r = blob
+        c = plt.Circle((x, y), r, color=color, linewidth=2, fill=False)
+        ax.add_patch(c)
+
+plt.show()
+```
+
+``` python
+from skimage.future import graph
+from skimage import data, segmentation, color, filters, io
+from skimage.util.colormap import viridis
+import numpy as np
+import PIL
+import PIL.Image
+img = PIL.Image.open('data/class.jpg').convert('L')
+gimg = np.asarray(img)
+
+
+#img = data.coffee()
+#gimg = color.rgb2gray(img)
+
+labels = segmentation.slic(img, compactness=30, n_segments=400)
+edges = filters.sobel(gimg)
+edges_rgb = color.gray2rgb(edges)
+
+g = graph.rag_boundary(labels, edges)
+
+out = graph.draw_rag(labels, g, edges_rgb, node_color="#999999",
+                     colormap=viridis)
+
+io.imshow(out)
+io.show()
+
+```
