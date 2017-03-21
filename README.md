@@ -1,3 +1,13 @@
-This is your home directory, each the weeks is a separate folder. You can upload and create files with the options in the upper left corner.
+# Computational Content Analysis Notebooks
 
-#A snapshot will be taken when your homework is due, make a copy of the weeks notebook and add your CNID to its name
+These are a series of Jupyter notebooks for the Computational Content Analysis at the university of Chicago. They are  written in Python 3 and they just require the associated data directories and the specified packages installed to run. The notebooks are:
+
+1. Intro
+2. Corpus Linguistics
+3. Clustering and Topic Modeling
+4. Word Embedding
+5. Reliability
+6. Classification
+7. Information Extraction
+8. Semantic Networks
+9. Beyond Text
