@@ -1,6 +1,8 @@
 #old-notebooks/*
 *.gif
-
+notebooks/shared/*
+*.wav
+*.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
