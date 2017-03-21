@@ -2,8 +2,8 @@
 
 These are a series of Jupyter notebooks for the Computational Content Analysis at the university of Chicago. They are  written in Python 3 and they just require the associated data directories and the specified packages installed to run. The notebooks are:
 
-1. Intro
-2. Corpus Linguistics
+1. [Intro](1-Intro/1-intro.ipynb)
+2. [Corpus Linguistics](2-Corpus-Linguistics/2-Corpus-Linguistics.ipynb)
 3. Clustering and Topic Modeling
 4. Word Embedding
 5. Reliability
