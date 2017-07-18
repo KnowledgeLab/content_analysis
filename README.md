@@ -5,7 +5,7 @@ These are a series of Jupyter notebooks for a talk at 中山大学 (Sun Yat-Sen 
 To use them follow the following steps:
 
 1. Install Python 3 and Jupyter, we recommend using the Anaconda distribution found [here](https://www.continuum.io/downloads)
-2. Download the notebooks and data, [here](https://github.com/KnowledgeLab/content_analysis/archive/1.0.zip) is a link
+2. Download the notebooks and data, [here](https://github.com/KnowledgeLab/content_analysis/archive/1.1.zip) is a link
 3. Unzip the files and open a terminal in the directory
 4. Install the requirements `pip install -U -r requirements.txt`
 5. Start the Jupyter Notebook server `jupyter notebook`
@@ -21,3 +21,5 @@ The notebooks are:
 7. _extension_ [Information Extraction](7-Information-Extraction/7-Information-Extraction.ipynb)
 8. _extension_ [Semantic Networks](8-Semantic-Networks/8-Semantic-Networks.ipynb)
 9. _extension_ [Beyond Text](9-Beyond-Text/9-Beyond-Text.ipynb)
+
+The extensions can be found [here](https://github.com/KnowledgeLab/content_analysis/)
