@@ -1,3 +1,21 @@
+# TODO
+
++ Code
+    + Standardize style
+    + Define imports/installs
+    + Explain compatibility
+    + Confirm all code working
++ Documentation
+    + Add more links
+    + Test internal links
+    + Test table of contents
+    + install explanation
+    + Better README
++ Dev
+    + Markdown vs notebook setup
+    + `ct` package
+
+
 # Class Structure
 
 1. Discussion
