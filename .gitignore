@@ -3,6 +3,7 @@
 notebooks/shared/*
 *.wav
 *.json
+old/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

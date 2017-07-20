@@ -1,3 +1,14 @@
+
+
+$names = 1-intro 2-Corpus-Linguistics 3-Clustering-and-Topic-Modeling 4-Word-Embedding
+
+
+
+names:
+	for n in '$names'; do echo $$n; done
+	echo 'sfddfd' > names.txt
+
+
 notebooks: 1-intro.ipynb 2-Corpus-Linguistics.ipynb 3-Clustering-and-Topic-Modeling.ipynb 4-Word-Embedding.ipynb
 
 html: 1-intro.html 2-Corpus-Linguistics.html 3-Clustering-and-Topic-Modeling.html 4-Word-Embedding.html
